@@ -27,7 +27,7 @@ Options 2:
 
 ## How To Use
 
-To change keybinds press F10 (by default) to open hotkey configuration window. You can change this keybind. You have to press the keybind in-game, this script doesn't recognize anything pressed outside of the game.
+To change keybinds, press F10 (default) to open the hotkey configuration window. You can customize this keybind to your preference. Note that the keybind must be pressed in-game, as this script doesn't recognize keys pressed outside of the game.
 
 ### Enter Hideout
 Travel to hideout by typing "/hideout".
@@ -50,13 +50,13 @@ How to use:
 3. Press this keybind
 
 ### Open Divination Stacked Deck
-Picks up one card and drops to the ground. You need to be somewhere that allows to drop loot to the ground. 
+Picks up one card and drops to the ground. You need to be in a location that allows you to drop loot. 
 
 1. Hover over divination stacked deck
 2. Press this keybind
 
 ### Drop Item From Inventory
-Drops an item to the ground.
+Drops an item to the ground. You need to be in a location that allows you to drop loot.
 
 1. Hover over item in inventory
 2. Press this keybind
@@ -73,7 +73,7 @@ Enters RegExp to the shop's search bar.
 1. Open shop
 2. Press this keybind
 
-The default is: "(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|ll g", for any 4-6 links, any 6 socket, any +1 wand and movement speed boots. You can modify the RegExp, so you can have whatever you want.
+The default RegExp is: "(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|ll g". This targets any 4-6 linked items, any 6-socket items, any +1 wand, and movement speed boots. You can modify the RegExp, so you can have whatever you want.
 
 ### Spam Ctrl Click
 Holds CTRL and spams left click.
@@ -83,14 +83,14 @@ Use cases:
 - Loot items from ground (I don't recommend this, horrible user experience)
 
 ### Toggle CTRL
-Press keybind once to hold CTRL. Press keybind second time to release CTRL. Meant to be used when you need to use more intent, when moving items between stash and inventory.
+Press the keybind once to hold CTRL. Press it again to release CTRL. This is useful when you need more precision when moving items between stash and inventory.
 
 Use cases:
 - Move items from inventory to stash
 - Move items from stash to inventory 
 
 ### Toggle SHIFT
-Press keybind once to hold SHIFT. Press keybind second time to release SHIFT.
+Press the keybind once to hold SHIFT. Press it again to release SHIFT.
 
 Use cases:
 - Use crafting items continuously (e.g. alterations, jewellers, fusings) without needing to hold SHIFT yourself
