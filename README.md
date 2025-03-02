@@ -6,6 +6,8 @@ Lately, I've been experiencing discomfort in my left pinky from frequently press
 
 I know this tool is in the gray area, or some might say illegal. There are tools that can achieve same results but not within one tool. You'd have to use multiple tools or even combine them. Morally I don't see the harm for being able to keep playing without discomfort or pain. As long as they don't ban me, I will still keep paying for the supporter packs.
 
+That said, use at your own risk! While the tool is designed to ease the strain on your hands, I can't guarantee anything.
+
 ## Requirements
 
 - Windows PC
