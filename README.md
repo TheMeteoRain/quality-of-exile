@@ -4,7 +4,7 @@
 
 Lately, I've been experiencing discomfort in my left pinky from frequently pressing modifier keys. To alleviate this, I created a small script that holds modifier keys (such as CTRL and SHIFT) for me. Over time, I expanded the tool to automate other repetitive tasks, giving my hands a break. My goal is not to automate anything that could compromise the integrity of the game, but simply to make the experience more comfortable and enjoyable without the pain. This tool is intended for anyone who faces similar issues, especially as they deal with the strain that can come with age.
 
-I know this tool is in the gray area, or some might say illegal. There are tools that can achieve same results but not within one tool. You'd have to use multiple tools or even combine them. Morally I don't see the harm for being able to keep playing without discomfort or pain. As long as they don't ban me, I will still keep paying for the supported packs.
+I know this tool is in the gray area, or some might say illegal. There are tools that can achieve same results but not within one tool. You'd have to use multiple tools or even combine them. Morally I don't see the harm for being able to keep playing without discomfort or pain. As long as they don't ban me, I will still keep paying for the supporter packs.
 
 ## Requirements
 
@@ -77,7 +77,7 @@ The default is: "(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|ll g", for any 4-6 
 Holds CTRL and spams left click.
 
 Use cases:
-- Rabidly click items to the stash
+- Rabidly move items to the stash
 - Loot items from ground (I don't recommend this, horrible user experience)
 
 ### Toggle CTRL
