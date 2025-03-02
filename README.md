@@ -46,7 +46,7 @@ How to use:
 1. Press this keybind (in town)
 
 ### Trade Full Stack of Divination Cards
-Trade divination cards for items faster.
+Trade divination cards for items.
 
 How to use:
 1. Open divination card trade window
