@@ -25,7 +25,7 @@ Option 1:
 - Unpack
 - Run QualityOfExile.ahk
 
-Options 2:
+Option 2:
 - Download .exe file (it will be recognized as virus)
 - Run it
 
