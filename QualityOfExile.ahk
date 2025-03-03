@@ -3,82 +3,15 @@
 #MaxThreadsPerHotkey 2
 #Include "MousePositionSaver.ahk"
 #Include "ClipboardSaver.ahk"
+#Include "GameInfo.ahk"
 
 ; Initialize variables
-global GameTitles := ["PathOfExile.exe", "PathOfExileSteam.exe"]
 global CtrlToggled := false
 global ShiftToggled := false
 global ScrollSpam := false
-global PoEMaxWidth := 3460
 global OverlayGui, CtrlLabel, ShiftLabel, SpamLabel
 
-GetGameInfo(WinTitles := GameTitles) {
-    global GameTitle
-    POE_HWND := 0
-
-    for index, title in WinTitles {
-        exe := "ahk_exe " title
-        if (WinExist(exe)) {
-            POE_HWND := WinWaitActive(exe)
-            GameTitle := exe
-            break
-        }
-
-        Sleep 1000
-    }
-
-    WinGetPos(&x, &y, &width, &height, POE_HWND)
-
-    fullHD := width == 1920 and height == 1080
-
-    centeredUI := false
-    gameSizeX := width >= PoEMaxWidth ? PoEMaxWidth : width
-    blackBarSize := width > PoEMaxWidth ? (width - PoEMaxWidth) / 2 : 0
-    screenMiddleX := (blackBarSize * 2 + gameSizeX) / 2
-    screenMiddleY := height / 2
-    screenMiddleWithInventoryX := screenMiddleX - 450
-    screenMiddleWithInventoryY :=screenMiddleY - 150
-    overlayPosX := centeredUI ? blackBarSize + 1200 : blackBarSize + 600
-    overlayPosY := height - 250
-    divTradeAreaX := 1200
-    divTradeAreaY := 600
-    divTradeButtonX := divTradeAreaX
-    divTradeButtonY := 955
-
-
-    if (fullHD) {
-        overlayPosX := 450
-        overlayPosY := height - 200
-        divTradeAreaX := 630
-        divTradeAreaY := height - 630
-        divTradeButtonX := divTradeAreaX
-        divTradeButtonY := height - 340
-        screenMiddleWithInventoryX := screenMiddleX - 325
-        screenMiddleWithInventoryY := screenMiddleY - 75
-    }
-
-    return {
-        HWND: POE_HWND,
-        TITLE: GameTitle,
-        GAME_X: gameSizeX,
-        GAME_Y: height,
-        SCREEN_MIDDLE_X: screenMiddleX,
-        SCREEN_MIDDLE_Y: screenMiddleY,
-        SCREEN_MIDDLE_WITH_INVENTORY_X: screenMiddleWithInventoryX,
-        SCREEN_MIDDLE_WITH_INVENTORY_Y: screenMiddleWithInventoryY,
-        BLACK_BAR_SIZE: blackBarSize,
-        OVERLAY_X: overlayPosX,
-        OVERLAY_Y: overlayPosY,
-        OVERLAY_WIDTH: 200,
-        OVERLAY_HEIGHT: 200,
-        DIV_TRADE_AREA_X: divTradeAreaX,
-        DIV_TRADE_AREA_Y: divTradeAreaY,
-        DIV_TRADE_BUTTON_X: divTradeButtonX,
-        DIV_TRADE_BUTTON_Y: divTradeButtonY,
-        CENTER_UI: centeredUI,
-    }
-}
-global GAME_INFO := GetGameInfo()
+global Game := GameInfo()
 
 global mousePos := MousePositionSaver()
 global clipboard := ClipboardSaver()
@@ -172,7 +105,7 @@ OpenHotkeyUI(*) {
         y := y + 30
     }
 
-    HotkeyGui.Add("Text", "w200", "Resolution: " GAME_INFO.GAME_X "x" GAME_INFO.GAME_Y)
+    HotkeyGui.Add("Text", "w200", "Resolution: " Game.GameWidth "x" Game.GameHeight)
     HotkeyGui.Add("Button", "Default", "Save And Reload").OnEvent("Click", (*) => SaveConfigurations(HotkeyGui))
     HotkeyGui.Add("Button", , "Close").OnEvent("Click", (*) => HotkeyGui.Destroy())
 
@@ -252,9 +185,9 @@ SaveConfigurations(HotkeyGui) {
 
 
 LoadConfigurations() {
-    global INI_FILE, Hotkeys, HotkeyData, HotkeyCustomData, Options, GAME_INFO
+    global INI_FILE, Hotkeys, HotkeyData, HotkeyCustomData, Options, Game
 
-    for data in HotkeyData {
+    For data in HotkeyData {
         hotkeyValue := IniRead(INI_FILE, "Hotkeys", data.var, data.defaultHotkey)
         Hotkeys.Set(data.var, hotkeyValue)
 
@@ -264,7 +197,7 @@ LoadConfigurations() {
         }
 
         if (hotkeyValue != "") {
-            HotIfWinActive(GAME_INFO.TITLE)
+            HotIfWinActive(Game.Title)
             Hotkey("*" hotkeyValue, data.func)
         }
     }
@@ -275,11 +208,9 @@ LoadConfigurations() {
         data.value := value
 
         if (key == "CenterUI" and value == 1) {
-            GAME_INFO.CENTER_UI := value
-            GAME_INFO.OVERLAY_X := GAME_INFO.BLACK_BAR_SIZE + 1200
+            Game.CenterUi := value
         } else {
-            GAME_INFO.CENTER_UI := value
-            GAME_INFO.OVERLAY_X := GAME_INFO.BLACK_BAR_SIZE + 600
+            Game.CenterUi := value
         }
     }
 
@@ -293,7 +224,7 @@ LoadConfigurations() {
         }
         Hotkeys.Set(data.var, hotkeyValue)
 
-        HotIfWinActive(GAME_INFO.TITLE)
+        HotIfWinActive(Game.Title)
         if (hotkeyValue == 1) {
             if (data.var == "ToggleCtrl") {
                 Hotkey("*Ctrl", data.func)
@@ -302,27 +233,27 @@ LoadConfigurations() {
                 Hotkey("*Shift", data.func)
             }
         }
-        ;HotIfWinActive(GAME_INFO.TITLE)
+        ;HotIfWinActive(Game.Title)
         ;Hotkey("*>", ResetToggle)
     }
 
     if (Hotkeys["ToggleCtrl"] == 1 and Hotkeys["ToggleShift"] == 0) {
-        HotIfWinActive(GAME_INFO.TITLE)
+        HotIfWinActive(Game.Title)
         Hotkey("*Shift", ResetToggle)
     }
     if (Hotkeys["ToggleCtrl"] == 0 and Hotkeys["ToggleShift"] == 1) {
-        HotIfWinActive(GAME_INFO.TITLE)
+        HotIfWinActive(Game.Title)
         Hotkey("*Ctrl", ResetToggle)
     }
 
     if (Hotkeys["ToggleCtrl"] == 1 or Hotkeys["ToggleShift"] == 1) {
-        HotIfWinActive(GAME_INFO.TITLE)
+        HotIfWinActive(Game.Title)
         Hotkey("*LWin", ResetToggleWin)
-        HotIfWinActive(GAME_INFO.TITLE)
+        HotIfWinActive(Game.Title)
         Hotkey("*!Tab", ResetToggleAltTab)
-        HotIfWinActive(GAME_INFO.TITLE)
+        HotIfWinActive(Game.Title)
         Hotkey("*Esc", ResetToggleEsc)
-        ; HotIfWinActive(GAME_INFO.TITLE)
+        ; HotIfWinActive(Game.Title)
         ; Hotkey("*Space", ResetToggleSpace)
     }
 }
@@ -337,13 +268,13 @@ ShowOverlay() {
         OverlayGui.BackColor := "Black"
         OverlayGui.Opt("-Caption +AlwaysOnTop +ToolWindow")
         WinSetTransColor(OverlayGui.BackColor " 150", OverlayGui)
-        CtrlLabel := OverlayGui.Add("Text", "x10 y10 w" GAME_INFO.OVERLAY_WIDTH / 2 " h30 vCtrlLabel", "Ctrl: OFF")
+        CtrlLabel := OverlayGui.Add("Text", "x10 y10 w" Game.OverlayWidth / 2 " h30 vCtrlLabel", "Ctrl: OFF")
         CtrlLabel.SetFont("cWhite s12 w700 q4")
-        ShiftLabel := OverlayGui.Add("Text", "x10 y40 w" GAME_INFO.OVERLAY_WIDTH / 2 " h30 vShiftLabel", "Shift: OFF")
+        ShiftLabel := OverlayGui.Add("Text", "x10 y40 w" Game.OverlayWidth / 2 " h30 vShiftLabel", "Shift: OFF")
         ShiftLabel.SetFont("cWhite s12 w700 q4")
-        SpamLabel := OverlayGui.Add("Text", "x" GAME_INFO.OVERLAY_WIDTH / 2 " y10 w" GAME_INFO.OVERLAY_WIDTH / 2 " h30 vSpam")
+        SpamLabel := OverlayGui.Add("Text", "x" Game.OverlayWidth / 2 " y10 w" Game.OverlayWidth / 2 " h30 vSpam")
         SpamLabel.SetFont("cRed s12 w700 q4")
-        OverlayGui.Show("x" GAME_INFO.OVERLAY_X " y" GAME_INFO.OVERLAY_Y " w" GAME_INFO.OVERLAY_WIDTH " h" GAME_INFO.OVERLAY_HEIGHT " NoActivate")
+        OverlayGui.Show("x" Game.OverlayPosX " y" Game.OverlayPosY " w" Game.OverlayWidth " h" Game.OverlayHeight " NoActivate")
     }
 }
 ; Functions
@@ -495,10 +426,10 @@ PerformDivinationTrading(*) {
     CtrlDown()
 
     Click("left")
-    MouseMove(GAME_INFO.DIV_TRADE_BUTTON_X, GAME_INFO.DIV_TRADE_BUTTON_Y, 25)
+    MouseMove(Game.DivTradeButtonX, Game.DivTradeButtonY, 25)
     Sleep(Random(175, 225))
     Click("left")
-    MouseMove(GAME_INFO.DIV_TRADE_AREA_X, GAME_INFO.DIV_TRADE_AREA_Y, 25)
+    MouseMove(Game.DivTradeAreaX, Game.DivTradeAreaY, 25)
     Sleep(Random(175, 225))
     Click("left")
 
@@ -516,7 +447,7 @@ OpenDivinationStackCard(*) {
     ResetToggle()
 
     Click("right")
-    MouseMove(GAME_INFO.SCREEN_MIDDLE_WITH_INVENTORY_X, GAME_INFO.SCREEN_MIDDLE_WITH_INVENTORY_Y, 1)
+    MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY, 1)
     Sleep(150)
     Click("left")
     Sleep(75)
@@ -531,7 +462,7 @@ DropItem(*) {
     mousePos.SavePosition()
 
     Click("left")
-    MouseMove(GAME_INFO.SCREEN_MIDDLE_WITH_INVENTORY_X, GAME_INFO.SCREEN_MIDDLE_WITH_INVENTORY_Y, 1)
+    MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY, 1)
     Sleep(150)
     Click("left")
     Sleep(75)
@@ -550,7 +481,7 @@ OpenKingsmarch(*) {
 OpenCurrencyTab() {
     global mousePos
     mousePos.SavePosition()
-    CurrencyTabX := GAME_INFO.BLACK_BAR_SIZE + 985
+    CurrencyTabX := Game.BlackBarSize + 985
     CurrencyTabY := 160
     MouseMove(CurrencyTabX, CurrencyTabY, 1)
     Sleep(200)
@@ -684,11 +615,10 @@ LoadShipmentValues()
 ShowOverlay()
 
 Main() {
-    global GAME_INFO
-
-    HWND := WinWaitActive(GAME_INFO.HWND)
+    global game
+Hwnd := WinWaitActive(Game.Hwnd)
     
-    if (HWND and WinWaitNotActive(GAME_INFO.HWND)) {
+    if (HWND and WinWaitNotActive(Game.Hwnd)) {
         ResetToggle()
         Main()
     }
