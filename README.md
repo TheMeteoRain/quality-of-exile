@@ -99,3 +99,9 @@ Press the keybind once to hold SHIFT. Press it again to release SHIFT.
 Use cases:
 - Use crafting items continuously (e.g. alterations, jewellers, fusings) without needing to hold SHIFT yourself
 
+
+### Support
+If Quality of Exile has helped you play more comfortably and you'd like to show your appreciation, consider buying me a coffee! The tool doesn't make any HTTP calls, so I can’t track its usage. If you'd like to support the project, please consider starring the project or supporting via the link below.
+
+
+<a href="https://www.buymeacoffee.com/MeteoRain" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
