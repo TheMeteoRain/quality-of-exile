@@ -650,13 +650,10 @@ SaveShipmentValues(ShipmentGui) {
      for data in ShipmentData {
         IniWrite(controls.%data.var%, INI_FILE, "Shipment", data.var)
     }
+    LoadShipmentValues()
 }
-LoadShipmentValues(ShipmentGui := 0) {
+LoadShipmentValues() {
      global INI_FILE, ShipmentData
-
-    if (ShipmentGui) {
-        ShipmentGui.Destroy()
-    }
 
     for data in ShipmentData {
         shipmentValue := IniRead(INI_FILE, "Shipment", data.var, 0)
@@ -677,8 +674,7 @@ openSettlersShipmentUI(*) {
     }
 
     ShipmentGui.Add("Button", "Default", "Save Shipment Values").OnEvent("Click", (*) => SaveShipmentValues(ShipmentGui))
-    ; dont know how to call multiple functions within callback, passing the gui instead :clown_emoji:
-    ShipmentGui.Add("Button", , "Close").OnEvent("Click", (*) => LoadShipmentValues(ShipmentGui))
+    ShipmentGui.Add("Button", , "Close").OnEvent("Click", (*) => ShipmentGui.Destroy())
 
     ShipmentGui.Show()
 }
