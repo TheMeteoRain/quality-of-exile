@@ -10,30 +10,8 @@ global CtrlToggled := false
 global ShiftToggled := false
 global ScrollSpam := false
 global PoEMaxWidth := 3460
-; GetWindowSize(WinTitle) {
-;     WinGetPos(&x, &y, &width, &height, WinTitle)
-    
+global OverlayGui, CtrlLabel, ShiftLabel, SpamLabel
 
-; screenWidth := SysGet(78) ; 78 = SM_CXSCREEN (Primary monitor width)
-;     screenHeight := SysGet(79) ; 79 = SM_CYSCREEN (Primary monitor height)
-;     workAreaX := SysGet(48) ;48 = SM_XVIRTUALSCREEN
-;     workAreaY := SysGet(49) ;49 = SM_YVIRTUALSCREEN
-;     workAreaWidth := SysGet(76) ; // 76 is SM_CXVIRTUALSCREEN
-;     workAreaHeight := SysGet(77) ; // 77 is SM_CYVIRTUALSCREEN
-
-;     return {
-;         x: x,
-;         y: y,
-;         width: width,
-;         height: height,
-;         screenWidth: screenWidth,
-;         screenHeight: screenHeight,
-;         workAreaX: workAreaX,
-;         workAreaY: workAreaY,
-;         workAreaWidth: workAreaWidth,
-;         workAreaHeight: workAreaHeight
-;     }
-; }
 GetGameInfo(WinTitles := GameTitles) {
     global GameTitle
     POE_HWND := 0
@@ -100,92 +78,16 @@ GetGameInfo(WinTitles := GameTitles) {
         CENTER_UI: centeredUI,
     }
 }
-
 global GAME_INFO := GetGameInfo()
-
-
-; while (GAME_INFO) {
-
-; }
-; if GAME_INFO {
-;     MsgBox("Window Position: X=" GAME_INFO.GAME_X ", Y=" GAME_INFO.GAME_Y "`nWindow Size: Width=" GAME_INFO.GAME_X ", Height=" GAME_INFO.GAME_Y "`nScreen Size: Width=" GAME_INFO.SCREENWIDTH ", Height=" GAME_INFO.SCREENHEIGHT "`nWork Area: X=" GAME_INFO.WORKAREAX ", Y=" GAME_INFO.WORKAREAY ", Width=" GAME_INFO.WORKAREAWIDTH ", Height=" GAME_INFO.WORKAREAHEIGHT)
-; }
-; MainhWnd := WinExist("ahk_class Path of Exile")
-
-; Max values officially supported
-; 5120-3460
-;PoEMaxWidth := 1920
-;PoEWindowMaxY := 1080
-
-
-
-; MsgBox(BlackBarsPaddingX)
-
-global OverlayGui, CtrlLabel, ShiftLabel, SpamLabel
-
-INS::KillSwitch()
-KillSwitch() {
-    ExitApp()
-}
-
-
-
-; hwndPoe := DllCall("GetForegroundWindow")
-; MsgBox(WinGetTitle(hwndPoe) " " GetWindowSize(hwndPoe).width "x" GetWindowSize(hwndPoe).height)
-
-; GAME_ACTIVE := false
-; EVENT_SYSTEM_FOREGROUND := 0x0003
-; WINEVENT_OUTOFCONTEXT := 0x0000
-
-; global hHook := 0
-
-; OnExit(UnhookEvent)
-
-; SetHook() {
-;     global hHook
-
-;     callbackAddress := CallbackCreate(ForegroundChanged, "StdCall")
-;     hHook := DllCall("SetWinEventHook", "uint", EVENT_SYSTEM_FOREGROUND, "uint", EVENT_SYSTEM_FOREGROUND, "ptr", 0, "ptr", callbackAddress, "uint", 0, "uint", 0, "uint", WINEVENT_OUTOFCONTEXT, "ptr")
-
-;     if (!hHook) {
-;         MsgBox("Failed to set event hook.")
-;         ExitApp()
-;     } else {
-;         MsgBox("Event hook set successfully.")
-;     }
-; }
-
-; ForegroundChanged(hWinEventHook, event, hwnd, idObject, idChild, idEventThread, dwmsEventTime) {
-;     global GAME_ACTIVE
-;     if (event = EVENT_SYSTEM_FOREGROUND) {
-;         if (!GAME_ACTIVE and WinActive(hwndPoe)) {
-;             GAME_ACTIVE := true
-;         } else {
-;             if (GAME_ACTIVE) {
-;                 ResetToggle()
-;                 GAME_ACTIVE := false
-;             }
-;         }
-;     }
-; }
-
-; UnhookEvent(*) {
-;     global hHook
-;     if (hHook) {
-;         DllCall("UnhookWinEvent", "ptr", hHook)
-;         MsgBox("Event hook unhooked.")
-;     }
-; }
-
 
 global mousePos := MousePositionSaver()
 global clipboard := ClipboardSaver()
 global INI_FILE := "data.ini"
 global Hotkeys := Map()
 global Extra := Map()
-global Options := [{
-    value: 0, field: "Checkbox", name: "Center UI", var: "CenterUI", tooltip: "TODO"
-}]
+global Options := {
+    CenterUI: { value: 0, field: "Checkbox", name: "Center UI", tooltip: "TODO"},
+}
 global HotkeyData := [
     {name: "Enter Hideout", var: "OpenHideout", defaultHotkey: "F5",func: OpenHideout, extraField: false, tooltip: "How to use: press hotkey to enter hideout."},
     {name: "Enter Kingsmarch", var: "OpenKingsmarch", defaultHotkey: "F6",func: OpenKingsmarch, extraField: false, tooltip: "How to use: press hotkey to enter Kingsmarch."},
@@ -201,42 +103,13 @@ global HotkeyCustomData := [
     {name: "Toggle CTRL", var: "ToggleCtrl", defaultValue: 0,func: ToggleCtrl, tooltip: "TODO"},
     {name: "Toggle SHIFT", var: "ToggleShift", defaultValue: 0,func: ToggleShift, tooltip: "TODO"}
 ]
-global ShipmentData := [
-    {name: "Crimson Iron Ore", var: "CrimsonIronOre", value: 0},
-    {name: "Orichalcum Ore", var: "OrichalcumOre", value: 0},
-    {name: "Petrified Amber Ore", var: "PetrifiedAmberOre", value: 0},
-    {name: "Bishmut Ore", var: "BishmutOre", value: 0},
-    {name: "Verisium Ore", var: "VerisiumOre", value: 0},
-    {name: "Crimson Iron Bar", var: "CrimsonIronBar", value: 0},
-    {name: "Orichalcum Bar", var: "OrichalcumBar", value: 0},
-    {name: "Petrified Amber Bar", var: "PetrifiedAmberBar", value: 0},
-    {name: "Bishmut Bar", var: "BishmutBar", value: 0},
-    {name: "Verisium Bar", var: "VerisiumBar", value: 0},
-    {name: "Wheat", var: "Wheat", value: 0},
-    {name: "Corn", var: "Corn", value: 0},
-    {name: "Pumpkin", var: "Pumpkin", value: 0},
-    {name: "Orgourd", var: "Orgourd", value: 0},
-    {name: "Blue Zanthimum", var: "BlueZanthimum", value: 0},
-    {name: "Thaumaturgic Dust", var: "ThaumaturgicDust", value: 0},
-]
 global MouseDropdownOptions := ["", "MButton", "XButton1", "XButton2", "WheelDown", "WheelUp"]
-; Load saved hotkeys
-LoadHotkeys()
-LoadShipmentValues()
-ShowOverlay()
 
-; SetHook() ;
-Main() {
-    global GAME_INFO
-
-    HWND := WinWaitActive(GAME_INFO.HWND)
-    
-    if (HWND and WinWaitNotActive(GAME_INFO.HWND)) {
-        ResetToggle()
-        Main()
-    }
+INS::KillSwitch()
+KillSwitch() {
+    ExitApp()
 }
-Main()
+
 OpenHotkeyUI(*) {
     global Hotkeys, HotkeyData, Extra, HotkeyCustomData, Options
     x := 10
@@ -291,16 +164,16 @@ OpenHotkeyUI(*) {
     }
 
     
-    for data in Options {
+    for key, data in Options.OwnProps() {
         HotkeyGui.Add("Text", "x" x " y" y " w" w, data.name ":")
-        control := HotkeyGui.Add(data.field, "v" data.var " x" x + 200 " y" y)
-        control.Value := Hotkeys.Get(data.var, 0)
+        control := HotkeyGui.Add(data.field, "v" key " x" x + 200 " y" y)
+        control.Value := data.value
         control.Tooltip := data.tooltip
         y := y + 30
     }
 
     HotkeyGui.Add("Text", "w200", "Resolution: " GAME_INFO.GAME_X "x" GAME_INFO.GAME_Y)
-    HotkeyGui.Add("Button", "Default", "Save And Reload").OnEvent("Click", (*) => SaveHotkeys(HotkeyGui))
+    HotkeyGui.Add("Button", "Default", "Save And Reload").OnEvent("Click", (*) => SaveConfigurations(HotkeyGui))
     HotkeyGui.Add("Button", , "Close").OnEvent("Click", (*) => HotkeyGui.Destroy())
 
     HotkeyGui.Show()
@@ -317,26 +190,6 @@ onChangeHotkeyToDropdown(dropdown, Control, *) {
     if (Control.Value != "") {
         dropdown.Value := ""
     }
-}
-
-openSettlersShipmentUI(*) {
-    global ShipmentData
-    ShipmentGui := Gui(, "Shipment Manager")
-    x := 10
-    y := 20
-    w := 100
-
-    for data in ShipmentData {
-        ShipmentGui.Add("Text", "x" x " y" y " w" w, data.name ":")
-        control := ShipmentGui.Add("Edit", "v" data.var " x" x + 100 " y" y " w" w, data.value)
-        y := y + 30
-    }
-
-    ShipmentGui.Add("Button", "Default", "Save Shipment Values").OnEvent("Click", (*) => SaveShipmentValues(ShipmentGui))
-    ; dont know how to call multiple functions within callback, passing the gui instead :clown_emoji:
-    ShipmentGui.Add("Button", , "Close").OnEvent("Click", (*) => LoadShipmentValues(ShipmentGui))
-
-    ShipmentGui.Show()
 }
 
 On_WM_MOUSEMOVE(wParam, lParam, msg, Hwnd)
@@ -366,16 +219,7 @@ hasKey(arr, find) {
     }
 }
 
-SaveShipmentValues(ShipmentGui) {
-    global INI_FILE, ShipmentData
-    controls := ShipmentGui.Submit()
-
-     for data in ShipmentData {
-        IniWrite(controls.%data.var%, INI_FILE, "Shipment", data.var)
-    }
-}
-
-SaveHotkeys(HotkeyGui) {
+SaveConfigurations(HotkeyGui) {
     global INI_FILE, Hotkeys, HotkeyData, HotkeyCustomData, Options
     controls := HotkeyGui.Submit()
 
@@ -398,28 +242,16 @@ SaveHotkeys(HotkeyGui) {
         IniWrite(controls.%data.var%, INI_FILE, "Toggle", data.var)
     }
 
-    for data in Options {
-        IniWrite(controls.%data.var%, INI_FILE, "Options", data.var)
+    for key, data in Options.OwnProps() {
+        IniWrite(controls.%key%, INI_FILE, "Options", key)
     }
 
-    ;MsgBox("Hotkeys Saved! Restarting script to apply changes.", "Success", "OK")
-    Reload() ; Restart script to apply new hotkeys
+    Reload()
 }
 
-LoadShipmentValues(ShipmentGui := 0) {
-     global INI_FILE, ShipmentData
 
-    if (ShipmentGui) {
-        ShipmentGui.Destroy()
-    }
 
-    for data in ShipmentData {
-        shipmentValue := IniRead(INI_FILE, "Shipment", data.var, 0)
-        data.value := shipmentValue
-    }
-}
-
-LoadHotkeys() {
+LoadConfigurations() {
     global INI_FILE, Hotkeys, HotkeyData, HotkeyCustomData, Options, GAME_INFO
 
     for data in HotkeyData {
@@ -438,11 +270,11 @@ LoadHotkeys() {
     }
 
 
-    for data in Options {
-        value := IniRead(INI_FILE, "Options", data.var, 0)
+    for key, data in Options.OwnProps() {
+        value := IniRead(INI_FILE, "Options", key, 0)
         data.value := value
 
-        if (data.var == "CenterUI" and value == 1) {
+        if (key == "CenterUI" and value == 1) {
             GAME_INFO.CENTER_UI := value
             GAME_INFO.OVERLAY_X := GAME_INFO.BLACK_BAR_SIZE + 1200
         } else {
@@ -778,6 +610,25 @@ CheckMapModifiers() {
     clipboard.Restore()
 }
 
+; league specific
+global ShipmentData := [
+    {name: "Crimson Iron Ore", var: "CrimsonIronOre", value: 0},
+    {name: "Orichalcum Ore", var: "OrichalcumOre", value: 0},
+    {name: "Petrified Amber Ore", var: "PetrifiedAmberOre", value: 0},
+    {name: "Bishmut Ore", var: "BishmutOre", value: 0},
+    {name: "Verisium Ore", var: "VerisiumOre", value: 0},
+    {name: "Crimson Iron Bar", var: "CrimsonIronBar", value: 0},
+    {name: "Orichalcum Bar", var: "OrichalcumBar", value: 0},
+    {name: "Petrified Amber Bar", var: "PetrifiedAmberBar", value: 0},
+    {name: "Bishmut Bar", var: "BishmutBar", value: 0},
+    {name: "Verisium Bar", var: "VerisiumBar", value: 0},
+    {name: "Wheat", var: "Wheat", value: 0},
+    {name: "Corn", var: "Corn", value: 0},
+    {name: "Pumpkin", var: "Pumpkin", value: 0},
+    {name: "Orgourd", var: "Orgourd", value: 0},
+    {name: "Blue Zanthimum", var: "BlueZanthimum", value: 0},
+    {name: "Thaumaturgic Dust", var: "ThaumaturgicDust", value: 0},
+]
 FillShipments(*) {
     global ShipmentData
     ResetToggle()
@@ -792,3 +643,58 @@ FillShipments(*) {
         }
     }
 }
+SaveShipmentValues(ShipmentGui) {
+    global INI_FILE, ShipmentData
+    controls := ShipmentGui.Submit()
+
+     for data in ShipmentData {
+        IniWrite(controls.%data.var%, INI_FILE, "Shipment", data.var)
+    }
+}
+LoadShipmentValues(ShipmentGui := 0) {
+     global INI_FILE, ShipmentData
+
+    if (ShipmentGui) {
+        ShipmentGui.Destroy()
+    }
+
+    for data in ShipmentData {
+        shipmentValue := IniRead(INI_FILE, "Shipment", data.var, 0)
+        data.value := shipmentValue
+    }
+}
+openSettlersShipmentUI(*) {
+    global ShipmentData
+    ShipmentGui := Gui(, "Shipment Manager")
+    x := 10
+    y := 20
+    w := 100
+
+    for data in ShipmentData {
+        ShipmentGui.Add("Text", "x" x " y" y " w" w, data.name ":")
+        control := ShipmentGui.Add("Edit", "v" data.var " x" x + 100 " y" y " w" w, data.value)
+        y := y + 30
+    }
+
+    ShipmentGui.Add("Button", "Default", "Save Shipment Values").OnEvent("Click", (*) => SaveShipmentValues(ShipmentGui))
+    ; dont know how to call multiple functions within callback, passing the gui instead :clown_emoji:
+    ShipmentGui.Add("Button", , "Close").OnEvent("Click", (*) => LoadShipmentValues(ShipmentGui))
+
+    ShipmentGui.Show()
+}
+
+LoadConfigurations()
+LoadShipmentValues()
+ShowOverlay()
+
+Main() {
+    global GAME_INFO
+
+    HWND := WinWaitActive(GAME_INFO.HWND)
+    
+    if (HWND and WinWaitNotActive(GAME_INFO.HWND)) {
+        ResetToggle()
+        Main()
+    }
+}
+Main()
