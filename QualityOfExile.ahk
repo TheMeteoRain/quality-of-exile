@@ -5,6 +5,8 @@
 #Include "ClipboardSaver.ahk"
 #Include "GameInfo.ahk"
 
+ScriptVersion := "0.1.0-beta.2"
+
 ; Initialize variables
 global CtrlToggled := false
 global ShiftToggled := false
@@ -22,15 +24,16 @@ global Options := {
     CenterUI: { value: 0, field: "Checkbox", name: "Center UI", tooltip: "TODO"},
 }
 global HotkeyData := [
-    {name: "Enter Hideout", var: "OpenHideout", defaultHotkey: "F5",func: OpenHideout, extraField: false, tooltip: "How to use: press hotkey to enter hideout."},
-    {name: "Enter Kingsmarch", var: "OpenKingsmarch", defaultHotkey: "F6",func: OpenKingsmarch, extraField: false, tooltip: "How to use: press hotkey to enter Kingsmarch."},
-    {name: "Trade Divination Card", var: "PerformDivinationTrading", defaultHotkey: "",func: PerformDivinationTrading, extraField: false, tooltip: "How to use: open divination card trade screen and press this hotkey, while hovering over the desired full divination card stack in your inventory."},
-    {name: "Drop Divination Card From Stack", var: "OpenDivinationStackCard", defaultHotkey: "",func: OpenDivinationStackCard, extraField: false, tooltip: "How to use: hover over the desired divination stack in your inventory and press this hotkey. Only usable in outdoor areas, since you cannot drop cards in hideout or similar areas."},
-    {name: "Drop Item From Inventory", var: "DropItem", defaultHotkey: "",func: DropItem, extraField: false, tooltip: "How to use: hover over item in your intentory and press this hotkey."},
-    {name: "Fill Shipments", var: "FillShipment", defaultHotkey: "",func: FillShipments, extraField: false, tooltip: "TODO"},
-    {name: "Spam Ctrl Click", var: "CtrlClickSpamToggle", defaultHotkey: "",func: CtrlClickSpamToggle, extraField: false, tooltip: "TODO"},
-    {name: "Enter Shop RegExp", var: "HighlightShopItems", defaultHotkey: "",func: HighlightShopItems, extraField: true, tooltip: "TODO", },
-    {name: "Options (This GUI) ", var: "OpenHotkeyUI", defaultHotkey: "F10",func: OpenHotkeyUI, extraField: false, tooltip: "TODO"}
+    {name: "Enter Hideout", var: "OpenHideout", defaultHotkey: "F5",func: OpenHideout, extraField: false, mouseBind: false, tooltip: "How to use: press hotkey to enter hideout."},
+    {name: "Enter Kingsmarch", var: "OpenKingsmarch", defaultHotkey: "F6",func: OpenKingsmarch, extraField: false, mouseBind: false, tooltip: "How to use: press hotkey to enter Kingsmarch."},
+    {name: "Trade Divination Card", var: "PerformDivinationTrading", defaultHotkey: "",func: PerformDivinationTrading, extraField: false, mouseBind: true, tooltip: "How to use: open divination card trade screen and press this hotkey, while hovering over the desired full divination card stack in your inventory."},
+    {name: "Drop Divination Card From Stack", var: "OpenDivinationStackCard", defaultHotkey: "",func: OpenDivinationStackCard, extraField: false, mouseBind: true, tooltip: "How to use: hover over the desired divination stack in your inventory and press this hotkey. Only usable in outdoor areas, since you cannot drop cards in hideout or similar areas."},
+    {name: "Drop Item From Inventory", var: "DropItem", defaultHotkey: "",func: DropItem, extraField: false, mouseBind: true, tooltip: "How to use: hover over item in your intentory and press this hotkey."},
+    {name: "Fill Shipments", var: "FillShipment", defaultHotkey: "",func: FillShipments, extraField: false, tooltip: "TODO", mouseBind: true},
+    {name: "Spam Ctrl Click", var: "CtrlClickSpamToggle", defaultHotkey: "",func: CtrlClickSpamToggle, extraField: false, tooltip: "TODO", mouseBind: true},
+    {name: "Enter Shop RegExp", var: "HighlightShopItems", defaultHotkey: "",func: HighlightShopItems, extraField: true, tooltip: "TODO", mouseBind: true },
+    {name: "Kill Switch", var: "KillSwitch", defaultHotkey: "Insert",func: KillSwitch, extraField: false, tooltip: "TODO", mouseBind: false },
+    {name: "Options (This GUI) ", var: "OpenConfigurationWindow", defaultHotkey: "F10",func: OpenConfigurationWindow, extraField: false, tooltip: "TODO", mouseBind: false}
 ]
 global HotkeyCustomData := [
     {name: "Toggle CTRL", var: "ToggleCtrl", defaultValue: 0,func: ToggleCtrl, tooltip: "TODO"},
@@ -38,17 +41,18 @@ global HotkeyCustomData := [
 ]
 global MouseDropdownOptions := ["", "MButton", "XButton1", "XButton2", "WheelDown", "WheelUp"]
 
-INS::KillSwitch()
-KillSwitch() {
+; INS::KillSwitch()
+KillSwitch(*) {
     ExitApp()
 }
 
-OpenHotkeyUI(*) {
+OpenConfigurationWindow(*) {
     global Hotkeys, HotkeyData, Extra, HotkeyCustomData, Options
     x := 10
     y := 40
     w := 175
     colSize := 200
+    rowSize := 30
 
     HotkeyGui := Gui(, "Hotkey Manager")
     HotkeyGui.Add("Text", "w200", "Set Hotkeys for Actions:")
@@ -59,24 +63,29 @@ OpenHotkeyUI(*) {
         HotkeyGui.Add("Text", "x" x " y" y " w" w, data.name ":")
         controlHotkey := HotkeyGui.Add("Hotkey", "v" data.var " x" x + colSize " y" y " w" w)
         controlHotkey.Tooltip := data.tooltip
-        controlDropdown := HotkeyGui.AddDropDownList("v" data.var "_mouseDropdownOptions x" x + 400 " y" y " w" 100, MouseDropdownOptions)
-        controlDropdown.OnEvent("Change", onChangeDropdownToHotkey.Bind(controlHotkey))
-        controlHotkey.OnEvent("Change", onChangeHotkeyToDropdown.Bind(controlDropdown))
-
         storedValue := Hotkeys.Get(data.var, "")
-        if (storedValue != "" and index := hasKey(MouseDropdownOptions, storedValue)) {
-            controlDropdown.Value := index
-        } else {
-            controlHotkey.Value := storedValue
+        controlHotkey.Value := storedValue
+
+        if (data.mouseBind) {
+            controlDropdown := HotkeyGui.AddDropDownList("v" data.var "_mouseDropdownOptions x" x + 400 " y" y " w" 100, MouseDropdownOptions)
+            controlDropdown.OnEvent("Change", onChangeDropdownToHotkey.Bind(controlHotkey))
+            controlHotkey.OnEvent("Change", onChangeHotkeyToDropdown.Bind(controlDropdown))
+
+            storedValue := Hotkeys.Get(data.var, "")
+            if (storedValue != "" and index := hasKey(MouseDropdownOptions, storedValue)) {
+                controlDropdown.Value := index
+            } else {
+                controlHotkey.Value := storedValue
+            }
         }
 
         if (data.var == "FillShipment") {
-            y := y + 30
+            y := y + rowSize
             control := HotkeyGui.Add("Button", "v" data.var "_extra x" x + colSize " y" y, "Shipment values")
             control.OnEvent("Click", openSettlersShipmentUI)
         }
 
-        y := y + 30
+        y := y + rowSize
 
         if (data.extraField and data.var == "HighlightShopItems") {
             control := HotkeyGui.Add("Edit", "v" data.var "_extra Limit50 -VScroll h60 x" x + 200 " y" y " w" w, Extra.Get(data.var, ""))
@@ -93,7 +102,7 @@ OpenHotkeyUI(*) {
         control := HotkeyGui.Add("Checkbox", "v" data.var " x" x + 200 " y" y)
         control.Value := Hotkeys.Get(data.var, 0)
         control.Tooltip := data.tooltip
-        y := y + 30
+        y := y + rowSize
     }
 
     
@@ -102,15 +111,21 @@ OpenHotkeyUI(*) {
         control := HotkeyGui.Add(data.field, "v" key " x" x + 200 " y" y)
         control.Value := data.value
         control.Tooltip := data.tooltip
-        y := y + 30
+        if (Game.GameWidth < Game.GameMaxWidth) {
+            control.Enabled := 0
+        }
+        y := y + rowSize
     }
 
-    HotkeyGui.Add("Text", "w200", "Resolution: " Game.GameWidth "x" Game.GameHeight)
-    HotkeyGui.Add("Button", "Default", "Save And Reload").OnEvent("Click", (*) => SaveConfigurations(HotkeyGui))
-    HotkeyGui.Add("Button", , "Close").OnEvent("Click", (*) => HotkeyGui.Destroy())
+    HotkeyGui.Add("Text", "x" x " y" y+(rowSize*2) " w200", "Game Resolution:`n" Game.GameWidth "x" Game.GameHeight)
+    HotkeyGui.Add("Link", "w200 ", '<a href="https://github.com/TheMeteoRain/quality-of-exile">Github / Documentation</a>')
+    HotkeyGui.Add("Text", "x" x+(colSize*2) " y" y+(rowSize*2) " w" w, "QualityOfExile version:`n" ScriptVersion)
+
+    HotkeyGui.Add("Button", "Default w" w " x" x+colSize " y" y+(rowSize*2), "Save And Reload").OnEvent("Click", (*) => SaveConfigurations(HotkeyGui))
+    HotkeyGui.Add("Button", "w" w " x" x+colSize " y" y+(rowSize*3), "Close").OnEvent("Click", (*) => HotkeyGui.Destroy())
 
     HotkeyGui.Show()
-    OnMessage(0x0200, On_WM_MOUSEMOVE)
+    ;OnMessage(0x0200, On_WM_MOUSEMOVE)
 }
 
 onChangeDropdownToHotkey(hotkey, Control, *) {
@@ -187,6 +202,7 @@ SaveConfigurations(HotkeyGui) {
 LoadConfigurations() {
     global INI_FILE, Hotkeys, HotkeyData, HotkeyCustomData, Options, Game
 
+    try {
     For data in HotkeyData {
         hotkeyValue := IniRead(INI_FILE, "Hotkeys", data.var, data.defaultHotkey)
         Hotkeys.Set(data.var, hotkeyValue)
@@ -196,7 +212,10 @@ LoadConfigurations() {
             Extra.Set(data.var, extraValue)
         }
 
-        if (hotkeyValue != "") {
+        if (hotkeyValue && data.var == "KillSwitch") {
+            HotIf()
+            Hotkey("*" hotkeyValue, data.func)
+        } else {
             HotIfWinActive(Game.Title)
             Hotkey("*" hotkeyValue, data.func)
         }
@@ -208,9 +227,9 @@ LoadConfigurations() {
         data.value := value
 
         if (key == "CenterUI" and value == 1) {
-            Game.CenterUi := value
+            Game.CenterUi := true
         } else {
-            Game.CenterUi := value
+            Game.CenterUi := false
         }
     }
 
@@ -248,19 +267,29 @@ LoadConfigurations() {
 
     if (Hotkeys["ToggleCtrl"] == 1 or Hotkeys["ToggleShift"] == 1) {
         HotIfWinActive(Game.Title)
-        Hotkey("*LWin", ResetToggleWin)
+        Hotkey("#LWin", ResetToggle)
         HotIfWinActive(Game.Title)
-        Hotkey("*!Tab", ResetToggleAltTab)
+        Hotkey("~*LWin", ResetToggleWin)
+        HotIfWinActive(Game.Title)
+        Hotkey("*Tab", ResetToggleAltTab)
         HotIfWinActive(Game.Title)
         Hotkey("*Esc", ResetToggleEsc)
         ; HotIfWinActive(Game.Title)
         ; Hotkey("*Space", ResetToggleSpace)
     }
+    } catch {
+        MsgBox("One or more keybinds you tried to set are not supported. Start the application again.")
+        KillSwitch()
+    }
 }
 
 
-ShowOverlay() {
+CreateOverlay() {
     global OverlayGui, CtrlLabel, ShiftLabel, SpamLabel
+
+    if (IsSet(OverlayGui)) {
+        return
+    }
 
     if (Hotkeys["ToggleCtrl"] or Hotkeys["ToggleShift"] or Hotkeys["CtrlClickSpamToggle"]) {
         OverlayGui := Gui()
@@ -274,7 +303,20 @@ ShowOverlay() {
         ShiftLabel.SetFont("cWhite s12 w700 q4")
         SpamLabel := OverlayGui.Add("Text", "x" Game.OverlayWidth / 2 " y10 w" Game.OverlayWidth / 2 " h30 vSpam")
         SpamLabel.SetFont("cRed s12 w700 q4")
+    }
+}
+ShowOverlay() {
+    global OverlayGui
+
+    if (IsSet(OverlayGui)) {
         OverlayGui.Show("x" Game.OverlayPosX " y" Game.OverlayPosY " w" Game.OverlayWidth " h" Game.OverlayHeight " NoActivate")
+    }
+}
+HideOverlay() {
+    global OverlayGui
+
+    if (IsSet(OverlayGui)) {
+        OverlayGui.Hide()
     }
 }
 ; Functions
@@ -612,13 +654,22 @@ openSettlersShipmentUI(*) {
 
 LoadConfigurations()
 LoadShipmentValues()
-ShowOverlay()
+CreateOverlay()
 
 Main() {
-    global game
-Hwnd := WinWaitActive(Game.Hwnd)
-    
-    if (HWND and WinWaitNotActive(Game.Hwnd)) {
+    global Game
+
+    if (!Game.GameClientExists()) {
+        HideOverlay()
+        Game := GameInfo()
+    }
+
+    WinWaitActive(Game.Hwnd)
+    if (Game.GameClientExists()) {
+        ShowOverlay()
+    }
+
+    if (WinWaitNotActive(Game.Hwnd)) {
         ResetToggle()
         Main()
     }

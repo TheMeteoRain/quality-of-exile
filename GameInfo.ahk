@@ -1,29 +1,51 @@
-GameTitles := ["PathOfExile.exe", "PathOfExileSteam.exe"]
-PoEMaxWidth := 3460
-
 class GameInfo {
     HWND := 0
+    Titles := ["PathOfExile.exe", "PathOfExileSteam.exe"]
     Title := ""
+    GameMaxWidth := 3460
+
     GameWidth := 0
     GameHeight := 0
+    ScreenWidth := 0
+    ScreenHeight := 0
     ScreenMiddleX := 0
     ScreenMiddleY := 0
     ScreenMiddleWithInventoryX := 0
     ScreenMiddleWithInventoryY := 0
     BlackBarSize := 0
+
+    ; overlay
+    OverlayPosX := 0
     OverlayPosY := 0
     OverlayWidth := 200
     OverlayHeight := 200
-    DivTradeAreaX := 1200
-    DivTradeAreaY := 600
-    DivTradeButtonX := 1200
-    DivTradeButtonY := 955
+
+    ; div
+    DivTradeAreaX := 0
+    DivTradeAreaY := 0
+    DivTradeButtonX := 0
+    DivTradeButtonY := 0
+
     CenterUI := false
 
-    __New(WinTitles := GameTitles, GameMaxWidth := PoEMaxWidth) {
-        this.GameMaxWidth := PoEMaxWidth
+    __New() {
+        while (!this.HWND) {
+            this.ConnectToGame()
+        }
 
-        for index, title in WinTitles {
+        WinGetPos(&x, &y, &width, &height, this.HWND)
+
+        this.ScreenWidth := width
+        this.ScreenHeight := height
+        this.GameWidth := width >= this.GameMaxWidth ? this.GameMaxWidth : width
+        this.GameHeight := height
+        this.BlackBarSize := (this.ScreenWidth - this.GameMaxWidth) / 2
+
+        this.CalculatePositions()
+    }
+
+    ConnectToGame() {
+        for index, title in this.Titles {
             exe := "ahk_exe " title
             if WinExist(exe) {
                 this.HWND := WinWaitActive(exe)
@@ -32,35 +54,92 @@ class GameInfo {
             }
             Sleep 1000
         }
+    }
 
-        ; Get window dimensions
-        WinGetPos(&x, &y, &width, &height, this.HWND)
+    GameClientExists() {
+        return WinExist(this.HWND)
+    }
 
-        this.GameWidth := width >= this.GameMaxWidth ? this.GameMaxWidth : width
-        this.GameHeight := height
-        this.BlackBarSize := this.GameWidth > this.GameMaxWidth ? (this.GameWidth - this.GameMaxWidth) / 2 : 0
+    CalculatePositions() {
+        if (this.GameWidth >= 2560 && this.GameMaxWidth < 3460) {
+            this.WideScreenPreset()
+        } else if (this.GameWidth >= 3460) {
+            this.UltraWideScreenPreset()
+        } else {
+            this.FullHDPreset()
+        }
+    }
+
+    ; 1920x1080
+    FullHDPreset() {
+        this.ScreenMiddleX := this.GameWidth / 2
+        this.ScreenMiddleY := this.GameHeight / 2
+        this.ScreenMiddleWithInventoryX := this.ScreenMiddleX - 325
+        this.ScreenMiddleWithInventoryY := this.ScreenMiddleY - 75
+
+        this.OverlayPosX := 450
+        this.OverlayPosY := this.GameHeight - 200
+
+        this.DivTradeAreaX := 630
+        this.DivTradeAreaY := this.GameHeight - 630
+        this.DivTradeButtonX := this.DivTradeAreaX
+        this.DivTradeButtonY := this.GameHeight - 340
+    }
+
+    ; 2560x
+    WideScreenPreset() {
+        this.ScreenMiddleX := this.GameWidth / 2
+        this.ScreenMiddleY := this.GameHeight / 2
+        this.ScreenMiddleWithInventoryX := this.ScreenMiddleX - 450
+        this.ScreenMiddleWithInventoryY := this.ScreenMiddleY - 125
+
+        this.OverlayPosX := 590
+        this.OverlayPosY := this.GameHeight - 200
+
+        this.DivTradeAreaX := 840
+        this.DivTradeAreaY := this.GameHeight - 840
+        this.DivTradeButtonX := this.DivTradeAreaX
+        this.DivTradeButtonY := this.GameHeight - 450
+    }
+
+    ; 3460x
+    UltraWideScreenPreset() {
         this.ScreenMiddleX := (this.BlackBarSize * 2 + this.GameWidth) / 2
         this.ScreenMiddleY := this.GameHeight / 2
         this.ScreenMiddleWithInventoryX := this.ScreenMiddleX - 450
         this.ScreenMiddleWithInventoryY := this.ScreenMiddleY - 150
+
+        this.OverlayPosX := 600
         this.OverlayPosY := this.GameHeight - 250
 
-        ; Adjust for full HD
-        if (this.GameWidth == 1920 && this.GameHeight == 1080) {
-            this.OverlayPosX := 450
-            this.OverlayPosY := this.GameHeight - 200
-            this.DivTradeAreaX := 630
-            this.DivTradeAreaY := this.GameHeight - 630
-            this.DivTradeButtonX := this.DivTradeAreaX
-            this.DivTradeButtonY := this.GameHeight - 340
-            this.ScreenMiddleWithInventoryX := this.ScreenMiddleX - 325
-            this.ScreenMiddleWithInventoryY := this.ScreenMiddleY - 75
+        this.DivTradeAreaX := 1300
+        this.DivTradeAreaY := this.GameHeight - 830
+        this.DivTradeButtonX := this.DivTradeAreaX
+        this.DivTradeButtonY := this.GameHeight - 450
+    }
+
+    OverlayPosX {
+        get => this._OverlayPosX
+        set {
+            this._OverlayPosX := this.BlackBarSize + Value
         }
     }
 
-    ; Setter for OverlayPosX
-    OverlayPosX {
-        get => this.CenterUI ? this.BlackBarSize + 1200 : this.BlackBarSize + 600
+    CenterUI {
+        get => this._CenterUI
+        set {
+            if (this.GameWidth < this.GameMaxWidth) {
+                this._CenterUI := Value
+                return
+            }
+            if (Value) {
+                this._CenterUI := Value
+                this.OverlayPosX := 1200
+            } else {
+                this._CenterUI := Value
+                this.OverlayPosX := 600
+            }
+        }
     }
 
     ; Returns the object representation

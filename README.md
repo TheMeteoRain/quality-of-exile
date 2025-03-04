@@ -33,7 +33,14 @@ Option 2:
 
 ## How To Use
 
-To change keybinds, press F10 (default) to open the hotkey configuration window. You can customize this keybind to your preference. Note that the keybind must be pressed in-game, as this script doesn't recognize keys pressed outside of the game.
+To change keybinds, press F10 (default) to open the hotkey configuration window. You can customize this keybind to your preference. Note that all the keybinds must be pressed in-game, as this script doesn't recognize keys pressed outside of the game.
+
+### Kill Switch
+Kill the tool. In case of there is a bug, you can press this exit the app.
+By default: Insert
+
+How to use:
+1. Press this keybind (only keybind that works outside of the game)
 
 ### Enter Hideout
 Travel to hideout by typing "/hideout".
