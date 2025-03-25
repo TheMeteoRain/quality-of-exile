@@ -810,35 +810,40 @@ OpenCurrencyTab() {
 }
 
 CraftAlchemyOrb(*) {
-    CraftWithOrb("AlchemyOrb")
+    CraftWithOrb("Alchemy Orb", "AlchemyOrbPixel")
 }
 CraftOrbOfChance(*) {
-    CraftWithOrb("OrbOfChance")
+    CraftWithOrb("Orb of Chance", "OrbOfChancePixel")
 }
 CraftOrbOfScouring(*) {
-    CraftWithOrb("OrbOfScouring")
+    CraftWithOrb("Orb of Scouring", "OrbOfScouringPixel")
 }
 ChaosOrb(*) {
-    CraftWithOrb("ChaosOrb")
+    CraftWithOrb("Chaos Orb", "ChaosOrbPixel")
 }
 OrbOfTransmutation(*) {
-    CraftWithOrb("OrbOfTransmutation")
+    CraftWithOrb("Orb of Transmutation", "OrbOfTransmutationPixel")
 }
 OrbOfAlteration(*) {
-    CraftWithOrb("OrbOfAlteration")
+    CraftWithOrb("Orb of Alteration", "OrbOfAlterationPixel")
 }
 
-CraftWithOrb(orb) {
+CraftWithOrb(name, key) {
     global mousePos
 
-    BlockInput("MouseMove")
-    mousePos.SavePosition()
-    resolution := ParseResolution(Extra[orb])
-    if (!resolution) {
-        BlockInput("MouseMoveOff")
-        MsgBox("Invalid resolution for " orb ". Please set a valid resolution in the format 'widthxheight' (e.g., 1920x1080).")
+    if (!Extra.Has(key)) {
+        MsgBox("Set pixel for " name ". Use the Pixel Search button in Configuration Window.")
         return
     }
+
+    resolution := ParseResolution(Extra[key])
+    if (!resolution) {
+        MsgBox("Invalid resolution for " name ". Please set a valid resolution in the format 'widthxheight' (e.g., 1920x1080).")
+        return
+    }
+    
+    BlockInput("MouseMove")
+    mousePos.SavePosition()
     MouseMove(resolution.width, resolution.height, 0)
     Sleep(50)
     Click("right")
@@ -999,52 +1004,25 @@ Main() {
     if (Game.GameClientExists()) {
         ShowOverlay()
     }
-
+    
     FindPoELogFile() {
-        ; Locate the Steam installation path from the registry
-        RegPath := "HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Valve\Steam"
-        InstallPath := RegRead(RegPath, "InstallPath")
-        if !InstallPath {
-            MsgBox("Steam installation path not found.")
-            ExitApp()
+        ProcessPath := ProcessGetPath(Game.PID)
+        logFilePath := RegExReplace(ProcessPath, "\\[^\\]*$", "\logs\Client.txt")
+
+        if FileExist(logFilePath) {
+            return logFilePath
         }
     
-        ; Path to the Steam library configuration file
-        LibraryFoldersPath := InstallPath "\steamapps\libraryfolders.vdf"
-        if !FileExist(LibraryFoldersPath) {
-            MsgBox("Steam library configuration file not found.")
-            ExitApp()
-        }
-    
-        ; Read the libraryfolders.vdf file to find all Steam library paths
-        SteamLibraries := []
-        LibraryContent := FileRead(LibraryFoldersPath)
-        for line in StrSplit(LibraryContent, "`n") {
-            if RegExMatch(line, "`"path`"\s*`"(.*?)`"", &Match) {
-                SteamLibraries.Push(Match[1] "\steamapps\common\Path of Exile\logs\Client.txt")
-            }
-        }
-    
-        ; Add the default Steam library path
-        SteamLibraries.Push(InstallPath "\steamapps\common\Path of Exile\logs\Client.txt")
-    
-        ; Check each library for the Path of Exile log file
-        for PoEPath in SteamLibraries {
-            if FileExist(PoEPath) {
-                return PoEPath
-            }
-        }
-    
-        MsgBox("Path of Exile Client.txt file not found in any Steam library.")
-        ExitApp()
+        return ""
     }
     logFile := FindPoELogFile()  ; Adjust path if needed
 
-    ; Open the file in read mode without locking it
-    clientFile := FileOpen(logFile, "r")
-    clientFile.Seek(0, 2)  ; Move to the end of the file
-    SetTimer(ReadLogFile, 1000)  ; Call ReadLogFile every 1000ms (1 second)
-
+    if (logFile) {
+        ; Open the file in read mode without locking it
+        clientFile := FileOpen(logFile, "r")
+        clientFile.Seek(0, 2)  ; Move to the end of the file
+        SetTimer(ReadLogFile, 1000)  ; Call ReadLogFile every 1000ms (1 second)
+    }
 
     if (WinWaitNotActive(Game.Hwnd)) {
         ResetToggle()

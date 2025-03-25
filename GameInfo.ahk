@@ -1,5 +1,7 @@
 class GameInfo {
     HWND := 0
+    PID := 0
+    ProcessPath := ""
     Titles := ["PathOfExile.exe", "PathOfExileSteam.exe"]
     Title := ""
     GameMaxWidth := 3460
@@ -33,7 +35,7 @@ class GameInfo {
 
     __New() {
         while (!this.HWND) {
-            this.ConnectToGame()
+            this.AttachToGame()
         }
 
         WinGetPos(&x, &y, &width, &height, this.HWND)
@@ -53,11 +55,13 @@ class GameInfo {
         this.CalculatePositions()
     }
 
-    ConnectToGame() {
+    AttachToGame() {
         for index, title in this.Titles {
             exe := "ahk_exe " title
             if WinExist(exe) {
                 this.HWND := WinWaitActive(exe)
+                this.PID := WinGetPID(this.HWND)
+                this.ProcessPath := ProcessGetPath(this.PID)
                 this.Title := exe
                 break
             }

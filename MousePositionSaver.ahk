@@ -15,6 +15,6 @@ class MousePositionSaver {
     }
 
     RestorePosition() {
-        MouseMove(this.OriginalX, this.OriginalY, this.Win)
+        MouseMove(this.OriginalX, this.OriginalY, 0)
     }
 }

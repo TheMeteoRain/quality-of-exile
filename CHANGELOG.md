@@ -16,6 +16,16 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - 
 
+## [0.1.0-beta.4] - 2025-03-25
+
+### Changed
+- Improved error handling to prevent the application from crashing if `Client.txt` is not found.
+- Enhanced support for standalone Path of Exile installations by locating `Client.txt` dynamically.
+
+### Fixed
+- Resolved an issue where pressing a keybind without setting a pixel value caused errors.
+- Resolved an issue where mouse moved very slowly when pressing a keybing.
+
 ## [0.1.0-beta.3] - 2025-03-25
 
 ### Added
