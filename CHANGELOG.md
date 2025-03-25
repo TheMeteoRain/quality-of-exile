@@ -16,6 +16,12 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - 
 
+## [0.1.0-beta.5] - 2025-03-25
+
+### Fixed
+- Fixed an issue where saved pixel values were not loaded correctly.
+- Fixed an issue where the Shop RegExp functionality was not working as expected.
+
 ## [0.1.0-beta.4] - 2025-03-25
 
 ### Changed

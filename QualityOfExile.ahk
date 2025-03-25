@@ -68,7 +68,7 @@ global Remember := {
         section: "Hotkey",
         coords: { x: 0, y: 0 },
         pixelSelect: true,
-        vars: ["TradeDivinationCardButton", "TradeDivinationCardArea"]
+        vars: ["TradeDivinationCardButton", "TradeDivinationCardItemArea"]
     },
     DropItem: {
         name: "Drop Item From Inventory",
@@ -258,7 +258,7 @@ OpenConfigurationWindow(*) {
     HotkeyGui.Add("Text", Format("x{} y{}", pX+colSize, pY), "Keyboard Hotkey")
 
     pixelSearchCtrls(key, x1, y1, x2, y2) {
-        pixelTextCtrl := HotkeyGui.Add("Edit", Format("v{}Pixel x{} y{} w{} {}", key, x1, y1, 100, "+Center ReadOnly"), Extra.Get(key, ""))
+        pixelTextCtrl := HotkeyGui.Add("Edit", Format("v{}Pixel x{} y{} w{} {}", key, x1, y1, 100, "+Center ReadOnly"), Extra.Get(key "Pixel", ""))
         pixelButtonCtrl := HotkeyGui.Add("Button", Format("v{}PixelSelect x{} y{} w{}", key, x2, y2, 100), "Select Pixel")
         pixelButtonCtrl.OnEvent("Click", SelectPixel.Bind(pixelButtonCtrl, pixelTextCtrl, key))
     }
@@ -734,13 +734,35 @@ CtrlClickSpamToggle(*) {
 PerformDivinationTrading(*) {
     global CtrlToggled, mousePos
 
+    buttonPixelKey := "TradeDivinationCardButtonPixel"
+    areaPixelKey := "TradeDivinationCardItemAreaPixel"
+
+
+    if (!Extra.Has(buttonPixelKey) or !Extra.Get(buttonPixelKey)) {
+        MsgBox("Set pixel for divination trade button. Use the Pixel Search button in Configuration Window.")
+        return
+    }
+
+    if (!Extra.Has(areaPixelKey) or !Extra.Get(areaPixelKey)) {
+        MsgBox("Set pixel for divination item area. Use the Pixel Search button in Configuration Window.")
+        return
+    }
+
+    buttonResolution := ParseResolution(Extra[buttonPixelKey])
+    areaResolution := ParseResolution(Extra[areaPixelKey])
+    if (!buttonResolution) {
+        MsgBox("Invalid resolution for divination trade button. Please set a valid resolution in the format 'widthxheight' (e.g., 1920x1080).")
+        return
+    }
+    if (!areaResolution) {
+        MsgBox("Invalid resolution for divination item area. Please set a valid resolution in the format 'widthxheight' (e.g., 1920x1080).")
+        return
+    }
+
     BlockInput("MouseMove")
     mousePos.SavePosition()
     ResetToggle()
     CtrlDown()
-
-    buttonResolution := ParseResolution(Extra["PerformDivinationTrading_TradeButton"])
-    areaResolution := ParseResolution(Extra["PerformDivinationTrading_TradeArea"])
 
     Click("left")
     MouseMove(buttonResolution.width, buttonResolution.height, 25)
@@ -831,7 +853,7 @@ OrbOfAlteration(*) {
 CraftWithOrb(name, key) {
     global mousePos
 
-    if (!Extra.Has(key)) {
+    if (!Extra.Has(key) or !Extra.Get(key)) {
         MsgBox("Set pixel for " name ". Use the Pixel Search button in Configuration Window.")
         return
     }
@@ -878,7 +900,7 @@ HighlightShopItems(*) {
     clipboard.Save()
     clipboard.Clear()
     clipboard.Set(Extra.Get("HighlightShopItems", "-\\w-.-|(-\\w){4}|(-\\w){5}|[gr]-[gr]-[gr]|nne|rint"))
-
+    
     SendInput("^f")
     clipboard.Paste()
     clipboard.Restore()
