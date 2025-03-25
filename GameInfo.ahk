@@ -6,6 +6,8 @@ class GameInfo {
 
     GameWidth := 0
     GameHeight := 0
+    GamePosX := 0
+    GamePosY := 0
     ScreenWidth := 0
     ScreenHeight := 0
     ScreenMiddleX := 0
@@ -27,6 +29,7 @@ class GameInfo {
     DivTradeButtonY := 0
 
     CenterUI := false
+    AllowCenterUI := false
 
     __New() {
         while (!this.HWND) {
@@ -35,12 +38,18 @@ class GameInfo {
 
         WinGetPos(&x, &y, &width, &height, this.HWND)
 
-        this.ScreenWidth := width
-        this.ScreenHeight := height
+        this.GamePosX := x
+        this.GamePosY := y
+        this.ScreenWidth := A_ScreenWidth
+        this.ScreenHeight := A_ScreenHeight
         this.GameWidth := width >= this.GameMaxWidth ? this.GameMaxWidth : width
         this.GameHeight := height
-        this.BlackBarSize := (this.ScreenWidth - this.GameMaxWidth) / 2
+        this.AllowCenterUI := this.GameWidth > 2560
+        this.BlackBarSize := this.GameWidth >= this.GameMaxWidth ? (this.ScreenWidth - this.GameMaxWidth) / 2 : 0
 
+        if (this.BlackBarSize < 0) {
+            this.BlackBarSize := 0
+        }
         this.CalculatePositions()
     }
 
@@ -121,7 +130,14 @@ class GameInfo {
     OverlayPosX {
         get => this._OverlayPosX
         set {
-            this._OverlayPosX := this.BlackBarSize + Value
+            this._OverlayPosX := this.GamePosX + this.BlackBarSize + Value
+        }
+    }
+
+    OverlayPosY {
+        get => this._OverlayPosY
+        set {
+            this._OverlayPosY := this.GamePosY + Value
         }
     }
 

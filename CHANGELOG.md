@@ -11,10 +11,28 @@ All notable changes to this project will be documented in this file.
 -
 
 ### Fixed
-- 
+-
 
 ### Removed
 - 
+
+## [0.1.0-beta.3] - 2025-03-25
+
+### Added
+- Hotkeys for crafting orbs.
+- Pixel selection for hotkeys (e.g., divination card trading and crafting orbs).
+- Automatic enabling/disabling of hotkeys by reading the `Path of Exile Client.txt` log file.
+- Overlay support for windowed mode.
+
+### Changed
+- Certain hotkeys are now active only in the hideout.
+- Instance entry hotkeys (e.g., "Enter Hideout") can now be pressed while modifier keys are toggled.
+- Divination card trading now uses pixel-based selection for improved compatibility across different resolutions.
+- Configuration Window layout.
+
+### Fixed
+- Pressing the `TAB` key no longer acts as `ALT+TAB`.
+- Overlay no longer blocks mouse clicks.
 
 ## [0.1.0-beta.2] - 2025-03-04
 ### Added

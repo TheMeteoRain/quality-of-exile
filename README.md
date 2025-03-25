@@ -28,6 +28,12 @@ Option 1:
 - Run QualityOfExile.ahk
 
 Option 2:
+- Clone repository
+- Install [AHK2](https://www.autohotkey.com/)
+- Run QualityOfExile.ahk
+- Pull whenever new updates arrive
+
+Option 3:
 - Download .exe file (it will be recognized as virus)
 - Run it
 
@@ -39,30 +45,31 @@ To change keybinds, press F10 (default) to open the hotkey configuration window.
 Kill the tool. In case of there is a bug, you can press this exit the app.
 By default: Insert
 
-How to use:
 1. Press this keybind (only keybind that works outside of the game)
 
 ### Enter Hideout
 Travel to hideout by typing "/hideout".
 
-How to use:
 1. Press this keybind (in town)
 
 ### Enter League Specific Area
 Travel to league specific area by typing e.g. "/kingsmarch".
 
-How to use:
 1. Press this keybind (in town)
 
 ### Trade Full Stack of Divination Cards
 Trade divination cards for items.
+
+Setup:
+1. Select pixel where the TRADE button is when trade window is open.
+2. Select pixel where the ITEM is going to be when trade window is open.
 
 How to use:
 1. Open divination card trade window
 2. Hover over full stack of divination cards
 3. Press this keybind
 
-### Open Divination Stacked Deck
+### Open Stacked Divination Deck
 Picks up one card and drops to the ground. You need to be in a location that allows you to drop loot. 
 
 1. Hover over divination stacked deck
@@ -88,8 +95,68 @@ Enters RegExp to the shop's search bar.
 
 The default RegExp is: "(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|ll g". This targets any 4-6 linked items, any 6-socket items, any +1 wand, and movement speed boots. You can modify the RegExp, so you can have whatever you want.
 
+### Orb of Transmutation (use on keybind)
+Uses Orb of Transmutation on the item you are hovering over. You need to have currency tab open while doing this.
+
+Setup:
+1. Select pixel where the Orb of Transmutation is on the currency tab.
+
+How to use:
+1. Hover over item in inventory
+2. Press this keybind
+
+### Orb of Alteration (use on keybind)
+Uses Orb of Alteration on the item you are hovering over. You need to have currency tab open while doing this.
+
+Setup:
+1. Select pixel where the Orb of Alteration is on the currency tab.
+
+How to use:
+1. Hover over item in inventory
+2. Press this keybind
+
+### Orb of Chance (use on keybind)
+Uses Orb of Chance on the item you are hovering over. You need to have currency tab open while doing this.
+
+Setup:
+1. Select pixel where the Orb of Chance is on the currency tab.
+
+How to use:
+1. Hover over item in inventory
+2. Press this keybind
+
+### Alchemy Orb (use on keybind)
+Uses Alchemy Orb on the item you are hovering over. You need to have currency tab open while doing this.
+
+Setup:
+1. Select pixel where the Alchemy Orb is on the currency tab.
+
+How to use:
+1. Hover over item in inventory
+2. Press this keybind
+
+### Orb of Scouring (use on keybind)
+Uses Orb of Scouring on the item you are hovering over. You need to have currency tab open while doing this.
+
+Setup:
+1. Select pixel where the Orb of Scouring is on the currency tab.
+
+How to use:
+1. Hover over item in inventory
+2. Press this keybind
+
+### Chaos Orb (use on keybind)
+Uses Chaos Orb on the item you are hovering over. You need to have currency tab open while doing this.
+
+Setup:
+1. Select pixel where the Chaos Orb is on the currency tab.
+
+How to use:
+1. Hover over item in inventory
+2. Press this keybind
+
 ### Spam Ctrl Click
-Holds CTRL and spams left click.
+Holds CTRL and spams left click. Press it again to stop.
 
 Use cases:
 - Rabidly move items to the stash
@@ -110,7 +177,7 @@ Use cases:
 
 
 ## Support
-If Quality of Exile has helped you play more comfortably and you'd like to show your appreciation, consider buying me a coffee! The tool doesn't make any HTTP calls, so I can’t track its usage. If you'd like to support the project, please consider starring the project or supporting via the link below.
+If Quality of Exile has helped you play more comfortably and you'd like to show your appreciation, consider buying me a coffee! The tool doesn't make any HTTP calls, so I can’t track its usage. So, supporting this way is the only way I know it's being used. If you'd like to support the project, please consider starring the project or supporting via the link below.
 
 
 <a href="https://www.buymeacoffee.com/MeteoRain" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
