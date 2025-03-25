@@ -258,7 +258,7 @@ OpenConfigurationWindow(*) {
     HotkeyGui.Add("Text", Format("x{} y{}", pX+colSize, pY), "Keyboard Hotkey")
 
     pixelSearchCtrls(key, x1, y1, x2, y2) {
-        pixelTextCtrl := HotkeyGui.Add("Edit", Format("v{}Pixel x{} y{} w{} {}", key, x1, y1, 100, "+Center ReadOnly"), Extra.Get(key, ""))
+        pixelTextCtrl := HotkeyGui.Add("Edit", Format("v{}Pixel x{} y{} w{} {}", key, x1, y1, 100, "+Center ReadOnly"), Extra.Get(key "Pixel", ""))
         pixelButtonCtrl := HotkeyGui.Add("Button", Format("v{}PixelSelect x{} y{} w{}", key, x2, y2, 100), "Select Pixel")
         pixelButtonCtrl.OnEvent("Click", SelectPixel.Bind(pixelButtonCtrl, pixelTextCtrl, key))
     }

@@ -16,6 +16,11 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - 
 
+## [0.1.0-beta.5] - 2025-03-25
+
+### Fixed
+- Resolved an issue saved pixel was not loaded properly.
+
 ## [0.1.0-beta.4] - 2025-03-25
 
 ### Changed
