@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - 
 
-## [0.1.0-beta.6] - 2025-03-25
+## [0.1.0-beta.6] - 2025-03-26
 
 ### Added
 - Enhanced documentation to provide clearer explanations of all features.
