@@ -23,13 +23,13 @@ The tool should work with Path of Exile 2, but it has not been tested.
 
 Option 1:
 - Install [AHK2](https://www.autohotkey.com/)
-- Download .zip file for the source codes
+- Download [.zip file](https://github.com/TheMeteoRain/quality-of-exile/releases) for the source codes
 - Unpack
 - Run QualityOfExile.ahk
 
 Option 2:
-- Clone repository
 - Install [AHK2](https://www.autohotkey.com/)
+- Clone repository
 - Run QualityOfExile.ahk
 - Pull whenever new updates arrive
 
