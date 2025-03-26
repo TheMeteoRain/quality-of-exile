@@ -37,10 +37,6 @@ Option 3:
 - Download .exe file (it will be recognized as virus)
 - Run it
 
-## How To Use
-
-To change keybinds, press F10 (default) to open the hotkey configuration window. You can customize this keybind to your preference. Note that all the keybinds must be pressed in-game, as this script doesn't recognize keys pressed outside of the game.
-
 ## Features
 - **Read Local Client.txt File**
   - Leverages the `Client.txt` file from Path of Exile 1 or 2 to enable advanced features.
@@ -54,6 +50,10 @@ To change keybinds, press F10 (default) to open the hotkey configuration window.
 - **Pixel Selection**
   - Allows you to select specific pixels where a hotkey will be triggered.
   - Designed to address differences in screen resolutions, ensuring consistent functionality across various setups.
+
+## How To Use
+
+To change keybinds, press F10 (default) to open the hotkey configuration window. You can customize this keybind to your preference. Note that all the keybinds must be pressed in-game, as this script doesn't recognize keys pressed outside of the game.
 
 ### Kill Switch
 Kill the tool. In case of there is a bug, you can press this to exit the app.
