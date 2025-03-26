@@ -16,6 +16,24 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - 
 
+## [0.1.0-beta.6] - 2025-03-25
+
+### Added
+- Enhanced documentation to provide clearer explanations of all features.
+- PoE2: Added support for reading `Path of Exile 2 Client.txt` to enable Dynamic Hotkeys based on the player's current location.
+- Disabled mouse movement when pressing a hotkey that requires mouse input, ensuring precise execution of actions.
+- Added safeguards to prevent hotkey failures from interrupting the user's keyboard or mouse input.
+
+### Changed
+- PoE1: Dynamic Hotkeys work now on all towns not only in hideouts.
+
+### Fixed
+- Resolved an issue where Dynamic Hotkeys would remain disabled after being toggled off once. They now properly enable and disable as expected.
+- Tooltip texts when selecting a pixel.
+
+### Removed
+- Extra MsgBox when selecting a pixel.
+
 ## [0.1.0-beta.5] - 2025-03-25
 
 ### Fixed

@@ -5,7 +5,7 @@
 #Include "ClipboardSaver.ahk"
 #Include "GameInfo.ahk"
 
-ScriptVersion := "0.1.0-beta.3"
+ScriptVersion := "0.1.0-beta.6"
 
 ; Initialize variables
 global CtrlToggled := false
@@ -20,7 +20,7 @@ global Hotkeys := Map()
 global Extra := Map()
 global Options :=  Map()
 global MouseDropdownOptions := ["", "MButton", "XButton1", "XButton2", "WheelDown", "WheelUp"]
-global Remember := {
+global Confgis := {
     EnterHideout: {
         name: "Enter Hideout",
         var: "OpenHideout",
@@ -216,9 +216,9 @@ global Remember := {
         section: "Hotkey",
         coords: { x: 0, y: 160 }
     },
-    ToggleCtrl: { name: "Toggle CTRL", defaultValue: 0, func: ToggleCtrl, tooltip: "TODO", section: "Toggle", tab: "Tab3", coords: { x: 0, y: 0 } },
-    ToggleShift: { name: "Toggle SHIFT", defaultValue: 0, func: ToggleShift, tooltip: "TODO", section: "Toggle", tab: "Tab3", coords: { x: 0, y: 40 } },
-    CenterUI: { value: 0, field: "Checkbox", name: "Center UI", tooltip: "TODO", section: "Options", tab: "Tab3", coords: { x: 0, y: 80 } },
+    ToggleCtrl: { name: "Toggle CTRL", defaultValue: 0, func: ToggleCtrl, tooltip: "TODO", section: "Toggle", tab: "Tab3", toggleOnInstance: false, coords: { x: 0, y: 0 } },
+    ToggleShift: { name: "Toggle SHIFT", defaultValue: 0, func: ToggleShift, tooltip: "TODO", section: "Toggle", tab: "Tab3", toggleOnInstance: false, coords: { x: 0, y: 40 } },
+    CenterUI: { value: 0, field: "Checkbox", name: "Center UI", tooltip: "TODO", section: "Options", tab: "Tab3", toggleOnInstance: false, coords: { x: 0, y: 80 } },
 }
 
 KillSwitch(*) {
@@ -226,7 +226,7 @@ KillSwitch(*) {
 }
 
 OpenConfigurationWindow(*) {
-    global Hotkeys, Extra, Options, HotkeyGui, Remember
+    global Hotkeys, Extra, Options, HotkeyGui, Confgis
     ; padding x
     pX := 20
     ; padding y
@@ -257,13 +257,13 @@ OpenConfigurationWindow(*) {
     HotkeyGui.Add("Text", Format("x{} y{} w{}", pX, pY, 200), "Set Hotkeys for Actions:")
     HotkeyGui.Add("Text", Format("x{} y{}", pX+colSize, pY), "Keyboard Hotkey")
 
-    pixelSearchCtrls(key, x1, y1, x2, y2) {
+    pixelSearchCtrls(conf, key, x1, y1, x2, y2) {
         pixelTextCtrl := HotkeyGui.Add("Edit", Format("v{}Pixel x{} y{} w{} {}", key, x1, y1, 100, "+Center ReadOnly"), Extra.Get(key "Pixel", ""))
         pixelButtonCtrl := HotkeyGui.Add("Button", Format("v{}PixelSelect x{} y{} w{}", key, x2, y2, 100), "Select Pixel")
-        pixelButtonCtrl.OnEvent("Click", SelectPixel.Bind(pixelButtonCtrl, pixelTextCtrl, key))
+        pixelButtonCtrl.OnEvent("Click", SelectPixel.Bind(pixelButtonCtrl, pixelTextCtrl, conf))
     }
 
-    for key, config in Remember.OwnProps() {
+    for key, config in Confgis.OwnProps() {
         TabControl.UseTab(config.tab)
         x := config.coords.x + pX
         y := config.coords.y + pY + rowSize
@@ -292,10 +292,10 @@ OpenConfigurationWindow(*) {
             if (config.HasProp("pixelSelect") and config.pixelSelect) {
                 if (config.HasProp("vars") and config.vars.Length > 0) {
                     for index, var in config.vars {
-                        pixelSearchCtrls(var, x+colSize*2, y+rowSize*(index-1), x+(colSize-20)*3, y+rowSize*(index-1))
+                        pixelSearchCtrls(config, var, x+colSize*2, y+rowSize*(index-1), x+(colSize-20)*3, y+rowSize*(index-1))
                     }
                 } else {
-                    pixelSearchCtrls(key, x+colSize*2, y, x+(colSize-20)*3, y)
+                    pixelSearchCtrls(config, key, x+colSize*2, y, x+(colSize-20)*3, y)
                 }
             }
 
@@ -342,15 +342,22 @@ OpenConfigurationWindow(*) {
 }
 
 
-SelectPixel(control, pixelTextControl, param1, *) {
+SelectPixel(control, pixelTextControl, config, *) {
     SelectedX := 0
     SelectedY := 0
 
     HotkeyGui.Hide()
-    ; Enable real-time tooltip to show mouse coordinates
-    ToolTip("Move your mouse to select a pixel. Click to confirm." param1 " " control.name)
 
-    WatchCursorBind := WatchCursor.Bind(&SelectedX, &SelectedY)
+    name := config.name
+    if (config.HasProp("vars") and config.vars.Length > 0) {
+        if (control.Name == "TradeDivinationCardButtonPixelSelect") {
+            name := "Trade Divination Card Button"
+        } else if (control.Name == "TradeDivinationCardItemAreaPixelSelect") {
+            name := "Trade Divination Card Item Area"
+        }
+    }
+
+    WatchCursorBind := WatchCursor.Bind(&SelectedX, &SelectedY, name)
     ; Continuously update the tooltip with the current mouse position
     SetTimer(WatchCursorBind, 5)
 
@@ -359,20 +366,18 @@ SelectPixel(control, pixelTextControl, param1, *) {
     SetTimer(WatchCursorBind, 0)  ; Turn off the timer after the click
     ToolTip()  ; Remove the tooltip
 
-    ; Display the selected coordinates
-    MsgBox("Selected Pixel: X = " SelectedX ", Y = " SelectedY " "  param1 " " control.name)
     pixelTextControl.Value := SelectedX "x" SelectedY
     HotkeyGui.Show()
 }
 
-WatchCursor(&SelectedX, &SelectedY, *) {
+WatchCursor(&SelectedX, &SelectedY, name, *) {
     ; Get the current mouse position
     
     CoordMode("Mouse", "Window")
     MouseGetPos(&SelectedX, &SelectedY)
     
     ; Update the tooltip with the current coordinates
-    ToolTip("Current Mouse Position: X = " SelectedX ", Y = " SelectedY "`nClick to confirm.")
+    ToolTip("`nSelect pixel for: " name "`nCurrent Mouse Position: X = " SelectedX ", Y = " SelectedY "`nClick to confirm.")
 }
 
 onChangeDropdownToHotkey(hotkey, Control, *) {
@@ -415,10 +420,10 @@ hasKey(arr, find) {
 }
 
 SaveConfigurations(*) {
-    global INI_FILE, Hotkeys, Options, Extra, Remember
+    global INI_FILE, Hotkeys, Options, Extra, Confgis
     controls := HotkeyGui.Submit()
 
-    for key, config in Remember.OwnProps() {
+    for key, config in Confgis.OwnProps() {
         if (config.section == "Hotkey") {
             val := controls.%key%
 
@@ -458,10 +463,10 @@ SaveConfigurations(*) {
 }
 
 LoadConfigurations() {
-    global INI_FILE, Hotkeys, Options, Game, Remember
+    global INI_FILE, Hotkeys, Options, Game, Confgis
 
     try {
-        for key, config in Remember.OwnProps() {
+        for key, config in Confgis.OwnProps() {
             if (config.section == "Hotkey") {
                 val := IniRead(INI_FILE, "Hotkeys", key, config.defaultHotkey)
                 Hotkeys.Set(key, val)
@@ -759,55 +764,65 @@ PerformDivinationTrading(*) {
         return
     }
 
-    BlockInput("MouseMove")
-    mousePos.SavePosition()
-    ResetToggle()
-    CtrlDown()
-
-    Click("left")
-    MouseMove(buttonResolution.width, buttonResolution.height, 25)
-    Sleep(Random(175, 225))
-    Click("left")
-    MouseMove(areaResolution.width, areaResolution.height, 25)
-    Sleep(Random(175, 225))
-    Click("left")
-
-    if (CtrlToggled) {
-        CtrlUp()
+    try {
+        BlockInput("MouseMove")
+        mousePos.SavePosition()
+        ResetToggle()
+    
+        Send("^{Click}")
+        MouseMove(buttonResolution.width, buttonResolution.height, 25)
+        Sleep(Random(175, 225))
+        Click("left")
+        MouseMove(areaResolution.width, areaResolution.height, 25)
+        Sleep(Random(175, 225))
+        Send("^{Click}")
+    
+        mousePos.RestorePosition()
+    } finally {
+        BlockInput("MouseMoveOff")
     }
 
-    mousePos.RestorePosition()
-    BlockInput("MouseMoveOff")
 }
 
 OpenStackedDivinationDeck(*) {
     global mousePos
 
-    mousePos.SavePosition()
-    ResetToggle()
+    try {
+        ResetToggle()
+        BlockInput("MouseMove")
+        mousePos.SavePosition()
 
-    Click("right")
-    MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY, 1)
-    Sleep(150)
-    Click("left")
-    Sleep(75)
-    mousePos.RestorePosition()
-    Sleep(10)
+        Click("right")
+        MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY, 1)
+        Sleep(150)
+        Click("left")
+        Sleep(75)
+
+        mousePos.RestorePosition()
+        Sleep(10)
+    } finally {
+        BlockInput("MouseMoveOff")
+    }
 }
 
 DropItem(*) {
     global mousePos, clipboard
 
-    ResetToggle()
-    mousePos.SavePosition()
-
-    Click("left")
-    MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY, 1)
-    Sleep(150)
-    Click("left")
-    Sleep(75)
-    mousePos.RestorePosition()
-    Sleep(10)
+    try {
+        ResetToggle()
+        BlockInput("MouseMove")
+        mousePos.SavePosition()
+    
+        Click("left")
+        MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY, 1)
+        Sleep(150)
+        Click("left")
+        Sleep(75)
+        mousePos.RestorePosition()
+        Sleep(10)
+    } finally {
+        BlockInput("MouseMoveOff")
+    }
 }
 
 OpenHideout(*) {
@@ -864,16 +879,19 @@ CraftWithOrb(name, key) {
         return
     }
     
-    BlockInput("MouseMove")
-    mousePos.SavePosition()
-    MouseMove(resolution.width, resolution.height, 0)
-    Sleep(50)
-    Click("right")
-    Sleep(75)
-    mousePos.RestorePosition()
-    Sleep(75)
-    Click("left")
-    BlockInput("MouseMoveOff")
+    try {
+        BlockInput("MouseMove")
+        mousePos.SavePosition()
+        MouseMove(resolution.width, resolution.height, 0)
+        Sleep(50)
+        Click("right")
+        Sleep(75)
+        mousePos.RestorePosition()
+        Sleep(75)
+        Click("left")
+    } finally {
+        BlockInput("MouseMoveOff")
+    }
 }
 
 ParseResolution(resolution) {
@@ -1053,28 +1071,38 @@ Main() {
 }
 Main()
 
+MatchPoe2Lines(line) {
+    if (RegExMatch(line, "Generating level \d+ area `"(?:C_)?G\d_town|.*Hideout.*`"")) {
+        return true
+    }
+    return false
+}
+MatchPoe1Lines(line) {
+    if (RegExMatch(line, "Generating level \d+ area `"\d+_\d+(?:_.*)?_town|.*Hideout.*|KalguuranSettlersLeague`"")){
+        return true
+    }
+    return false
+}
 ReadLogFile() {
-    global clientFile, Remember, Hotkeys
+    global clientFile, Confgis, Hotkeys
 
     if !IsObject(clientFile) {
         return  ; Ensure the file object is valid
     }
 
-    ; Read new lines from the file
     if (newLines := clientFile.Read()) {
-        ; Process new lines
-        if RegExMatch(newLines, "You have entered .*") {
+        if (RegExMatch(newLines, "Generating level")) {
             ResetToggle()
 
-            if RegExMatch(newLines, "You have entered .* Hideout.") {
-                for key, config in Remember.OwnProps() {
-                    if (config.HasOwnProp("toggleOnInstance") and Hotkeys[key]) {
+            if (MatchPoe1Lines(newLines) or MatchPoe2Lines(newLines)) {
+                for key, config in Confgis.OwnProps() {
+                    if (config.toggleOnInstance and Hotkeys[key]) {
                         Hotkey("*" Hotkeys[key], config.func, "On")
                     }
                 }
             } else {
-                for key, config in Remember.OwnProps() {
-                    if (config.HasOwnProp("toggleOnInstance") and Hotkeys[key]) {
+                for key, config in Confgis.OwnProps() {
+                    if (config.toggleOnInstance and Hotkeys[key]) {
                         Hotkey("*" Hotkeys[key], config.func, "Off")
                     }
                 }
