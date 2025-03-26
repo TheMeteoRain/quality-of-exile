@@ -50,10 +50,15 @@ Option 3:
 - **Pixel Selection**
   - Allows you to select specific pixels where a hotkey will be triggered.
   - Designed to address differences in screen resolutions, ensuring consistent functionality across various setups.
+- **In-Game Hotkey Detection**
+  - Keybinds are only active while the game is running and in focus.
+  - Assigned keybinds will not interfere with other applications or actions outside the game.
 
 ## How To Use
 
 To change keybinds, press F10 (default) to open the hotkey configuration window. You can customize this keybind to your preference. Note that all the keybinds must be pressed in-game, as this script doesn't recognize keys pressed outside of the game.
+
+## Hotkeys
 
 ### Kill Switch
 Kill the tool. In case of there is a bug, you can press this to exit the app.
