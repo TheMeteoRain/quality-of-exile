@@ -31,10 +31,9 @@ Option 2:
 - Install [AHK2](https://www.autohotkey.com/)
 - Clone repository
 - Run QualityOfExile.ahk
-- Pull whenever new updates arrive
 
 Option 3:
-- Download .exe file (it will be recognized as virus)
+- Download [.exe file](https://github.com/TheMeteoRain/quality-of-exile/releases) (it will be recognized as virus)
 - Run it
 
 ## Features
