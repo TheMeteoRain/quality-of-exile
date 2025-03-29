@@ -5,7 +5,39 @@
 #Include "ClipboardSaver.ahk"
 #Include "GameInfo.ahk"
 
-ScriptVersion := "0.1.0-beta.6"
+ScriptVersion := "0.1.0-beta.7"
+DEBUG := false
+
+if (A_Args.Length > 0) {
+    ; debug
+    if (RegExMatch(A_Args[1], "DEBUG=(true|false)", &match)) {
+        DEBUG := (match[1] = "true")
+    }
+}
+
+DocumentPath := A_MyDocuments "\QualityOfExile"
+ErrorPath := A_MyDocuments "\QualityOfExile\error.txt"
+cportsPath := DocumentPath . "\cports"
+cportsExecutable := cportsPath . "\cports.exe" ; Check in the script's directory
+cportsDownloadURL := "https://www.nirsoft.net/utils/cports.zip" ; URL to the ZIP file
+cportsZipPath := DocumentPath . "\cports.zip"
+INI_FILE := DocumentPath "\data.ini"
+
+Initialize()
+
+if (!DEBUG) {
+    full_command_line := DllCall("GetCommandLine", "str")
+    if not (A_IsAdmin or RegExMatch(full_command_line, " /restart(?!\S)"))
+    {
+        try {
+            if A_IsCompiled
+                Run '*RunAs "' A_ScriptFullPath '" /restart'
+            else
+                Run '*RunAs "' A_AhkPath '" /restart "' A_ScriptFullPath '"'
+        }
+        ExitApp
+    }
+}
 
 ; Initialize variables
 global CtrlToggled := false
@@ -15,17 +47,17 @@ global OverlayGui, CtrlLabel, ShiftLabel, SpamLabel, HotkeyGui
 global Game := GameInfo()
 global mousePos := MousePositionSaver()
 global clipboard := ClipboardSaver()
-global INI_FILE := "data.ini"
 global Hotkeys := Map()
 global Extra := Map()
 global Options :=  Map()
 global MouseDropdownOptions := ["", "MButton", "XButton1", "XButton2", "WheelDown", "WheelUp"]
-global Confgis := {
+global Configs := {
     EnterHideout: {
         name: "Enter Hideout",
         var: "OpenHideout",
         defaultHotkey: "F5",
         func: OpenHideout,
+        blockKeyNativeFunction: true,
         mouseBind: false,
         tooltip: "How to use: press hotkey to enter hideout.",
         toggleOnInstance: false,
@@ -38,35 +70,38 @@ global Confgis := {
         var: "OpenKingsmarch",
         defaultHotkey: "F6",
         func: OpenKingsmarch,
+        blockKeyNativeFunction: true,
         mouseBind: false,
         tooltip: "How to use: press hotkey to enter Kingsmarch.",
         toggleOnInstance: false,
         tab: "Tab1",
         section: "Hotkey",
-        coords: { x: 0, y: 40 }
+        coords: { x: 175, y: 0 }
     },
     OpenStackedDivinationDeck: {
         name: "Open Stacked Divination Deck",
         defaultHotkey: "",
         func: OpenStackedDivinationDeck,
+        blockKeyNativeFunction: true,
         mouseBind: true,
         tooltip: "How to use: hover over the desired divination stack in your inventory and press this hotkey. Only usable in outdoor areas, since you cannot drop cards in hideout or similar areas.",
         toggleOnInstance: false,
-        tab: "Tab1",
+        tab: "Tab3",
         section: "Hotkey",
-        coords: { x: 0, y: 120 }
+        coords: { x: 175, y: 0 }
     },
     TradeDivinationCard: {
         name: "Trade Divination Card",
         defaultHotkey: "",
         func: PerformDivinationTrading,
+        blockKeyNativeFunction: true,
         extraField: true,
         mouseBind: false,
         tooltip: "How to use: open divination card trade screen and press this hotkey, while hovering over the desired full divination card stack in your inventory.",
         toggleOnInstance: false,
-        tab: "Tab2",
+        tab: "Tab3",
         section: "Hotkey",
-        coords: { x: 0, y: 0 },
+        coords: { x: 350, y: 0 },
         pixelSelect: true,
         vars: ["TradeDivinationCardButton", "TradeDivinationCardItemArea"]
     },
@@ -75,64 +110,86 @@ global Confgis := {
         defaultHotkey: "",
         func: DropItem,
         mouseBind: true,
+        blockKeyNativeFunction: true,
         tooltip: "How to use: hover over item in your inventory and press this hotkey.",
         toggleOnInstance: false,
-        tab: "Tab1",
+        tab: "Tab3",
         section: "Hotkey",
-        coords: { x: 0, y: 160 }
+        coords: { x: 0, y: 0 }
     },
     FillShipment: {
         name: "Fill Shipments",
         var: "FillShipment",
         defaultHotkey: "",
         func: FillShipments,
+        blockKeyNativeFunction: true,
         mouseBind: true,
         tooltip: "TODO",
         toggleOnInstance: false,
-        tab: "Tab1",
+        tab: "Tab3",
         section: "Hotkey",
-        coords: { x: 0, y: 200 }
-    },
-    CtrlClickSpamToggle: {
-        name: "Spam Ctrl Click",
-        defaultHotkey: "",
-        func: CtrlClickSpamToggle,
-        mouseBind: true,
-        tooltip: "TODO",
-        toggleOnInstance: false,
-        coords: { x: 0, y: 80 },
-        tab: "Tab1",
-        section: "Hotkey"
+        coords: { x: 0, y: 90 }
     },
     HighlightShopItems: {
-        name: "Enter Shop RegExp",
+        name: "Enter RegExp",
         defaultHotkey: "",
         func: HighlightShopItems,
+        blockKeyNativeFunction: true,
         extraField: true,
         mouseBind: true,
         tooltip: "TODO",
         toggleOnInstance: false,
-        tab: "Tab1",
+        tab: "Tab3",
         section: "Hotkey",
-        coords: { x: 0, y: 260 }
+        coords: { x: 175, y: 90 }
     },
     OrbOfTransmutation: {
         name: "Orb of Transmutation",
         defaultHotkey: "",
         func: OrbOfTransmutation,
+        blockKeyNativeFunction: true,
         extraField: true,
         mouseBind: false,
         tooltip: "TODO",
         toggleOnInstance: true,
         tab: "Tab2",
         section: "Hotkey",
-        coords: { x: 0, y: 80 },
+        coords: { x: 0, y: 0 },
         pixelSelect: true
     },
     OrbOfAlteration: {
         name: "Orb of Alteration",
         defaultHotkey: "",
         func: OrbOfAlteration,
+        blockKeyNativeFunction: true,
+        extraField: true,
+        mouseBind: false,
+        tooltip: "TODO",
+        toggleOnInstance: true,
+        tab: "Tab2",
+        section: "Hotkey",
+        coords: { x: 175, y: 0 },
+        pixelSelect: true
+    },
+    OrbOfChance: {
+        name: "Orb of Chance",
+        defaultHotkey: "",
+        func: CraftOrbOfChance,
+        blockKeyNativeFunction: true,
+        extraField: true,
+        mouseBind: false,
+        tooltip: "TODO",
+        toggleOnInstance: true,
+        tab: "Tab2",
+        section: "Hotkey",
+        coords: { x: 350, y: 0 },
+        pixelSelect: true
+    },
+    AlchemyOrb: {
+        name: "Alchemy Orb",
+        defaultHotkey: "",
+        func: CraftAlchemyOrb,
+        blockKeyNativeFunction: true,
         extraField: true,
         mouseBind: false,
         tooltip: "TODO",
@@ -142,43 +199,18 @@ global Confgis := {
         coords: { x: 0, y: 120 },
         pixelSelect: true
     },
-    OrbOfChance: {
-        name: "Orb of Chance",
-        defaultHotkey: "",
-        func: CraftOrbOfChance,
-        extraField: true,
-        mouseBind: false,
-        tooltip: "TODO",
-        toggleOnInstance: true,
-        tab: "Tab2",
-        section: "Hotkey",
-        coords: { x: 0, y: 160 },
-        pixelSelect: true
-    },
-    AlchemyOrb: {
-        name: "Alchemy Orb",
-        defaultHotkey: "",
-        func: CraftAlchemyOrb,
-        extraField: true,
-        mouseBind: false,
-        tooltip: "TODO",
-        toggleOnInstance: true,
-        tab: "Tab2",
-        section: "Hotkey",
-        coords: { x: 0, y: 200 },
-        pixelSelect: true
-    },
     OrbOfScouring: {
         name: "Orb of Scouring",
         defaultHotkey: "",
         func: CraftOrbOfScouring,
+        blockKeyNativeFunction: true,
         extraField: true,
         mouseBind: false,
         tooltip: "TODO",
         toggleOnInstance: true,
         tab: "Tab2",
         section: "Hotkey",
-        coords: { x: 0, y: 240 },
+        coords: { x: 175, y: 120 },
         pixelSelect: true
     },
     ChaosOrb: {
@@ -186,47 +218,202 @@ global Confgis := {
         defaultHotkey: "",
         func: ChaosOrb,
         extraField: true,
+        blockKeyNativeFunction: true,
         mouseBind: false,
         tooltip: "TODO",
         toggleOnInstance: true,
         tab: "Tab2",
         section: "Hotkey",
-        coords: { x: 0, y: 280 },
+        coords: { x: 350, y: 120 },
         pixelSelect: true
     },
     KillSwitch: {
         name: "Kill Switch",
-        defaultHotkey: "Insert",
+        defaultHotkey: "Home",
         func: KillSwitch,
+        blockKeyNativeFunction: true,
         mouseBind: false,
         tooltip: "TODO",
         toggleOnInstance: false,
-        tab: "Tab3",
+        tab: "Tab1",
         section: "Hotkey",
-        coords: { x: 0, y: 120 }
+        coords: { x: 175, y: 60 }
     },
-    OpenConfigurationWindow: {
-        name: "Options (This GUI)",
+    Settings: {
+        name: "Settings (This GUI)",
         defaultHotkey: "F10",
-        func: OpenConfigurationWindow,
+        func: Settings,
+        blockKeyNativeFunction: true,
         mouseBind: false,
         tooltip: "TODO",
         toggleOnInstance: false,
-        tab: "Tab3",
+        tab: "Tab1",
         section: "Hotkey",
-        coords: { x: 0, y: 160 }
+        coords: { x: 0, y: 60 }
     },
-    ToggleCtrl: { name: "Toggle CTRL", defaultValue: 0, func: ToggleCtrl, tooltip: "TODO", section: "Toggle", tab: "Tab3", toggleOnInstance: false, coords: { x: 0, y: 0 } },
-    ToggleShift: { name: "Toggle SHIFT", defaultValue: 0, func: ToggleShift, tooltip: "TODO", section: "Toggle", tab: "Tab3", toggleOnInstance: false, coords: { x: 0, y: 40 } },
-    CenterUI: { value: 0, field: "Checkbox", name: "Center UI", tooltip: "TODO", section: "Options", tab: "Tab3", toggleOnInstance: false, coords: { x: 0, y: 80 } },
+    ToggleCtrlKeybind: {
+        name: "Toggle CTRL Hotkey",
+        defaultHotkey: "",
+        func: ToggleCtrl,
+        blockKeyNativeFunction: true,
+        mouseBind: true,
+        tooltip: "TODO",
+        toggleOnInstance: false,
+        tab: "Tab1",
+        section: "Hotkey",
+        coords: { x: 175, y: 240 }
+    },
+    ToggleShiftKeybind: {
+        name: "Toggle SHIFT Hotkey",
+        defaultHotkey: "",
+        func: ToggleShift,
+        blockKeyNativeFunction: true,
+        mouseBind: true,
+        tooltip: "TODO",
+        toggleOnInstance: false,
+        tab: "Tab1",
+        section: "Hotkey",
+        coords: { x: 350, y: 240 }
+    },
+    CtrlClickSpamToggle: {
+        name: "Spam Ctrl Click",
+        defaultHotkey: "",
+        func: CtrlClickSpamToggle,
+        blockKeyNativeFunction: true,
+        mouseBind: true,
+        tooltip: "TODO",
+        toggleOnInstance: false,
+        coords: { x: 0, y: 240 },
+        tab: "Tab1",
+        section: "Hotkey"
+    },
+    ForceLogout: {
+        name: "Force Logout",
+        defaultHotkey: "",
+        func: TerminateTCP,
+        blockKeyNativeFunction: true,
+        mouseBind: false,
+        tooltip: "TODO",
+        toggleOnInstance: false,
+        tab: "Tab1",
+        section: "Hotkey",
+        coords: { x: 350, y: 0 }
+    },
+    ToggleCtrl: {
+        name: "Toggle CTRL",
+        defaultValue: 0, 
+        func: ToggleCtrl, 
+        tooltip: "TODO", 
+        section: "Toggle", 
+        tab: "Tab1", 
+        toggleOnInstance: false, 
+        coords: { x: 175, y: 150 }
+    },
+    ToggleShift: {
+        name: "Toggle SHIFT",
+        defaultValue: 0,
+        func: ToggleShift,
+        tooltip: "TODO",
+        section: "Toggle",
+        tab: "Tab1",
+        toggleOnInstance: false,
+        coords: { x: 350, y: 150 }
+    },
+    ToggleOverlayPosition: {
+        field: "SelectPixel",
+        name: "Toggle Overlay Position",
+        tooltip: "TODO",
+        section: "Options",
+        tab: "Tab1",
+        toggleOnInstance: false,
+        pixelSelect: true,
+        coords: { x: 0, y: 150 }
+    },
+}
+
+Initialize() {
+    if (!FileExist(DocumentPath)) {
+        DirCreate(DocumentPath)
+    }
+    
+    If !FileExist(cportsExecutable) {
+        ; Download cports
+        try {
+            Download(cportsDownloadURL, cportsZipPath)
+        } catch Error as e {
+            LogError("Failed to download CurrPorts. Please check your internet connection and try again.", e, true)
+        }
+    
+        ; Wait for download
+        timeout := 30000
+        startTime := A_TickCount
+        loop 30 {
+            if FileExist(cportsZipPath) && FileGetSize(cportsZipPath) > 0 {
+                break
+            }
+            if (A_TickCount - startTime > timeout) {
+                LogError("Downloading CurrPorts timedout. Please check your internet connection or try again later.", e, true)
+                ExitApp()
+            }
+            Sleep(1000)
+        }
+    
+        ; Create dir
+        DirCreate(cportsPath)
+        if (!FileExist(cportsPath)) {
+            MsgBox("Something went wrong")
+            LogError("Could not create dir for cports", e)
+            ExitApp()
+        }
+    
+        ; Extract zip
+        tarCommand := Format("tar -xf {} -C {}", cportsZipPath, cportsPath)
+        RunWait(A_ComSpec . " /c " . tarCommand, "", "Hide")
+        FileDelete(cportsZipPath)
+    
+        if !FileExist(cportsExecutable) {
+            MsgBox("Error downloading or extracting CurrPorts. Please ensure you have internet access and try again.")
+            ExitApp()
+        }
+    }
 }
 
 KillSwitch(*) {
     ExitApp()
 }
 
-OpenConfigurationWindow(*) {
-    global Hotkeys, Extra, Options, HotkeyGui, Confgis
+TerminateTCP(*) {
+    Critical
+    try {
+        loop 5 {
+            cportsCommand := Format("{} /close * * * * {}", cportsExecutable, Game.PID)
+            Run(A_ComSpec . " /c " . cportsCommand, "", "Hide")
+        }
+
+        if (DEBUG) {
+            MsgBox("TCP connections terminated.")
+        }
+    } catch Error as e {
+        ProcessClose(Game.PID)
+        LogError("Could not terminate TCP connections with cports", e)
+    }
+}
+
+LogError(msg, e, showMsgBox := false) {
+    if (showMsgBox) {
+        MsgBox(msg)
+    }
+    FileAppend("An error occurred while running the script:`n`n"
+    . "Time: " A_NowUTC "`n"
+    . "Message: " msg "`n"
+    . "Error: " e.what "`n"
+    . "Details: " e.message "`n"
+    . "File: " e.file "`n"
+    . "Line: " e.line "`n"
+    . (e.extra ? "Additional Info: " e.extra "`n" : ""), ErrorPath, "UTF-16")
+}
+Settings(*) {
+    global Hotkeys, Extra, Options, HotkeyGui, Configs
     ; padding x
     pX := 20
     ; padding y
@@ -234,50 +421,60 @@ OpenConfigurationWindow(*) {
     w := 150
     colSize := 175
     rowSize := 30
+    reduceGap := 10
     maxY := 0
 
     if (IsSet(HotkeyGui)) {
         HotkeyGui.Destroy()
     }
 
-    HotkeyGui := Gui(, "Hotkey Manager")
+    HotkeyGui := Gui("+AlwaysOnTop", "Quality of Exile")
     TabControl := HotkeyGui.Add("Tab3", "", ["Tab1","Tab2","Tab3"])
     
     TabControl.UseTab("Tab1")
-    HotkeyGui.Add("Text", Format("x{} y{} w{}", pX, pY, 200), "Set Hotkeys for Actions:")
-    HotkeyGui.Add("Text", Format("x{} y{}", pX+colSize, pY), "Keyboard Hotkey")
-    HotkeyGui.Add("Text", Format("x{} y{}", pX+colSize*2, pY), "Mouse Hotkey")
+    HotkeyGui.Add("Text", Format("x{} y{}", pX, pY), "K: Keyboard keybind | M: Mouse keybind | Px: Pixel")
 
     TabControl.UseTab("Tab2")
-    HotkeyGui.Add("Text", Format("x{} y{} w{}", pX, pY, 200), "Set Hotkeys for Actions:")
-    HotkeyGui.Add("Text", Format("x{} y{}", pX+colSize, pY), "Keyboard Hotkey")
-    HotkeyGui.Add("Text", Format("x{} y{}", pX+colSize*2, pY), "Pixel")
+    HotkeyGui.Add("Text", Format("x{} y{}", pX, pY), "K: Keyboard keybind | M: Mouse keybind | Px: Pixel")
 
     TabControl.UseTab("Tab3")
-    HotkeyGui.Add("Text", Format("x{} y{} w{}", pX, pY, 200), "Set Hotkeys for Actions:")
-    HotkeyGui.Add("Text", Format("x{} y{}", pX+colSize, pY), "Keyboard Hotkey")
+    HotkeyGui.Add("Text", Format("x{} y{}", pX, pY), "K: Keyboard keybind | M: Mouse keybind | Px: Pixel")
 
-    pixelSearchCtrls(conf, key, x1, y1, x2, y2) {
-        pixelTextCtrl := HotkeyGui.Add("Edit", Format("v{}Pixel x{} y{} w{} {}", key, x1, y1, 100, "+Center ReadOnly"), Extra.Get(key "Pixel", ""))
-        pixelButtonCtrl := HotkeyGui.Add("Button", Format("v{}PixelSelect x{} y{} w{}", key, x2, y2, 100), "Select Pixel")
+
+    pixelSearchCtrls(conf, key, options, x1, y1, x2, y2) {
+        HotkeyGui.Add("Text", Format("x{} y{} w{}", x1, y1+4, w), "Px")
+        pixelTextCtrl := HotkeyGui.Add("Edit", Format("v{}Pixel x{} y{} w{} +Center {}", key, x1+20, y1, w-10, options), Extra.Get(key "Pixel", ""))
+        if (key == "ToggleOverlayPosition" and !pixelTextCtrl.Value) {
+            pixelTextCtrl.Value := Format("{}x{}", Game.OverlayPosX, Game.OverlayPosY)
+        } 
+        pixelTextCtrl.OnEvent("Change", ValidatePixel.Bind(pixelTextCtrl.Value))
+        pixelButtonCtrl := HotkeyGui.Add("Button", Format("v{}PixelSelect x{} y{} w{}", key, x2+20, y2, w-10), "Select Pixel")
         pixelButtonCtrl.OnEvent("Click", SelectPixel.Bind(pixelButtonCtrl, pixelTextCtrl, conf))
+
+        return { text: pixelTextCtrl, button: pixelButtonCtrl }
     }
 
-    for key, config in Confgis.OwnProps() {
+    for key, config in Configs.OwnProps() {
         TabControl.UseTab(config.tab)
         x := config.coords.x + pX
         y := config.coords.y + pY + rowSize
-        maxY := Max(y, maxY)
 
+        textGuiControl := HotkeyGui.Add("Text", Format("x{} y{} w{}", x, y, w), config.name)
+        textGuiControl.SetFont("bold")
         if (config.section == "Hotkey") {
-            textGuiControl := HotkeyGui.Add("Text", Format("x{} y{} w{}", x, y, w), config.name ":")
-            mainGuiControl := HotkeyGui.Add("Hotkey", Format("v{} x{} y{} w{}", key, x+colSize, y, w), Hotkeys.Get(key, ""))
+            keyboardLabel := HotkeyGui.Add("Text", Format("x{} y{} Center", x, y+rowSize+3-reduceGap), "K")
+            mainGuiControl := HotkeyGui.Add("Hotkey", Format("v{} x{} y{} w{}", key, x+10, y+rowSize-reduceGap, w), Hotkeys.Get(key, ""))
             hotkeyValue := Hotkeys.Get(key, "")
             mainGuiControl.Value := hotkeyValue
+            y := y+rowSize*2
+            ; if (key == "KillSwitch" or key == "Settings") {
+            ;     mainGuiControl.
+            ; }
 
 
             if (config.HasProp("mouseBind") and config.mouseBind) {
-                guiDropdown := HotkeyGui.Add("DropDownList", Format("v{} x{} y{} w{}", key "_mouseDropdownOptions", x+colSize*2, y, w), MouseDropdownOptions)
+                mouseLabel := HotkeyGui.Add("Text", Format("x{} y{} Center", x, y+3-reduceGap), "M")
+                guiDropdown := HotkeyGui.Add("DropDownList", Format("v{} x{} y{} w{}", key "_mouseDropdownOptions", x+10, y-reduceGap, w), MouseDropdownOptions)
                 guiDropdown.OnEvent("Change", onChangeDropdownToHotkey.Bind(mainGuiControl))
                 mainGuiControl.OnEvent("Change", onChangeHotkeyToDropdown.Bind(guiDropdown))
 
@@ -287,58 +484,211 @@ OpenConfigurationWindow(*) {
                 } else {
                     mainGuiControl.Value := hotkeyValue
                 }
+                y := y+rowSize
             }
 
             if (config.HasProp("pixelSelect") and config.pixelSelect) {
                 if (config.HasProp("vars") and config.vars.Length > 0) {
                     for index, var in config.vars {
-                        pixelSearchCtrls(config, var, x+colSize*2, y+rowSize*(index-1), x+(colSize-20)*3, y+rowSize*(index-1))
+                        newY := index > 1 ? y+rowSize*index : y
+                        pixelSearchCtrls(config, var, "Readonly", x, newY-reduceGap, x, newY+rowSize-reduceGap)
                     }
                 } else {
-                    pixelSearchCtrls(config, key, x+colSize*2, y, x+(colSize-20)*3, y)
+                    pixelSearchCtrls(config, key, "Readonly", x, y-reduceGap, x, y+rowSize-reduceGap)
                 }
+                y := y+rowSize
             }
 
             if (key == "HighlightShopItems") {
-                extraGuiControl := HotkeyGui.Add("Edit", Format("v{}_extra x{} y{} w{} {}", key, x+colSize, y+rowSize, w, "Limit50 -VScroll h60"), Extra.Get(key, ""))
+                extraGuiControl := HotkeyGui.Add("Edit", Format("v{}_extra x{} y{} w{} Limit50 -VScroll h60", key, x+10, y-reduceGap, w), Extra.Get(key, ""))
             }
 
             if (key == "FillShipment") {
-                control := HotkeyGui.Add("Button", Format("v{}_extra x{} y{}", key, x+colSize, y+rowSize), "Shipment values")
+                control := HotkeyGui.Add("Button", Format("v{}_extra x{} y{} w{}", key, x+10, y-reduceGap, w), "Shipment values")
                 control.OnEvent("Click", openSettlersShipmentUI)
             }
-
+            maxY := Max(y, maxY)
             continue
         }
 
         if (config.section == "Options" or config.section == "Toggle") {
-            HotkeyGui.Add("Text", Format("x{} y{} w{}", x, y, w), config.name ":")
-            control := HotkeyGui.Add("Checkbox", Format("v{} x{} y{}", key, x+colSize, y))
+            if (key == "ToggleOverlayPosition") {
+                pixelSearchCtrls(config, key, "", x, y+rowSize-reduceGap, x, y+rowSize*2-reduceGap)
+                continue
+            }
+            HotkeyGui.Add("Text", Format("x{} y{} w{}", x, y+rowSize+4-reduceGap, w), "Enabled")
+            control := HotkeyGui.Add("Checkbox", Format("v{} x{} y{}", key, x+45, y+4+rowSize-reduceGap))
             control.Value := Hotkeys.Get(key, 0)
             control.Tooltip := config.tooltip
-
-            if (key == "CenterUI") {
-                if (Game.AllowCenterUI) {
-                    control.Enabled := 1
-                } else {
-                    control.Enabled := 0
-                }
-            }
-
             continue
         }
     }
 
     TabControl.UseTab("")
 
-    HotkeyGui.Add("Text", Format("x{} y{} w{} Center", 0, maxY + 100, 200), "QualityOfExile version:`n" ScriptVersion)
-    HotkeyGui.Add("Link", Format("x{} y{} w{}", x+pX, maxY + 135, w), '<a href="https://github.com/TheMeteoRain/quality-of-exile">Github / Documentation</a>')
+    HotkeyGui.Add("Text", Format("x{} y{} w{} Center", 0, maxY, 200), "QualityOfExile version:`n" ScriptVersion)
+    HotkeyGui.Add("Link", Format("x{} y{} w{}", pX*2, maxY + 35, w), '<a href="https://github.com/TheMeteoRain/quality-of-exile">Github / Documentation</a>')
 
-    HotkeyGui.Add("Button", Format("x{} y{} w{} Default", 210, maxY + 100, 200), "Save And Reload").OnEvent("Click", SaveConfigurations)
-    HotkeyGui.Add("Button", Format("x{} y{} w{}", 210, maxY + 100 + rowSize, 200), "Close").OnEvent("Click", (*) => HotkeyGui.Destroy())
+    HotkeyGui.Add("Button", Format("x{} y{} w{} Default", 550/2-200/2, maxY, 200), "Save And Reload").OnEvent("Click", SaveConfigurations)
+    HotkeyGui.Add("Button", Format("x{} y{} w{}", 550/2-200/2, maxY + rowSize, 200), "Close").OnEvent("Click", (*) => HotkeyGui.Destroy())
 
     HotkeyGui.Show()
+    ControlFocus(HotkeyGui, HotkeyGui.Title)
     ;OnMessage(0x0200, On_WM_MOUSEMOVE)
+}
+
+ValidatePixel(oldValue, GuiCtrlObj, *) {
+    resolution := ParseResolution(GuiCtrlObj.Value)
+    if (!resolution) {
+        GuiCtrlObj.Value := oldValue
+    }
+}
+
+SaveConfigurations(*) {
+    global Hotkeys, Options, Extra, Configs
+    controls := HotkeyGui.Submit()
+
+    for key in controls.OwnProps() {
+        found := Configs.HasProp(key)
+
+        if (!found) {
+            if (InStr(key, "_extra")) {
+                IniWrite(controls.%key%, INI_FILE, "Extra", SubStr(key, 1, StrLen(key) - 6))
+            }
+            continue
+        }
+
+        config := Configs.%key%
+
+        if (config.HasProp("pixelSelect") and config.pixelSelect) {
+            parsedValues := []
+
+            if (config.HasProp("vars") and config.vars.Length > 0) {
+                for index, var in config.vars {
+                    parsedValues.Push([var, controls.%var "Pixel"%])
+                }
+            } else {
+                parsedValues.Push([key, controls.%key "Pixel"%])
+            }
+
+            for index, arr in parsedValues {
+                var := arr[1]
+                val := arr[2]
+
+                IniWrite(val, INI_FILE, "Pixels", var)
+                Extra.Set(var, val)
+            }
+        }
+
+        if (config.HasProp("section") and config.section == "Hotkey") {
+            val := controls.%key%
+
+            if (config.mouseBind and val == "") {
+                val := controls.%key "_mouseDropdownOptions"%
+            }
+    
+            IniWrite(val, INI_FILE, "Hotkeys", key)
+        }
+        if (config.HasProp("section") and config.section == "Toggle") {
+            IniWrite(controls.%key%, INI_FILE, "Toggle", key)
+        }
+        if (config.HasProp("section") and config.section == "Options") {
+            IniWrite(controls.%key%, INI_FILE, "Options", key)
+        }
+    }
+
+    Reload()
+}
+
+LoadConfigurations() {
+    global Hotkeys, Options, Game, Configs
+
+    try {
+        for key, config in Configs.OwnProps() {
+            if (config.HasProp("pixelSelect") and config.pixelSelect) {
+                if (config.HasProp("vars") and config.vars.Length > 0) {
+                    for index, var in config.vars {
+                        extraValue := IniRead(INI_FILE, "Pixels", var, "")
+                        Extra.Set(var "Pixel", extraValue)
+                    }
+                } else {
+                    extraValue := IniRead(INI_FILE, "Pixels", key, "")
+                    Extra.Set(key "Pixel", extraValue)
+                }
+            }
+
+            if (config.section == "Hotkey") {
+                val := IniRead(INI_FILE, "Hotkeys", key, config.defaultHotkey)
+                Hotkeys.Set(key, val)
+
+                if (key == "HighlightShopItems") {
+                    extraValue := IniRead(INI_FILE, "Extra", key, "(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|ll g")
+                    Extra.Set(key, extraValue)
+                }
+
+                if (val && key == "KillSwitch") {
+                    HotIf()
+                    Hotkey("*" val, config.func)
+                } else {
+                    HotIfWinActive(Game.Title)
+                    if (config.blockKeyNativeFunction) {
+                        Hotkey("*" val, config.func)
+                    } else {
+                        Hotkey("~" val, config.func)
+                    }
+                }
+
+                continue
+            }
+            
+            if (config.section == "Options") {
+                val := IniRead(INI_FILE, "Options", key, 0)
+                Hotkeys.Set(key, val)
+
+                continue
+            }
+
+            if (config.section == "Toggle") {
+                val := IniRead(INI_FILE, "Toggle", key, 0)
+                Hotkeys.Set(key, val)
+
+                HotIfWinActive(Game.Title)
+                if (val == 1) {
+                    if (key == "ToggleCtrl") {
+                        Hotkey("*Ctrl", config.func)
+                    }
+                    if (key == "ToggleShift") {
+                        Hotkey("*Shift", config.func)
+                    }
+                }
+
+                continue
+            }
+        }
+
+        if (Hotkeys["ToggleCtrl"] == 1 and Hotkeys["ToggleShift"] == 0) {
+            HotIfWinActive(Game.Title)
+            Hotkey("*Shift", ResetToggle)
+        }
+        if (Hotkeys["ToggleCtrl"] == 0 and Hotkeys["ToggleShift"] == 1) {
+            HotIfWinActive(Game.Title)
+            Hotkey("*Ctrl", ResetToggle)
+        }
+
+        if (Hotkeys["ToggleCtrl"] == 1 or Hotkeys["ToggleShift"] == 1) {
+            HotIfWinActive(Game.Title)
+            Hotkey("#LWin", ResetToggle)
+            HotIfWinActive(Game.Title)
+            Hotkey("~*LWin", ResetToggleWin)
+            HotIfWinActive(Game.Title)
+            Hotkey("*Esc", ResetToggleEsc)
+            ; HotIfWinActive(Game.Title)
+            ; Hotkey("*Space", ResetToggleSpace)
+        }
+    } catch Error as e {
+        LogError("Could not load configurations." e, true)
+        KillSwitch()
+    }
 }
 
 
@@ -358,16 +708,19 @@ SelectPixel(control, pixelTextControl, config, *) {
     }
 
     WatchCursorBind := WatchCursor.Bind(&SelectedX, &SelectedY, name)
-    ; Continuously update the tooltip with the current mouse position
-    SetTimer(WatchCursorBind, 5)
 
-    ; Wait for the user to click
-    KeyWait("LButton", "D")  ; Wait for the left mouse button to be pressed
-    SetTimer(WatchCursorBind, 0)  ; Turn off the timer after the click
-    ToolTip()  ; Remove the tooltip
+    try {
+        SetTimer(WatchCursorBind, 5)
 
-    pixelTextControl.Value := SelectedX "x" SelectedY
-    HotkeyGui.Show()
+        KeyWait("LButton", "D")  ; Wait for the left mouse button to be pressed
+        SetTimer(WatchCursorBind, 0)  ; Turn off the timer after the click
+        ToolTip()  ; Remove the tooltip
+
+        pixelTextControl.Value := SelectedX "x" SelectedY
+    } finally {
+        BlockInput("Off")
+        HotkeyGui.Show()
+    }
 }
 
 WatchCursor(&SelectedX, &SelectedY, name, *) {
@@ -419,188 +772,80 @@ hasKey(arr, find) {
     }
 }
 
-SaveConfigurations(*) {
-    global INI_FILE, Hotkeys, Options, Extra, Confgis
-    controls := HotkeyGui.Submit()
+CreateHUD() {
+    global Hotkeys, Configs
 
-    for key, config in Confgis.OwnProps() {
-        if (config.section == "Hotkey") {
-            val := controls.%key%
+    ; Retrieve the hotkeys for the configuration window and kill switch
+    configHotkey := Hotkeys.Has("Settings") ? Hotkeys["Settings"] : "Not Set"
+    killSwitchHotkey := Hotkeys.Has("KillSwitch") ? Hotkeys["KillSwitch"] : "Not Set"
 
-            if (config.mouseBind and val == "") {
-                val := controls.%key "_mouseDropdownOptions"%
-            }
-    
-            IniWrite(val, INI_FILE, "Hotkeys", key)
-    
-            if (config.HasProp("pixelSelect") and config.pixelSelect) {
-                if (config.HasProp("vars") and config.vars.Length > 0) {
-                    for index, var in config.vars {
-                        IniWrite(controls.%var "Pixel"%, INI_FILE, "Pixels", var "Pixel")
-                        Extra.Set(var, controls.%var "Pixel"%)
-                    }
-                } else {
-                    IniWrite(controls.%key "Pixel"%, INI_FILE, "Pixels", key "Pixel")
-                    Extra.Set(key, controls.%key "Pixel"%)
-                }
-            }
-            
-            continue
-        }
-        
-        if (config.section == "Toggle") {
-            IniWrite(controls.%key%, INI_FILE, "Toggle", key)
-            continue
-        }
+    ; Create the overlay GUI
+    OverlayGui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20", "HUD")
+    OverlayGui.BackColor := "20283f"
+    WinSetTransColor("Black 150", OverlayGui)  ; Make the background transparent
 
-        if (config.section == "Options") {
-            IniWrite(controls.%key%, INI_FILE, "Options", key)
-            continue
-        }
-    }
+    ; Add text for the hotkeys
+    ctrl := OverlayGui.Add("Text", "x5 y5 h30 cWhite", "Settings: " configHotkey)
+    ctrl.SetFont("s6 q2")
+    ctrl := OverlayGui.Add("Text", "x5 y23 h30 cWhite", "Kill Switch: " killSwitchHotkey)
+    ctrl.SetFont("s6 q2")
 
-    Reload()
+    ; Show the GUI in a specific position
+    OverlayGui.Show("x" (Game.GamePosX + Game.GameWidth + Game.BlackBarSize + (Game.Windowed ? -9 : 0)) - 150 " y" Game.GamePosY + (Game.Windowed ? 38 : 0)  " w120 h40 NoActivate")  ; Position and size
 }
 
-LoadConfigurations() {
-    global INI_FILE, Hotkeys, Options, Game, Confgis
-
-    try {
-        for key, config in Confgis.OwnProps() {
-            if (config.section == "Hotkey") {
-                val := IniRead(INI_FILE, "Hotkeys", key, config.defaultHotkey)
-                Hotkeys.Set(key, val)
-        
-                if (config.HasProp("pixelSelect") and config.pixelSelect) {
-                    if (config.HasProp("vars") and config.vars.Length > 0) {
-                        for index, var in config.vars {
-                            extraValue := IniRead(INI_FILE, "Pixels", var "Pixel", "")
-                            Extra.Set(var "Pixel", extraValue)
-                        }
-                    } else {
-                        extraValue := IniRead(INI_FILE, "Pixels", key "Pixel", "")
-                        Extra.Set(key "Pixel", extraValue)
-                    }
-                }
-
-                if (key == "HighlightShopItems") {
-                    extraValue := IniRead(INI_FILE, "Extra", key, "-\\w-.-|(-\\w){4}|(-\\w){5}|[gr]-[gr]-[gr]|nne|rint")
-                    Extra.Set(key, extraValue)
-                }
-
-                if (val && key == "KillSwitch") {
-                    HotIf()
-                    Hotkey("*" val, config.func)
-                } else {
-                    HotIfWinActive(Game.Title)
-                    Hotkey("*" val, config.func)
-                }
-
-                continue
-            }
-            
-            if (config.section == "Options") {
-                val := IniRead(INI_FILE, "Options", key, 0)
-                Hotkeys.Set(key, val)
-
-                if (key == "CenterUI" and val == 1 and Game.AllowCenterUI) {
-                    Game.CenterUi := true
-                } else {
-                    Game.CenterUi := false
-                }
-
-                continue
-            }
-
-            if (config.section == "Toggle") {
-                val := IniRead(INI_FILE, "Toggle", key, 0)
-                Hotkeys.Set(key, val)
-
-                HotIfWinActive(Game.Title)
-                if (val == 1) {
-                    if (key == "ToggleCtrl") {
-                        Hotkey("*Ctrl", config.func)
-                    }
-                    if (key == "ToggleShift") {
-                        Hotkey("*Shift", config.func)
-                    }
-                }
-
-                continue
-            }
-        }
-
-        if (Hotkeys["ToggleCtrl"] == 1 and Hotkeys["ToggleShift"] == 0) {
-            HotIfWinActive(Game.Title)
-            Hotkey("*Shift", ResetToggle)
-        }
-        if (Hotkeys["ToggleCtrl"] == 0 and Hotkeys["ToggleShift"] == 1) {
-            HotIfWinActive(Game.Title)
-            Hotkey("*Ctrl", ResetToggle)
-        }
-
-        if (Hotkeys["ToggleCtrl"] == 1 or Hotkeys["ToggleShift"] == 1) {
-            HotIfWinActive(Game.Title)
-            Hotkey("#LWin", ResetToggle)
-            HotIfWinActive(Game.Title)
-            Hotkey("~*LWin", ResetToggleWin)
-            HotIfWinActive(Game.Title)
-            Hotkey("*Esc", ResetToggleEsc)
-            ; HotIfWinActive(Game.Title)
-            ; Hotkey("*Space", ResetToggleSpace)
-        }
-    } catch Error as e {
-        MsgBox("An error occurred while running the script:`n`n"
-            . "Error: " e.what "`n"
-            . "Details: " e.message "`n"
-            . "File: " e.file "`n"
-            . "Line: " e.line "`n"
-            . (e.extra ? "Additional Info: " e.extra "`n" : ""), "Error", 16
-        )
-        KillSwitch()
-    }
-}
-
-CreateOverlay() {
+CreateToggleOverlay() {
     global OverlayGui, CtrlLabel, ShiftLabel, SpamLabel
 
     if (IsSet(OverlayGui)) {
         return
     }
 
-    if (Hotkeys["ToggleCtrl"] or Hotkeys["ToggleShift"] or Hotkeys["CtrlClickSpamToggle"]) {
+    if (Hotkeys["ToggleCtrl"] or Hotkeys["ToggleShift"] or Hotkeys["CtrlClickSpamToggle"] or Hotkeys["ToggleCtrlKeybind"] or Hotkeys["ToggleShiftKeybind"]) {
         OverlayGui := Gui()
         OverlayGui.Title := "Toggle Overlay"
         OverlayGui.BackColor := "Black"
         OverlayGui.Opt("-Caption +AlwaysOnTop +ToolWindow +E0x20")
         WinSetTransColor(OverlayGui.BackColor " 150", OverlayGui)
         CtrlLabel := OverlayGui.Add("Text", "x10 y10 w" Game.OverlayWidth / 2 " h30 vCtrlLabel", "Ctrl: OFF")
-        CtrlLabel.SetFont("cWhite s12 w700 q4")
+        CtrlLabel.SetFont("cWhite s12 w700 q2")
         ShiftLabel := OverlayGui.Add("Text", "x10 y40 w" Game.OverlayWidth / 2 " h30 vShiftLabel", "Shift: OFF")
-        ShiftLabel.SetFont("cWhite s12 w700 q4")
+        ShiftLabel.SetFont("cWhite s12 w700 q2")
         SpamLabel := OverlayGui.Add("Text", "x" Game.OverlayWidth / 2 " y10 w" Game.OverlayWidth / 2 " h30 vSpam")
-        SpamLabel.SetFont("cRed s12 w700 q4")
+        SpamLabel.SetFont("cRed s12 w700 q2")
     }
 }
-ShowOverlay() {
-    global OverlayGui
+ShowToggleOverlay() {
+    global OverlayGui, Extra
+    
     if (IsSet(OverlayGui)) {
-        OverlayGui.Show("x" Game.OverlayPosX " y" Game.OverlayPosY " w" Game.OverlayWidth " h" Game.OverlayHeight " NoActivate")
+        val := Extra.Get("ToggleOverlayPositionPixel", "")
+        if (!val) {
+            val := Format("{}x{}", Game.OverlayPosX, Game.OverlayPosY)
+        }
+
+        resolution := ParseResolution(val)
+        if (!resolution) {
+            MsgBox("Invalid resolution for toggle overlay position. Please set a valid resolution in the format 'widthxheight' (e.g., 1920x1080).")
+            return
+        }
+
+        OverlayGui.Show("x" resolution.width " y" resolution.height " w" Game.OverlayWidth " h" Game.OverlayHeight " NoActivate")
     }
 }
-HideOverlay() {
+HideToggleOverlay() {
     global OverlayGui
 
     if (IsSet(OverlayGui)) {
         OverlayGui.Hide()
     }
 }
-; Functions
+
 ResetToggle(*) {
     global Hotkeys
 
-    if (Hotkeys["ToggleCtrl"] or Hotkeys["ToggleShift"] or Hotkeys["CtrlClickSpamToggle"]) {
-        StopSpam2()
+    if (Hotkeys["ToggleCtrl"] or Hotkeys["ToggleShift"] or Hotkeys["CtrlClickSpamToggle"] or Hotkeys["ToggleCtrlKeybind"] or Hotkeys["ToggleShiftKeybind"]) {
+        StopClickSpam()
         CtrlUp()
         ShiftUp()
     }
@@ -632,9 +877,14 @@ ResetToggleWin(*) {
 }
 
 ToggleCtrl(*) {
-    global CtrlToggled, ShiftToggled
+    global CtrlToggled
 
     ShiftUp()
+    spamState := StopClickSpam()
+    if (spamState) {
+        return
+    }
+
     if (!CtrlToggled) {
         CtrlDown()
     } else {
@@ -643,8 +893,9 @@ ToggleCtrl(*) {
 }
 
 ToggleShift(*) {
-    global CtrlToggled, ShiftToggled
+    global ShiftToggled
     
+    StopClickSpam()
     CtrlUp()
     if (!ShiftToggled) {
         ShiftDown()
@@ -685,44 +936,34 @@ ShiftUp() {
     ShiftToggled := false
 }
 
-StopSpam2() {
+StartCtrlClickSpam() {
     global ScrollSpam, SpamLabel
-    ScrollSpam := false
-    SpamLabel.Text := ""
-}
 
-StopSpam(keepToggled) {
-    global ScrollSpam, SpamLabel
-    ScrollSpam := false
-
-    Sleep(100) ;fixes if this func is programmed to wheelup/down
-    if (keepToggled == "ctrl") {
-        ShiftUp()
-    } else if (keepToggled == "shift") {
-        CtrlUp()
-    } else {
-        CtrlUp()
-        ShiftUp()
-    }
-    SpamLabel.Text := ""
-}
-
-StartSpam() {
-    global ScrollSpam, SpamLabel
     ScrollSpam := true
+    SpamLabel.Text := "SPAM!"
 
     ShiftUp()
     CtrlDown()
-    SpamLabel.Text := "SPAM!"
+    SetTimer(ClickSpam, Random(30, 50))
+}
 
-    fn() {
-        if (ScrollSpam) {
-            SendInput("{LButton}")
-        } else {
-            SpamLabel.Text := ""
-        }
-    }
-    SetTimer(fn, Random(30, 50))
+ClickSpam() {
+    SendInput("{LButton}")
+}
+
+StopClickSpam() {
+    global ScrollSpam, SpamLabel, CtrlToggled
+
+    savedState := ScrollSpam
+    ScrollSpam := false
+    SpamLabel.Text := ""
+    SetTimer(ClickSpam, 0)
+    return savedState
+}
+
+StopCtrlClickSpam() {
+    CtrlUp()
+    StopClickSpam()
 }
 
 CtrlClickSpamToggle(*) {
@@ -730,9 +971,9 @@ CtrlClickSpamToggle(*) {
     ScrollSpam := !ScrollSpam
 
     if (ScrollSpam) {
-        StartSpam()
+        StartCtrlClickSpam()
     } else {
-        StopSpam("")
+        StopCtrlClickSpam()
     }
 }
 
@@ -744,12 +985,12 @@ PerformDivinationTrading(*) {
 
 
     if (!Extra.Has(buttonPixelKey) or !Extra.Get(buttonPixelKey)) {
-        MsgBox("Set pixel for divination trade button. Use the Pixel Search button in Configuration Window.")
+        MsgBox("Set pixel for divination trade button. Use the Pixel Search button in settings (" Hotkeys["Settings"] ").")
         return
     }
 
     if (!Extra.Has(areaPixelKey) or !Extra.Get(areaPixelKey)) {
-        MsgBox("Set pixel for divination item area. Use the Pixel Search button in Configuration Window.")
+        MsgBox("Set pixel for divination item area. Use the Pixel Search button in settings (" Hotkeys["Settings"] ").")
         return
     }
 
@@ -847,29 +1088,29 @@ OpenCurrencyTab() {
 }
 
 CraftAlchemyOrb(*) {
-    CraftWithOrb("Alchemy Orb", "AlchemyOrbPixel")
+    CraftWithCurrency("Alchemy Orb", "AlchemyOrbPixel")
 }
 CraftOrbOfChance(*) {
-    CraftWithOrb("Orb of Chance", "OrbOfChancePixel")
+    CraftWithCurrency("Orb of Chance", "OrbOfChancePixel")
 }
 CraftOrbOfScouring(*) {
-    CraftWithOrb("Orb of Scouring", "OrbOfScouringPixel")
+    CraftWithCurrency("Orb of Scouring", "OrbOfScouringPixel")
 }
 ChaosOrb(*) {
-    CraftWithOrb("Chaos Orb", "ChaosOrbPixel")
+    CraftWithCurrency("Chaos Orb", "ChaosOrbPixel")
 }
 OrbOfTransmutation(*) {
-    CraftWithOrb("Orb of Transmutation", "OrbOfTransmutationPixel")
+    CraftWithCurrency("Orb of Transmutation", "OrbOfTransmutationPixel")
 }
 OrbOfAlteration(*) {
-    CraftWithOrb("Orb of Alteration", "OrbOfAlterationPixel")
+    CraftWithCurrency("Orb of Alteration", "OrbOfAlterationPixel")
 }
 
-CraftWithOrb(name, key) {
+CraftWithCurrency(name, key) {
     global mousePos
 
     if (!Extra.Has(key) or !Extra.Get(key)) {
-        MsgBox("Set pixel for " name ". Use the Pixel Search button in Configuration Window.")
+        MsgBox("Set pixel for " name ". Use the Pixel Search button in settings (" Hotkeys["Settings"] ").")
         return
     }
 
@@ -879,6 +1120,8 @@ CraftWithOrb(name, key) {
         return
     }
     
+    state := SaveToggleState()
+    ResetToggle()
     try {
         BlockInput("MouseMove")
         mousePos.SavePosition()
@@ -891,11 +1134,31 @@ CraftWithOrb(name, key) {
         Click("left")
     } finally {
         BlockInput("MouseMoveOff")
+        RestoreToggleState(state)
+    }
+}
+
+SaveToggleState() {
+    global CtrlToggled, ShiftToggled
+    return {ctrl: CtrlToggled, shift: ShiftToggled}
+}
+
+RestoreToggleState(state) {
+    global CtrlToggled, ShiftToggled
+    if (state.ctrl) {
+        CtrlDown()
+    } else {
+        CtrlUp()
+    }
+    if (state.shift) {
+        ShiftDown()
+    } else {
+        ShiftUp()
     }
 }
 
 ParseResolution(resolution) {
-    if (!resolution || !RegExMatch(resolution, "^\d+x\d+$")) {
+    if (!resolution || !RegExMatch(resolution, "^\d+(\.)?(\d+)?x\d+(\.)?(\d+)?$")) {
         return false
     }
 
@@ -917,7 +1180,7 @@ HighlightShopItems(*) {
 
     clipboard.Save()
     clipboard.Clear()
-    clipboard.Set(Extra.Get("HighlightShopItems", "-\\w-.-|(-\\w){4}|(-\\w){5}|[gr]-[gr]-[gr]|nne|rint"))
+    clipboard.Set(Extra.Get("HighlightShopItems", "(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|ll g"))
     
     SendInput("^f")
     clipboard.Paste()
@@ -989,7 +1252,7 @@ FillShipments(*) {
     }
 }
 SaveShipmentValues(ShipmentGui) {
-    global INI_FILE, ShipmentData
+    global ShipmentData
     controls := ShipmentGui.Submit()
 
      for data in ShipmentData {
@@ -998,7 +1261,7 @@ SaveShipmentValues(ShipmentGui) {
     LoadShipmentValues()
 }
 LoadShipmentValues() {
-     global INI_FILE, ShipmentData
+     global ShipmentData
 
     for data in ShipmentData {
         shipmentValue := IniRead(INI_FILE, "Shipment", data.var, 0)
@@ -1007,7 +1270,7 @@ LoadShipmentValues() {
 }
 openSettlersShipmentUI(*) {
     global ShipmentData
-    ShipmentGui := Gui(, "Shipment Manager")
+    ShipmentGui := Gui("+AlwaysOnTop", "Shipment Manager")
     x := 10
     y := 20
     w := 100
@@ -1026,15 +1289,17 @@ openSettlersShipmentUI(*) {
 
 LoadConfigurations()
 LoadShipmentValues()
-CreateOverlay()
+CreateToggleOverlay()
+CreateHUD()
 
+global clientFilePath
 global clientFile
 
 Main() {
-    global Game, clientFile
+    global Game, clientFilePath
 
     if (!Game.GameClientExists()) {
-        HideOverlay()
+        HideToggleOverlay()
         Game := GameInfo()
     }
     CoordMode("Menu", "Client")
@@ -1042,27 +1307,10 @@ Main() {
 
     WinWaitActive(Game.Hwnd)
     if (Game.GameClientExists()) {
-        ShowOverlay()
+        ShowToggleOverlay()
     }
-    
-    FindPoELogFile() {
-        ProcessPath := ProcessGetPath(Game.PID)
-        logFilePath := RegExReplace(ProcessPath, "\\[^\\]*$", "\logs\Client.txt")
-
-        if FileExist(logFilePath) {
-            return logFilePath
-        }
-    
-        return ""
-    }
-    logFile := FindPoELogFile()  ; Adjust path if needed
-
-    if (logFile) {
-        ; Open the file in read mode without locking it
-        clientFile := FileOpen(logFile, "r")
-        clientFile.Seek(0, 2)  ; Move to the end of the file
-        SetTimer(ReadLogFile, 1000)  ; Call ReadLogFile every 1000ms (1 second)
-    }
+    GetPoEClientFilePath()
+    AttemptToReadClientFile()
 
     if (WinWaitNotActive(Game.Hwnd)) {
         ResetToggle()
@@ -1071,6 +1319,33 @@ Main() {
 }
 Main()
 
+GetPoEClientFilePath() {
+    global clientFilePath
+
+    if (IsSet(clientFilePath) and clientFilePath) {
+        return
+    }
+
+    ProcessPath := ProcessGetPath(Game.PID)
+    logFilePath := RegExReplace(ProcessPath, "\\[^\\]*$", "\logs\Client.txt")
+
+    if FileExist(logFilePath) {
+        clientFilePath := logFilePath
+    }
+}
+AttemptToReadClientFile() {
+    global clientFilePath, clientFile
+
+    if (!IsSet(clientFile) and clientFilePath) {
+        ; Open the file in read mode without locking it
+        clientFile := FileOpen(clientFilePath, "r")
+    }
+
+    if (clientFile) {
+        clientFile.Seek(0, 2)  ; Move to the end of the file
+        SetTimer(ReadLogFile.Bind(clientFile), 1000)  ; Call ReadLogFile every 1000ms (1 second)
+    }
+}
 MatchPoe2Lines(line) {
     if (RegExMatch(line, "Generating level \d+ area `"(?:C_)?G\d_town|.*Hideout.*`"")) {
         return true
@@ -1083,8 +1358,8 @@ MatchPoe1Lines(line) {
     }
     return false
 }
-ReadLogFile() {
-    global clientFile, Confgis, Hotkeys
+ReadLogFile(clientFile) {
+    global Configs, Hotkeys
 
     if !IsObject(clientFile) {
         return  ; Ensure the file object is valid
@@ -1095,13 +1370,13 @@ ReadLogFile() {
             ResetToggle()
 
             if (MatchPoe1Lines(newLines) or MatchPoe2Lines(newLines)) {
-                for key, config in Confgis.OwnProps() {
+                for key, config in Configs.OwnProps() {
                     if (config.toggleOnInstance and Hotkeys[key]) {
                         Hotkey("*" Hotkeys[key], config.func, "On")
                     }
                 }
             } else {
-                for key, config in Confgis.OwnProps() {
+                for key, config in Configs.OwnProps() {
                     if (config.toggleOnInstance and Hotkeys[key]) {
                         Hotkey("*" Hotkeys[key], config.func, "Off")
                     }

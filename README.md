@@ -4,11 +4,11 @@ Feeling strain, exile?
 
 ## Motivation
 
-Lately, I've been experiencing discomfort in my left pinky from frequently pressing modifier keys. To alleviate this, I created a small script that holds modifier keys (such as CTRL and SHIFT) for me. Over time, I expanded the tool to automate other repetitive tasks, giving my hands a break. My goal is not to automate anything that could compromise the integrity of the game, but simply to make the experience more comfortable and enjoyable without the pain. This tool is intended for anyone who faces similar issues, especially as they deal with the strain that can come with age.
+For a long time, I've been experiencing discomfort in my left pinky from frequently having to press modifier keys. To alleviate this, I created a small script that toggles modifier keys (CTRL and SHIFT). Over time, I expanded the tool to hotkey other repetitive tasks to give my hands a break. My goal is not to hotkey anything that could compromise the integrity of the game, but simply to make the experience more comfortable and enjoyable without the pain. This tool is intended for anyone who faces similar issues, especially as they deal with the strain that can come with age.
 
-I know this tool is in the gray area, or some might say illegal. There are tools that can achieve same results but not within one tool. You'd have to use multiple tools or even combine them. Morally I don't see the harm for being able to keep playing without discomfort or pain. As it allows me to enjoy the game, something I might otherwise have to give up due to discomfort. And personally I play only HC SSF, so I can't even affect other players.
+I know this tool is in the gray area. There are tools that can achieve same results but not within one tool. You'd have to use multiple tools or even combine them. Morally I don't see the harm for being able to keep playing without discomfort or pain. As it allows me to enjoy the game, something I might otherwise have to give up due to discomfort.
 
-That said, use at your own risk! The tool is designed to reduce strain on your hands, allowing you to play for longer in a day or over time.
+That said, use at your own risk! The tool is designed to reduce strain on your hands, allowing you to play comfortably for longer periods, whether in a single session or over time.
 
 ## Requirements
 
@@ -31,10 +31,9 @@ Option 2:
 - Install [AHK2](https://www.autohotkey.com/)
 - Clone repository
 - Run QualityOfExile.ahk
-- Pull whenever new updates arrive
 
 Option 3:
-- Download .exe file (it will be recognized as virus)
+- Download [.exe file](https://github.com/TheMeteoRain/quality-of-exile/releases) (it will be recognized as virus)
 - Run it
 
 ## Features
@@ -202,6 +201,9 @@ Press the keybind once to hold SHIFT. Press it again to release SHIFT.
 
 Use cases:
 - Use crafting items continuously (e.g. alterations, jewellers, fusings) without needing to hold SHIFT yourself
+
+### Logout
+Close TCP connections of Path of Exile process.
 
 
 ## Support
