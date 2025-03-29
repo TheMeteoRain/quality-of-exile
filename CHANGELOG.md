@@ -19,19 +19,19 @@ All notable changes to this project will be documented in this file.
 ## [0.1.0-beta.7] - 2025-03-29
 
 ### Added
-- Logout macro.
+- Introduced a logout macro for quick character logout.
 - Enabled rebinding of SHIFT and CTRL modifier keys.
-- Select position for toggle overlay.
+- Added the ability to reposition the toggle overlay.
 
 ### Changed
-- Currency hotkeys now works even when a modifier key is toggled.
-- Toggle overlay defaults to bottom right corner.
-- UI layout.
-- Script has to run in admin to work properly. Mainly because of logout macro.
+- Currency hotkeys now function correctly even when a modifier key is toggled.
+- The toggle overlay now defaults to the bottom-right corner of the game.
+- Improved the overall UI layout for better clarity and usability.
+- The script now requires administrative privileges to run properly, primarily due to the logout macro functionality.
 
 ### Fixed
-- Fixed an issue where custom RegExp values were not being saved correctly.
-- Resolved an issue where Ctrl Click Spam was not properly canceled when another toggle was pressed.
+- Resolved an issue where custom RegExp values were not being saved correctly.
+- Fixed a bug where Ctrl Click Spam was not properly canceled when another toggle was activated.
 
 ## [0.1.0-beta.6] - 2025-03-26
 
