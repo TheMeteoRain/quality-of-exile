@@ -751,7 +751,7 @@ DoNothing(*) {
 WatchCursor(&SelectedX, &SelectedY, name, *) {
     ; Get the current mouse position
     
-    CoordMode("Mouse", "Window")
+    CoordMode("Mouse", "Screen")
     MouseGetPos(&SelectedX, &SelectedY)
     
     ; Update the tooltip with the current coordinates
