@@ -13,11 +13,11 @@ That said, use at your own risk! The tool is designed to reduce strain on your h
 ## Requirements
 
 - Windows PC
-- Path of Exile must be set to Windowed Full Screen
 
 ## Caveats
 
-The tool should work with Path of Exile 2, but it has not been tested.
+- Should work with Path of Exile 2, but it has not been tested thoroughly.
+- Game must be on your primary monitor.
 
 ## Installation
 
@@ -43,11 +43,13 @@ Option 3:
   - Instead of holding modifier keys (SHIFT and CTRL) continuously, you can toggle them on or off as needed.
   - When toggling modifier keys, an overlay will display their current status. By default, this overlay appears in the bottom-right corner of the game. However, it is recommended to reposition it via the settings. The overlay is designed to fit above your flasks but can be placed anywhere you prefer.
 - **Automatic Toggle Reset**
-  - Automatically resets any toggles left ON when pressing ALT+TAB, the Windows key, or ESC. Toggles are also reset when entering a new area, so you don’t have to manually turn them OFF.
+  - Automatically resets any toggles left ON when pressing ALT+TAB, the Windows key, or ESC.
+  - Automatically resets any toggles left ON when entering a new area or when the game window is not active
   - Uses local `Client.txt` file.
 - **Dynamic Hotkeys**
-  - Dynamic Hotkeys are dynamically enabled or disabled based on the player's current location.
-  - For example, you can assign numbers (1, 2, 3, 4, 5) to Dynamic Hotkeys. These keys will perform their normal functions in combat areas but will execute alternate actions in towns. This allows you to effectively "double-bind" keys for different contexts.
+  - Dynamic Hotkeys allow keys to serve dual purposes based on your current location in the game. 
+  - For example, you can assign numbers (1, 2, 3, 4, 5) to Dynamic Hotkeys. In combat areas, these keys perform their default actions (e.g., using flasks). In towns, they execute specific macros (e.g., crafting). This effectively lets you "double-bind" keys for different contexts.
+  - Dynamic Hotkeys are clearly marked in the list below.
   - Uses local `Client.txt` file.
 - **Pixel Selection**
   - Allows you to select specific pixels where a hotkey will be triggered.
@@ -65,7 +67,7 @@ Here is a small gif to show how to reposition toggle overlay
 
 ## Hotkeys
 
-### Logout
+### Logout Macro
 Close TCP connections of Path of Exile process.
 
 ### Toggle CTRL
