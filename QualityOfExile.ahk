@@ -1,4 +1,4 @@
-#Requires AutoHotkey v2.0
+﻿#Requires AutoHotkey v2.0
 #SingleInstance Force
 #MaxThreadsPerHotkey 2
 #Include "MousePositionSaver.ahk"
@@ -515,10 +515,10 @@ Settings(*) {
             if (key == "ToggleOverlayPosition") {
                 pixelSearchCtrls(config, key, "", x, y+rowSize-reduceGap, x, y+rowSize*2-reduceGap)
             } else {
-            HotkeyGui.Add("Text", Format("x{} y{} w{}", x, y+rowSize+4-reduceGap, w), "Enabled")
-            control := HotkeyGui.Add("Checkbox", Format("v{} x{} y{}", key, x+45, y+4+rowSize-reduceGap))
-            control.Value := Hotkeys.Get(key, 0)
-            control.Tooltip := config.tooltip
+                HotkeyGui.Add("Text", Format("x{} y{} w{}", x, y+rowSize+4-reduceGap, w), "Enabled")
+                control := HotkeyGui.Add("Checkbox", Format("v{} x{} y{}", key, x+45, y+4+rowSize-reduceGap))
+                control.Value := Hotkeys.Get(key, 0)
+                control.Tooltip := config.tooltip
             }
         }
     }
@@ -702,22 +702,22 @@ LoadConfigurations() {
 
 SelectPixel(control, pixelTextControl, config, *) {
     try {
-    SelectedX := 0
-    SelectedY := 0
+        SelectedX := 0
+        SelectedY := 0
         name := config.name
 
-    HotkeyGui.Hide()
+        HotkeyGui.Hide()
         WinActivate(Game.HWND)
 
-    if (config.HasProp("vars") and config.vars.Length > 0) {
-        if (control.Name == "TradeDivinationCardButtonPixelSelect") {
-            name := "Trade Divination Card Button"
-        } else if (control.Name == "TradeDivinationCardItemAreaPixelSelect") {
-            name := "Trade Divination Card Item Area"
+        if (config.HasProp("vars") and config.vars.Length > 0) {
+            if (control.Name == "TradeDivinationCardButtonPixelSelect") {
+                name := "Trade Divination Card Button"
+            } else if (control.Name == "TradeDivinationCardItemAreaPixelSelect") {
+                name := "Trade Divination Card Item Area"
+            }
         }
-    }
-
-    WatchCursorBind := WatchCursor.Bind(&SelectedX, &SelectedY, name)
+    
+        WatchCursorBind := WatchCursor.Bind(&SelectedX, &SelectedY, name)
 
         SetTimer(WatchCursorBind, 15)
         Hotkey("*Esc", DoNothing, "On")
