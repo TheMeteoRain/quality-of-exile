@@ -755,7 +755,7 @@ WatchCursor(&SelectedX, &SelectedY, name, *) {
     MouseGetPos(&SelectedX, &SelectedY)
     
     ; Update the tooltip with the current coordinates
-    ToolTip("`nSelect pixel for: " name "`nCurrent Mouse Position: X = " SelectedX ", Y = " SelectedY "`nClick to confirm.")
+    ToolTip("`nSelect pixel for: " name "`nCurrent Mouse Position: X = " SelectedX ", Y = " SelectedY "`nClick to confirm.`nEsc to cancel.")
 }
 
 onChangeDropdownToHotkey(hotkey, Control, *) {
