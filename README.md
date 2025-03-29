@@ -39,12 +39,15 @@ Option 3:
 ## Features
 - **Read Local Client.txt File**
   - Leverages the `Client.txt` file from Path of Exile 1 or 2 to enable advanced features.
+- **Toggle Modifier Keys**
+  - Instead of holding modifier keys (SHIFT and CTRL) continuously, you can toggle them on or off as needed.
+  - When toggling modifier keys, an overlay will display their current status. By default, this overlay appears in the bottom-right corner of the game. However, it is recommended to reposition it via the settings. The overlay is designed to fit above your flasks but can be placed anywhere you prefer.
+- **Automatic Toggle Reset**
+  - Automatically resets any toggles left ON when pressing ALT+TAB, the Windows key, or ESC. Toggles are also reset when entering a new area, so you don’t have to manually turn them OFF.
+  - Uses local `Client.txt` file.
 - **Dynamic Hotkeys**
   - Dynamic Hotkeys are dynamically enabled or disabled based on the player's current location.
   - For example, you can assign numbers (1, 2, 3, 4, 5) to Dynamic Hotkeys. These keys will perform their normal functions in combat areas but will execute alternate actions in towns. This allows you to effectively "double-bind" keys for different contexts.
-  - Uses local `Client.txt` file. 
-- **Automatic Toggle Reset**
-  - Automatically resets any toggles left ON when pressing ALT+TAB, the Windows key, or ESC. Toggles are also reset when entering a new area, so you don’t have to manually turn them OFF.
   - Uses local `Client.txt` file.
 - **Pixel Selection**
   - Allows you to select specific pixels where a hotkey will be triggered.
@@ -57,11 +60,38 @@ Option 3:
 
 To change keybinds, press F10 (default) to open the hotkey configuration window. You can customize this keybind to your preference. Note that all the keybinds must be pressed in-game, as this script doesn't recognize keys pressed outside of the game.
 
+Here is a small gif to show how to reposition toggle overlay
+![setting toggle overlay](assets/overlay.gif)
+
 ## Hotkeys
+
+### Logout
+Close TCP connections of Path of Exile process.
+
+### Toggle CTRL
+Press the keybind once to hold CTRL. Press it again to release CTRL. You can also rebind CTRL to any key you want, maybe you have small macro keypad. My favourite is setting my mouse's side buttons to CTRL and SHIFT. So, I don't have to use pinky at all. 
+
+Use cases:
+- Move items from inventory to stash
+- Move items from stash to inventory
+- Pre-toggle before interacting with an NPC to trigger specific actions, such as opening the sell window or identifying items.
+
+### Toggle SHIFT
+Press the keybind once to hold SHIFT. Press it again to release SHIFT. You can also rebind SHIFT to any key you want, maybe you have small macro keypad. My favourite is setting my mouse's side buttons to CTRL and SHIFT. So, I don't have to use pinky at all. 
+
+Use cases:
+- Use crafting items continuously (e.g. alterations, jewellers, fusings) without needing to hold SHIFT yourself
+
+### Spam Ctrl Click
+Holds CTRL and spams left click. Press it again to stop.
+
+Use cases:
+- Rabidly move items to the stash
+- Loot items from ground (I don't recommend this, horrible user experience)
 
 ### Kill Switch
 Kill the tool. In case of there is a bug, you can press this to exit the app.
-By default: Insert
+By default: Home
 
 1. Press the assigned keybind. (only keybind that works outside of the game)
 
@@ -74,53 +104,6 @@ Travel to hideout by typing "/hideout".
 Travel to league specific area by typing e.g. "/kingsmarch".
 
 1. Press the assigned keybind. (in town)
-
-### Trade Full Stack of Divination Cards
-Trade divination cards for items.
-
-Setup:
-1. Select the pixel where the TRADE button is when trade window is open.
-2. Select the pixel where the ITEM AREA is when trade window is open.
-
-How to use:
-1. Open divination card trade window
-2. Hover over full stack of divination cards
-3. Press the assigned keybind.
-
-### Open Stacked Divination Deck
-Picks up one card from a stacked deck and drops it to the ground. This requires being in a location where dropping loot is allowed.
-
-1. Hover over the stacked divination deck in your inventory.
-2. Press the assigned keybind.
-
-### Drop Item From Inventory
-Drops an item to the ground. You need to be in a location that allows you to drop loot.
-
-1. Hover over the item in your inventory.
-2. Press the assigned keybind.
-
-### Fill Shipments
-Automatically fill the numerical values for shipments.
-
-1. Select the first value of shipments table (Crimson Iron Ore)
-2. Press the assigned keybind.
-
-### Enter RegExp
-Inputs RegExp into any window with search functionality.
-
-1. Open a window with search functionality.
-2. Press the assigned keybind.
-
-**Default RegExp:**
-`(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|ll g`
-
-This default RegExp is designed to target:
-- 4-6 linked items.
-- 6-socket items.
-- +1 wands.
-- Movement speed boots.
-
-You can customize the RegExp to suit your specific needs, enabling you to search for items with your own criteria.
 
 ### Orb of Transmutation (Dynamic Hotkey)
 Uses Orb of Transmutation on the item you are hovering over. You need to have the currency tab open while doing this.
@@ -182,29 +165,52 @@ How to use:
 1. Hover over item in inventory
 2. Press the assigned keybind.
 
-### Spam Ctrl Click
-Holds CTRL and spams left click. Press it again to stop.
+### Trade Full Stack of Divination Cards
+Trade divination cards for items.
 
-Use cases:
-- Rabidly move items to the stash
-- Loot items from ground (I don't recommend this, horrible user experience)
+Setup:
+1. Select the pixel where the TRADE button is when trade window is open.
+2. Select the pixel where the ITEM AREA is when trade window is open.
 
-### Toggle CTRL
-Press the keybind once to hold CTRL. Press it again to release CTRL. This is useful when you need more precision when moving items between stash and inventory.
+How to use:
+1. Open divination card trade window
+2. Hover over full stack of divination cards
+3. Press the assigned keybind.
 
-Use cases:
-- Move items from inventory to stash
-- Move items from stash to inventory 
+### Open Stacked Divination Deck
+Picks up one card from a stacked deck and drops it to the ground. This requires being in a location where dropping loot is allowed.
 
-### Toggle SHIFT
-Press the keybind once to hold SHIFT. Press it again to release SHIFT.
+1. Hover over the stacked divination deck in your inventory.
+2. Press the assigned keybind.
 
-Use cases:
-- Use crafting items continuously (e.g. alterations, jewellers, fusings) without needing to hold SHIFT yourself
+### Drop Item From Inventory
+Drops an item to the ground. You need to be in a location that allows you to drop loot.
 
-### Logout
-Close TCP connections of Path of Exile process.
+1. Hover over the item in your inventory.
+2. Press the assigned keybind.
 
+### Fill Shipments
+Automatically fill the numerical values for shipments.
+
+1. Select the first value of shipments table (Crimson Iron Ore)
+2. Press the assigned keybind.
+
+### Enter RegExp
+Inputs RegExp into any window with search functionality.
+
+1. Open a window with search functionality.
+2. Press the assigned keybind.
+
+**Default RegExp:**
+`(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|ll g`
+
+This default RegExp is designed to target:
+- 4-6 linked items.
+- 6-socket items.
+- +1 wands.
+- Movement speed boots.
+
+You can customize the RegExp to suit your specific needs, enabling you to search for items with your own criteria.
 
 ## Support
 If Quality of Exile has helped you play more comfortably and you'd like to show your appreciation, consider buying me a coffee! The tool doesn't make any HTTP calls, so I can’t track its usage. So, supporting this way is the only way I know it's being used. If you'd like to support the project, please consider starring the project or supporting via the link below.
