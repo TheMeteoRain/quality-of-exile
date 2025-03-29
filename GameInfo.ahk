@@ -51,7 +51,7 @@ class GameInfo {
         this.ScreenHeight := A_ScreenHeight
         this.GameWidth := width >= this.GameMaxWidth ? this.GameMaxWidth : width
         this.GameHeight := height
-        this.BlackBarSize := this.ScreenWidth - this.GameMaxWidth == 0 ? 0 : (this.ScreenWidth - this.GameMaxWidth) / 2
+        this.BlackBarSize := this.Windowed ? 0 : (this.ScreenWidth - this.GameWidth == 0 ? 0 : (this.ScreenWidth - this.GameWidth) / 2)
         this.OverlayPosX := this.GamePosX + this.BlackBarSize + this.GameWidth - this.OverlayWidth
         this.OverlayPosY := this.GamePosY + this.GameHeight - this.OverlayHeight
 
