@@ -701,12 +701,14 @@ LoadConfigurations() {
 
 
 SelectPixel(control, pixelTextControl, config, *) {
+    try {
     SelectedX := 0
     SelectedY := 0
+        name := config.name
 
     HotkeyGui.Hide()
+        WinActivate(Game.HWND)
 
-    name := config.name
     if (config.HasProp("vars") and config.vars.Length > 0) {
         if (control.Name == "TradeDivinationCardButtonPixelSelect") {
             name := "Trade Divination Card Button"
@@ -717,18 +719,33 @@ SelectPixel(control, pixelTextControl, config, *) {
 
     WatchCursorBind := WatchCursor.Bind(&SelectedX, &SelectedY, name)
 
-    try {
-        SetTimer(WatchCursorBind, 5)
+        SetTimer(WatchCursorBind, 15)
+        Hotkey("*Esc", DoNothing, "On")
+        Hotkey("*LButton", DoNothing, "On")
 
-        KeyWait("LButton", "D")  ; Wait for the left mouse button to be pressed
+        loop {
+            if GetKeyState("Esc", "P") {
+                ; do nothing :)
+                break
+            }
+            if GetKeyState("LButton", "P") {
+                pixelTextControl.Value := SelectedX "x" SelectedY
+                break
+            }
+            Sleep(10)
+        }
         SetTimer(WatchCursorBind, 0)  ; Turn off the timer after the click
         ToolTip()  ; Remove the tooltip
-
-        pixelTextControl.Value := SelectedX "x" SelectedY
     } finally {
-        BlockInput("Off")
+        Sleep(100) ; delay deactivations a bit to prevent still getting triggered
+        Hotkey("*Esc", DoNothing, "Off")
+        Hotkey("*LButton", DoNothing, "Off")
         HotkeyGui.Show()
     }
+}
+
+DoNothing(*) {
+    return
 }
 
 WatchCursor(&SelectedX, &SelectedY, name, *) {
