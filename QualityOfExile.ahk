@@ -443,7 +443,7 @@ Settings(*) {
 
     pixelSearchCtrls(conf, key, options, x1, y1, x2, y2) {
         HotkeyGui.Add("Text", Format("x{} y{} w{}", x1, y1+4, w), "Px")
-        pixelTextCtrl := HotkeyGui.Add("Edit", Format("v{}Pixel x{} y{} w{} +Center {}", key, x1+20, y1, w-10, options), Extra.Get(key "Pixel", ""))
+        pixelTextCtrl := HotkeyGui.Add("Edit", Format("v{}Pixel x{} y{} w{} +Center {}", key, x1+20, y1, w-10, options), Extra.Get(key, ""))
         if (key == "ToggleOverlayPosition" and !pixelTextCtrl.Value) {
             pixelTextCtrl.Value := Format("{}x{}", Game.OverlayPosX, Game.OverlayPosY)
         } 
@@ -514,13 +514,12 @@ Settings(*) {
         if (config.section == "Options" or config.section == "Toggle") {
             if (key == "ToggleOverlayPosition") {
                 pixelSearchCtrls(config, key, "", x, y+rowSize-reduceGap, x, y+rowSize*2-reduceGap)
-                continue
-            }
+            } else {
             HotkeyGui.Add("Text", Format("x{} y{} w{}", x, y+rowSize+4-reduceGap, w), "Enabled")
             control := HotkeyGui.Add("Checkbox", Format("v{} x{} y{}", key, x+45, y+4+rowSize-reduceGap))
             control.Value := Hotkeys.Get(key, 0)
             control.Tooltip := config.tooltip
-            continue
+            }
         }
     }
 
@@ -550,6 +549,15 @@ SaveConfigurations(*) {
 
     for key in controls.OwnProps() {
         found := Configs.HasProp(key)
+
+        ; duplication - fix me
+        if (key == "ToggleOverlayPositionPixel") {
+            var := "ToggleOverlayPosition"
+            val := controls.%var "Pixel"%
+            IniWrite(val, INI_FILE, "Pixels", var)
+            Extra.Set(var, val)
+            continue
+        }
 
         if (!found) {
             if (InStr(key, "_extra")) {
@@ -609,11 +617,11 @@ LoadConfigurations() {
                 if (config.HasProp("vars") and config.vars.Length > 0) {
                     for index, var in config.vars {
                         extraValue := IniRead(INI_FILE, "Pixels", var, "")
-                        Extra.Set(var "Pixel", extraValue)
+                        Extra.Set(var, extraValue)
                     }
                 } else {
                     extraValue := IniRead(INI_FILE, "Pixels", key, "")
-                    Extra.Set(key "Pixel", extraValue)
+                    Extra.Set(key, extraValue)
                 }
             }
 
@@ -819,7 +827,7 @@ ShowToggleOverlay() {
     global OverlayGui, Extra
     
     if (IsSet(OverlayGui)) {
-        val := Extra.Get("ToggleOverlayPositionPixel", "")
+        val := Extra.Get("ToggleOverlayPosition", "")
         if (!val) {
             val := Format("{}x{}", Game.OverlayPosX, Game.OverlayPosY)
         }
@@ -980,8 +988,8 @@ CtrlClickSpamToggle(*) {
 PerformDivinationTrading(*) {
     global CtrlToggled, mousePos
 
-    buttonPixelKey := "TradeDivinationCardButtonPixel"
-    areaPixelKey := "TradeDivinationCardItemAreaPixel"
+    buttonPixelKey := "TradeDivinationCardButton"
+    areaPixelKey := "TradeDivinationCardItemArea"
 
 
     if (!Extra.Has(buttonPixelKey) or !Extra.Get(buttonPixelKey)) {
@@ -1088,22 +1096,22 @@ OpenCurrencyTab() {
 }
 
 CraftAlchemyOrb(*) {
-    CraftWithCurrency("Alchemy Orb", "AlchemyOrbPixel")
+    CraftWithCurrency("Alchemy Orb", "AlchemyOrb")
 }
 CraftOrbOfChance(*) {
-    CraftWithCurrency("Orb of Chance", "OrbOfChancePixel")
+    CraftWithCurrency("Orb of Chance", "OrbOfChance")
 }
 CraftOrbOfScouring(*) {
-    CraftWithCurrency("Orb of Scouring", "OrbOfScouringPixel")
+    CraftWithCurrency("Orb of Scouring", "OrbOfScouring")
 }
 ChaosOrb(*) {
-    CraftWithCurrency("Chaos Orb", "ChaosOrbPixel")
+    CraftWithCurrency("Chaos Orb", "ChaosOrb")
 }
 OrbOfTransmutation(*) {
-    CraftWithCurrency("Orb of Transmutation", "OrbOfTransmutationPixel")
+    CraftWithCurrency("Orb of Transmutation", "OrbOfTransmutation")
 }
 OrbOfAlteration(*) {
-    CraftWithCurrency("Orb of Alteration", "OrbOfAlterationPixel")
+    CraftWithCurrency("Orb of Alteration", "OrbOfAlteration")
 }
 
 CraftWithCurrency(name, key) {
