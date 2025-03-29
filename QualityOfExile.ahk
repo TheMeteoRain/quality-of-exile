@@ -1,4 +1,4 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #SingleInstance Force
 #MaxThreadsPerHotkey 2
 #Include "MousePositionSaver.ahk"
@@ -720,8 +720,8 @@ SelectPixel(control, pixelTextControl, config, *) {
         WatchCursorBind := WatchCursor.Bind(&SelectedX, &SelectedY, name)
 
         SetTimer(WatchCursorBind, 15)
-        Hotkey("*Esc", DoNothing, "On")
-        Hotkey("*LButton", DoNothing, "On")
+        Hotkey("Esc", DoNothing, "On")
+        Hotkey("LButton", DoNothing, "On")
 
         loop {
             if GetKeyState("Esc", "P") {
@@ -734,13 +734,13 @@ SelectPixel(control, pixelTextControl, config, *) {
             }
             Sleep(10)
         }
+        Sleep(250)
         SetTimer(WatchCursorBind, 0)  ; Turn off the timer after the click
         ToolTip()  ; Remove the tooltip
     } finally {
-        Sleep(100) ; delay deactivations a bit to prevent still getting triggered
-        Hotkey("*Esc", DoNothing, "Off")
-        Hotkey("*LButton", DoNothing, "Off")
         HotkeyGui.Show()
+        Hotkey("Esc", DoNothing, "Off")
+        Hotkey("LButton", DoNothing, "Off")
     }
 }
 
