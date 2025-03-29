@@ -844,18 +844,14 @@ ShowToggleOverlay() {
     global OverlayGui, Extra
     
     if (IsSet(OverlayGui)) {
-        val := Extra.Get("ToggleOverlayPosition", "")
-        if (!val) {
-            val := Format("{}x{}", Game.OverlayPosX, Game.OverlayPosY)
-        }
-
+        val := Extra.Get("ToggleOverlayPosition", Format("{}x{}", Game.OverlayPosX, Game.OverlayPosY))
         resolution := ParseResolution(val)
         if (!resolution) {
             MsgBox("Invalid resolution for toggle overlay position. Please set a valid resolution in the format 'widthxheight' (e.g., 1920x1080).")
             return
         }
 
-        OverlayGui.Show("x" Game.GamePosX + resolution.width " y" Game.GamePosY + resolution.height " w" Game.OverlayWidth " h" Game.OverlayHeight " NoActivate")
+        OverlayGui.Show("x" resolution.width " y" resolution.height " w" Game.OverlayWidth " h" Game.OverlayHeight " NoActivate")
     }
 }
 HideToggleOverlay() {
