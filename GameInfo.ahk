@@ -24,6 +24,8 @@ class GameInfo {
     OverlayPosY := 0
     OverlayWidth := 200
     OverlayHeight := 75
+    HudPosX := 0
+    HudPosY := 0
 
     __New() {
         while (!this.HWND) {
@@ -54,7 +56,8 @@ class GameInfo {
         this.BlackBarSize := this.Windowed ? 0 : (this.ScreenWidth - this.GameWidth == 0 ? 0 : (this.ScreenWidth - this.GameWidth) / 2)
         this.OverlayPosX := this.GamePosX + this.BlackBarSize + this.GameWidth - this.OverlayWidth
         this.OverlayPosY := this.GamePosY + this.GameHeight - this.OverlayHeight
-
+        this.HudPosX := (this.GamePosX + this.GameWidth + this.BlackBarSize + (this.Windowed ? -9 : 0)) - 150
+        this.HudPosY := this.GamePosY + (this.Windowed ? 38 : 0)
         this.CalculatePositions()
     }
 

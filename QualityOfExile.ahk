@@ -1,4 +1,4 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #SingleInstance Force
 #MaxThreadsPerHotkey 2
 #Include "MousePositionSaver.ahk"
@@ -791,7 +791,7 @@ CreateHUD() {
     ctrl.SetFont("s6 q2")
 
     ; Show the GUI in a specific position
-    OverlayGui.Show("x" (Game.GamePosX + Game.GameWidth + Game.BlackBarSize + (Game.Windowed ? -9 : 0)) - 150 " y" Game.GamePosY + (Game.Windowed ? 38 : 0)  " w120 h40 NoActivate")  ; Position and size
+    OverlayGui.Show("x" Game.HudPosX " y" Game.HudPosY " w120 h40 NoActivate")  ; Position and size
 }
 
 CreateToggleOverlay() {
@@ -830,7 +830,7 @@ ShowToggleOverlay() {
             return
         }
 
-        OverlayGui.Show("x" resolution.width " y" resolution.height " w" Game.OverlayWidth " h" Game.OverlayHeight " NoActivate")
+        OverlayGui.Show("x" Game.GamePosX + resolution.width " y" Game.GamePosY + resolution.height " w" Game.OverlayWidth " h" Game.OverlayHeight " NoActivate")
     }
 }
 HideToggleOverlay() {
