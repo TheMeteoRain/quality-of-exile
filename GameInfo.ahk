@@ -79,6 +79,14 @@ class GameInfo {
         return WinExist(this.HWND)
     }
 
+    GameClientActive() {
+        WinWaitActive(this.Hwnd)
+    }
+
+    GameClientNotActive() {
+        return WinWaitNotActive(this.HWND)
+    }
+
     CalculatePositions() {
         if (this.GameWidth >= 2500 && this.GameWidth < 3400) {
             this.WideScreenPreset()

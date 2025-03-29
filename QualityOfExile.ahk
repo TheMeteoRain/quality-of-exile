@@ -43,7 +43,7 @@ if (!DEBUG) {
 global CtrlToggled := false
 global ShiftToggled := false
 global ScrollSpam := false
-global OverlayGui, CtrlLabel, ShiftLabel, SpamLabel, HotkeyGui
+global OverlayGui, CtrlLabel, ShiftLabel, SpamLabel, HotkeyGui, HUDGui
 global Game := GameInfo()
 global mousePos := MousePositionSaver()
 global clipboard := ClipboardSaver()
@@ -798,25 +798,34 @@ hasKey(arr, find) {
 }
 
 CreateHUD() {
-    global Hotkeys, Configs
+    global Hotkeys, Configs, HUDGui
 
-    ; Retrieve the hotkeys for the configuration window and kill switch
     configHotkey := Hotkeys.Has("Settings") ? Hotkeys["Settings"] : "Not Set"
     killSwitchHotkey := Hotkeys.Has("KillSwitch") ? Hotkeys["KillSwitch"] : "Not Set"
 
-    ; Create the overlay GUI
-    OverlayGui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20", "HUD")
-    OverlayGui.BackColor := "20283f"
-    WinSetTransColor("Black 150", OverlayGui)  ; Make the background transparent
+    HUDGui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20", "HUD")
+    HUDGui.BackColor := "20283f"
+    WinSetTransColor("Black 150", HUDGui)  ; Make the background transparent
 
-    ; Add text for the hotkeys
-    ctrl := OverlayGui.Add("Text", "x5 y5 h30 cWhite", "Settings: " configHotkey)
+    ctrl := HUDGui.Add("Text", "x5 y5 h30 cWhite", "Settings: " configHotkey)
     ctrl.SetFont("s6 q2")
-    ctrl := OverlayGui.Add("Text", "x5 y23 h30 cWhite", "Kill Switch: " killSwitchHotkey)
+    ctrl := HUDGui.Add("Text", "x5 y23 h30 cWhite", "Kill Switch: " killSwitchHotkey)
     ctrl.SetFont("s6 q2")
+}
 
-    ; Show the GUI in a specific position
-    OverlayGui.Show("x" Game.HudPosX " y" Game.HudPosY " w120 h40 NoActivate")  ; Position and size
+HideHud() {
+    global HUDGui
+
+    if (IsSet(OverlayGui)) {
+        HUDGui.Hide()
+    }
+}
+ShowHud() {
+    global HUDGui
+
+    if (IsSet(OverlayGui)) {
+        HUDGui.Show("x" Game.HudPosX " y" Game.HudPosY " w120 h40 NoActivate")
+    }
 }
 
 CreateToggleOverlay() {
@@ -1315,26 +1324,35 @@ CreateHUD()
 
 global clientFilePath
 global clientFile
+global count := 0
+global clientFileReadFunc
 
 Main() {
     global Game, clientFilePath
 
-    if (!Game.GameClientExists()) {
-        HideToggleOverlay()
-        Game := GameInfo()
+    Game := GameInfo()
+    if (Game.GameClientExists()) {
+        ShowToggleOverlay()
+        ShowHud()
     }
     CoordMode("Menu", "Client")
     CoordMode("Mouse", "Client")
 
-    WinWaitActive(Game.Hwnd)
-    if (Game.GameClientExists()) {
-        ShowToggleOverlay()
-    }
     GetPoEClientFilePath()
-    AttemptToReadClientFile()
+    ListenToClientFile()
 
-    if (WinWaitNotActive(Game.Hwnd)) {
+    if (!Game.GameClientExists()) {
+        HideToggleOverlay()
+        HideHud()
         ResetToggle()
+        UnlistenClientFile()
+        Main()
+    }
+    if (Game.GameClientNotActive()) {
+        HideToggleOverlay()
+        HideHud()
+        ResetToggle()
+        UnlistenClientFile()
         Main()
     }
 }
@@ -1354,17 +1372,26 @@ GetPoEClientFilePath() {
         clientFilePath := logFilePath
     }
 }
-AttemptToReadClientFile() {
-    global clientFilePath, clientFile
+ListenToClientFile() {
+    global clientFilePath, clientFile, clientFileReadFunc
 
     if (!IsSet(clientFile) and clientFilePath) {
         ; Open the file in read mode without locking it
         clientFile := FileOpen(clientFilePath, "r")
     }
 
-    if (clientFile) {
+    if (clientFile and !IsSet(clientFileReadFunc)) {
+        clientFileReadFunc := ReadLogFile.Bind(clientFile)
         clientFile.Seek(0, 2)  ; Move to the end of the file
-        SetTimer(ReadLogFile.Bind(clientFile), 1000)  ; Call ReadLogFile every 1000ms (1 second)
+        SetTimer(clientFileReadFunc, 1000)  ; Call ReadLogFile every 1000ms (1 second)
+    }
+}
+UnlistenClientFile() {
+    global clientFileReadFunc
+    
+    if (IsSet(clientFileReadFunc)) {
+        SetTimer(clientFileReadFunc, 0)
+        clientFileReadFunc := unset
     }
 }
 MatchPoe2Lines(line) {

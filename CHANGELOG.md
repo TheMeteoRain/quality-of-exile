@@ -11,7 +11,8 @@ All notable changes to this project will be documented in this file.
 -
 
 ### Fixed
--
+- Stop reading `Client.txt` when game does not exist or is not active.
+- Hide all overlays when game does not exist or is not active.
 
 ### Removed
 - 
