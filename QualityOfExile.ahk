@@ -391,19 +391,60 @@ KillSwitch(*) {
 }
 
 TerminateTCP(*) {
+    global LastExecutionTime
     Critical
+    
+    if (Debounce("TerminateTCP", 2000)) {
+        return
+    }
+
+    if (DEBUG) {
+        MsgBox("TCP connections terminated.")
+        return
+    }
+    
+    tempFile := cportsPath "\temp.txt"
+
     try {
         loop 5 {
             cportsCommand := Format("{} /close * * * * {}", cportsExecutable, Game.PID)
             Run(A_ComSpec . " /c " . cportsCommand, "", "Hide")
         }
 
-        if (DEBUG) {
-            MsgBox("TCP connections terminated.")
+        cportsCommand := Format("{} /filter include:process:{} /stext {}", cportsExecutable, Game.PID, tempFile)
+        Run(A_ComSpec . " /c " . cportsCommand, "", "Hide")
+
+        found := false
+        Loop 200 {
+            if (FileExist(tempFile)) {
+                found := true
+                break
+            }
+            Sleep(10)
+        }
+
+        if (found) {
+            if (FileGetSize(tempFile) > 0) {
+                ; if log file has content it, then the tcp connection is still alive, close the game
+                ProcessClose(Game.PID)
+                MsgBox("Could not terminate TCP connections with cports. Closing game to be safe. This should not happen. Send an issue in: " GithubLink)
+            }
+        } else {
+            ; if log file is not found then the cports commands did not work, close the game
+            ProcessClose(Game.PID)
+            MsgBox("Could not terminate TCP connections with cports. Closing game to be safe. This should not happen. Send an issue in: " GithubLink)
         }
     } catch Error as e {
+        ; close the game if something goes wrong
         ProcessClose(Game.PID)
-        LogError("Could not terminate TCP connections with cports", e)
+        LogError("Something went wrong when trying to close TCP connections. Closing game to be safe. This should not happen. Send an issue in: " GithubLink, e)
+    } finally {
+        Loop 20 {
+            if (FileExist(tempFile)) {
+                FileDelete(tempFile)
+            }
+            Sleep(100)
+        }
     }
 }
 
