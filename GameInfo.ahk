@@ -75,12 +75,19 @@ class GameInfo {
         }
     }
 
+    Reset() {
+        this.HWND := 0
+        this.PID := 0
+        this.ProcessPath := ""
+        this.Title := ""
+    }
+
     GameClientExists() {
         return WinExist(this.HWND)
     }
 
     GameClientActive() {
-        WinWaitActive(this.Hwnd)
+        return WinWaitActive(this.Hwnd)
     }
 
     GameClientNotActive() {

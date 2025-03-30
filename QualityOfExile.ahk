@@ -1,4 +1,4 @@
-#Requires AutoHotkey v2.0
+﻿#Requires AutoHotkey v2.0
 #SingleInstance Force
 #MaxThreadsPerHotkey 2
 #Include "MousePositionSaver.ahk"
@@ -1417,31 +1417,35 @@ Main() {
     global Game, clientFilePath
 
     Game := GameInfo()
+
     if (Game.GameClientExists()) {
         ShowToggleOverlay()
         ShowHud()
+        GetPoEClientFilePath()
+        ListenToClientFile()
     }
-    CoordMode("Menu", "Client")
-    CoordMode("Mouse", "Client")
 
-    GetPoEClientFilePath()
-    ListenToClientFile()
-
-    if (!Game.GameClientExists()) {
-        HideToggleOverlay()
-        HideHud()
-        ResetToggle()
-        UnlistenClientFile()
-        Main()
-    }
     if (Game.GameClientNotActive()) {
         HideToggleOverlay()
         HideHud()
         ResetToggle()
         UnlistenClientFile()
+
+        if (!Game.GameClientExists()) {
+            Game.Reset()
+        }
+
         Main()
     }
 }
+; Reset(*) {
+;     global game
+
+;     if (!Game.GameClientExists()) {
+;         Game.Reset()
+;         SetTimer(Reset, 0)
+;     }
+; }
 Main()
 
 GetPoEClientFilePath() {
