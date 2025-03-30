@@ -1,4 +1,4 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #SingleInstance Force
 #MaxThreadsPerHotkey 2
 #Include "MousePositionSaver.ahk"
@@ -6,6 +6,7 @@
 #Include "GameInfo.ahk"
 
 ScriptVersion := "0.1.0-beta.7"
+GithubLink := "https://github.com/TheMeteoRain/quality-of-exile"
 DEBUG := false
 
 if (A_Args.Length > 0) {
@@ -526,7 +527,7 @@ Settings(*) {
     TabControl.UseTab("")
 
     HotkeyGui.Add("Text", Format("x{} y{} w{} Center", 0, maxY, 200), "QualityOfExile version:`n" ScriptVersion)
-    HotkeyGui.Add("Link", Format("x{} y{} w{}", pX*2, maxY + 35, w), '<a href="https://github.com/TheMeteoRain/quality-of-exile">Github / Documentation</a>')
+    HotkeyGui.Add("Link", Format("x{} y{} w{}", pX*2, maxY + 35, w), Format('<a href="{}">Github / Documentation</a>', GithubLink))
 
     HotkeyGui.Add("Button", Format("x{} y{} w{} Default", 550/2-200/2, maxY, 200), "Save And Reload").OnEvent("Click", SaveConfigurations)
     HotkeyGui.Add("Button", Format("x{} y{} w{}", 550/2-200/2, maxY + rowSize, 200), "Close").OnEvent("Click", (*) => HotkeyGui.Destroy())
