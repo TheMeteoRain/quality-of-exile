@@ -1,12 +1,12 @@
 # Quality of Exile
 
-Feeling strain, exile?
+Feeling strained, exile?
 
 ## Motivation
 
-For a long time, I've been experiencing discomfort in my left pinky from frequently having to press modifier keys. To alleviate this, I created a small script that toggles modifier keys (CTRL and SHIFT). Over time, I expanded the tool to hotkey other repetitive tasks to give my hands a break. My goal is not to hotkey anything that could compromise the integrity of the game, but simply to make the experience more comfortable and enjoyable without the pain. This tool is intended for anyone who faces similar issues, especially as they deal with the strain that can come with age.
+For a long time, I've been experiencing discomfort in my left pinky from frequently having to hold modifier keys (CTRL and SHIFT). To alleviate this, I created a small script that toggles modifier keys. Over time, I expanded the tool to hotkey other repetitive tasks to give my hands a break from the constant wrist movements and click spamming. My goal is not to hotkey anything that could compromise the integrity of the game, but simply to make the experience more comfortable (mostly in towns) and enjoyable without the pain. This tool is intended for anyone who faces similar issues, especially as they deal with the strain that can come with age.
 
-I know this tool is in the gray area. There are tools that can achieve same results but not within one tool. You'd have to use multiple tools or even combine them. Morally I don't see the harm for being able to keep playing without discomfort or pain. As it allows me to enjoy the game, something I might otherwise have to give up due to discomfort.
+Like all tools of this nature, this one also falls into a gray area. There are tools that can achieve same results but not within one tool. You'd have to use multiple tools or even combine them. Morally I don't see the harm for being able to keep playing without discomfort or pain. Personally it allows me to enjoy the game more, something I might otherwise have to give up due to discomfort. I will be expanding the tool and adding features as I encounter them, but again I won't be automating anything. Game is supposed to be played yourself.
 
 That said, use at your own risk! The tool is designed to reduce strain on your hands, allowing you to play comfortably for longer periods, whether in a single session or over time.
 
@@ -16,8 +16,8 @@ That said, use at your own risk! The tool is designed to reduce strain on your h
 
 ## Caveats
 
-- Should work with Path of Exile 2, but it has not been tested thoroughly.
-- Game must be on your primary monitor.
+- Game must be on your primary monitor for the overlays to work, other things should work fine.
+- Should not be started while you are in combat area as Dynamic Hotkeys are enabled by default (read more below).
 
 ## Installation
 
@@ -43,13 +43,14 @@ Option 3:
   - Instead of holding modifier keys (SHIFT and CTRL) continuously, you can toggle them on or off as needed.
   - When toggling modifier keys, an overlay will display their current status. By default, this overlay appears in the bottom-right corner of the game. However, it is recommended to reposition it via the settings. The overlay is designed to fit above your flasks but can be placed anywhere you prefer.
 - **Automatic Toggle Reset**
-  - Automatically resets any toggles left ON when pressing ALT+TAB, the Windows key, or ESC.
-  - Automatically resets any toggles left ON when entering a new area or when the game window is not active
+  - Toggles are automatically reset when pressing ALT+TAB, the Windows key, or ESC.
+  - Toggles also reset upon entering a new area or when the game window loses focus.
   - Uses local `Client.txt` file.
 - **Dynamic Hotkeys**
   - Dynamic Hotkeys allow keys to serve dual purposes based on your current location in the game. 
-  - For example, you can assign numbers (1, 2, 3, 4, 5) to Dynamic Hotkeys. In combat areas, these keys perform their default actions (e.g., using flasks). In towns, they execute specific macros (e.g., crafting). This effectively lets you "double-bind" keys for different contexts.
+  - For example, you can assign numbers (1, 2, 3, 4, 5) to Dynamic Hotkeys. In combat areas, these keys perform their default actions (e.g. using flasks). In towns, they execute specific macros (e.g. crafting). This effectively lets you "double-bind" keys for different contexts. This is to combat keybind bloat.
   - Dynamic Hotkeys are clearly marked in the list below.
+  - When the tool starts, Dynamic Hotkeys are enabled by default, executing their corresponding macros. It will begin tracking location on the first loading screen.
   - Uses local `Client.txt` file.
 - **Pixel Selection**
   - Allows you to select specific pixels where a hotkey will be triggered.
@@ -62,7 +63,7 @@ Option 3:
 
 To change keybinds, press F10 (default) to open the hotkey configuration window. You can customize this keybind to your preference. Note that all the keybinds must be pressed in-game, as this script doesn't recognize keys pressed outside of the game.
 
-Here is a small gif to show how to reposition toggle overlay
+How to reposition toggle overlay:
 ![setting toggle overlay](assets/overlay.gif)
 
 ## Hotkeys
@@ -74,22 +75,21 @@ Close TCP connections of Path of Exile process.
 Press the keybind once to hold CTRL. Press it again to release CTRL. You can also rebind CTRL to any key you want, maybe you have small macro keypad. My favourite is setting my mouse's side buttons to CTRL and SHIFT. So, I don't have to use pinky at all. 
 
 Use cases:
-- Move items from inventory to stash
-- Move items from stash to inventory
-- Pre-toggle before interacting with an NPC to trigger specific actions, such as opening the sell window or identifying items.
+- Move items from inventory to stash.
+- Move items from stash to inventory.
+- Pre-toggle before interacting with an NPC to trigger specific actions, such as opening the sell window or identifying items (PoE2:The Hooded One).
 
 ### Toggle SHIFT
-Press the keybind once to hold SHIFT. Press it again to release SHIFT. You can also rebind SHIFT to any key you want, maybe you have small macro keypad. My favourite is setting my mouse's side buttons to CTRL and SHIFT. So, I don't have to use pinky at all. 
+Press the keybind once to hold SHIFT. Press it again to release SHIFT. You can also rebind SHIFT to any key you want, maybe you have small macro keypad. My favourite is setting my mouse's side buttons to CTRL and SHIFT. So, I don't have to use pinky at all.
 
 Use cases:
-- Use crafting items continuously (e.g. alterations, jewellers, fusings) without needing to hold SHIFT yourself
+- Use crafting items continuously (e.g. alterations, jewellers, fusings) without needing to hold down SHIFT yourself.
 
 ### Spam Ctrl Click
 Holds CTRL and spams left click. Press it again to stop.
 
 Use cases:
-- Rabidly move items to the stash
-- Loot items from ground (I don't recommend this, horrible user experience)
+- Rabidly move items to the stash.
 
 ### Kill Switch
 Kill the tool. In case of there is a bug, you can press this to exit the app.
@@ -114,7 +114,7 @@ Setup:
 1. Select the pixel where the Orb of Transmutation is located in the currency tab.
 
 How to use:
-1. Hover over item in inventory
+1. Hover over the item in your inventory.
 2. Press the assigned keybind.
 
 ### Orb of Alteration (Dynamic Hotkey)
@@ -134,7 +134,7 @@ Setup:
 1. Select the pixel where the Orb of Chance is located in the currency tab.
 
 How to use:
-1. Hover over item in inventory
+1. Hover over the item in your inventory.
 2. Press the assigned keybind.
 
 ### Alchemy Orb (Dynamic Hotkey)
@@ -144,7 +144,7 @@ Setup:
 1. Select the pixel where the Alchemy Orb is located in the currency tab.
 
 How to use:
-1. Hover over item in inventory
+1. Hover over the item in your inventory.
 2. Press the assigned keybind.
 
 ### Orb of Scouring (Dynamic Hotkey)
@@ -154,7 +154,7 @@ Setup:
 1. Select the pixel where the Orb of Scouring is located in the currency tab.
 
 How to use:
-1. Hover over item in inventory
+1. Hover over the item in your inventory.
 2. Press the assigned keybind.
 
 ### Chaos Orb (Dynamic Hotkey)
@@ -164,19 +164,19 @@ Setup:
 1. Select the pixel where the Chaos Orb is located in the currency tab.
 
 How to use:
-1. Hover over item in inventory
+1. Hover over the item in your inventory.
 2. Press the assigned keybind.
 
 ### Trade Full Stack of Divination Cards
 Trade divination cards for items.
 
 Setup:
-1. Select the pixel where the TRADE button is when trade window is open.
+1. Select the pixel where the TRADE BUTTON is when trade window is open.
 2. Select the pixel where the ITEM AREA is when trade window is open.
 
 How to use:
-1. Open divination card trade window
-2. Hover over full stack of divination cards
+1. Open divination card trade window.
+2. Hover over full stack of divination cards.
 3. Press the assigned keybind.
 
 ### Open Stacked Divination Deck
@@ -194,7 +194,11 @@ Drops an item to the ground. You need to be in a location that allows you to dro
 ### Fill Shipments
 Automatically fill the numerical values for shipments.
 
-1. Select the first value of shipments table (Crimson Iron Ore)
+Setup:
+1. Set the numerical values for each resource.
+
+How to use:
+1. Select the first value of shipments table (Crimson Iron Ore).
 2. Press the assigned keybind.
 
 ### Enter RegExp
@@ -203,8 +207,7 @@ Inputs RegExp into any window with search functionality.
 1. Open a window with search functionality.
 2. Press the assigned keybind.
 
-**Default RegExp:**
-`(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|ll g`
+Default RegExp: `(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|ll g`
 
 This default RegExp is designed to target:
 - 4-6 linked items.
@@ -215,7 +218,7 @@ This default RegExp is designed to target:
 You can customize the RegExp to suit your specific needs, enabling you to search for items with your own criteria.
 
 ## Support
-If Quality of Exile has helped you play more comfortably and you'd like to show your appreciation, consider buying me a coffee! The tool doesn't make any HTTP calls, so I can’t track its usage. So, supporting this way is the only way I know it's being used. If you'd like to support the project, please consider starring the project or supporting via the link below.
+If Quality of Exile has helped you play more comfortably and you'd like to show your appreciation, consider buying me a coffee! P.S. Accidentally spent way too much time on this.
 
 
 <a href="https://www.buymeacoffee.com/MeteoRain" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
