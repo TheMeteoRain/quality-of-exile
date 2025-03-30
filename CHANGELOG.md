@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
--
+- Introduced a debounce mechanism for hotkeys to prevent accidental multiple triggers, ensuring correct execution of hotkey actions.
 
 ### Changed
 -
