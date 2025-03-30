@@ -41,6 +41,13 @@ if (!DEBUG) {
 }
 
 ; Initialize variables
+global LastExecutionTime := {
+    TerminateTCP: 0,
+    CraftWithCurrency: 0,
+    PerformDivinationTrading: 0,
+    DropItem: 0,
+    OpenStackedDivinationDeck: 0,
+}
 global CtrlToggled := false
 global ShiftToggled := false
 global ScrollSpam := false
@@ -1011,9 +1018,14 @@ CtrlClickSpamToggle(*) {
 PerformDivinationTrading(*) {
     global CtrlToggled, mousePos
 
+    rand1 := Random(125, 175)
+    rand2 := Random(125, 175)
+    if (Debounce("PerformDivinationTrading", rand1+rand2)) {
+        return
+    }
+
     buttonPixelKey := "TradeDivinationCardButton"
     areaPixelKey := "TradeDivinationCardItemArea"
-
 
     if (!Extra.Has(buttonPixelKey) or !Extra.Get(buttonPixelKey)) {
         MsgBox("Set pixel for divination trade button. Use the Pixel Search button in settings (" Hotkeys["Settings"] ").")
@@ -1042,11 +1054,11 @@ PerformDivinationTrading(*) {
         ResetToggle()
     
         Send("^{Click}")
-        MouseMove(buttonResolution.width, buttonResolution.height, 25)
-        Sleep(Random(175, 225))
+        MouseMove(buttonResolution.width, buttonResolution.height, 0)
+        Sleep(rand1)
         Click("left")
-        MouseMove(areaResolution.width, areaResolution.height, 25)
-        Sleep(Random(175, 225))
+        MouseMove(areaResolution.width, areaResolution.height, 0)
+        Sleep(rand2)
         Send("^{Click}")
     
         mousePos.RestorePosition()
@@ -1059,19 +1071,21 @@ PerformDivinationTrading(*) {
 OpenStackedDivinationDeck(*) {
     global mousePos
 
+    if (Debounce("OpenStackedDivinationDeck", 175)) {
+        return
+    }
+
     try {
         ResetToggle()
         BlockInput("MouseMove")
         mousePos.SavePosition()
 
         Click("right")
-        MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY, 1)
-        Sleep(150)
+        MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY, 0)
+        Sleep(100)
         Click("left")
         Sleep(75)
-
         mousePos.RestorePosition()
-        Sleep(10)
     } finally {
         BlockInput("MouseMoveOff")
     }
@@ -1080,18 +1094,21 @@ OpenStackedDivinationDeck(*) {
 DropItem(*) {
     global mousePos, clipboard
 
+    if (Debounce("DropItem", 175)) {
+        return
+    }
+
     try {
         ResetToggle()
         BlockInput("MouseMove")
         mousePos.SavePosition()
     
         Click("left")
-        MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY, 1)
-        Sleep(150)
+        MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY, 0)
+        Sleep(100)
         Click("left")
         Sleep(75)
         mousePos.RestorePosition()
-        Sleep(10)
     } finally {
         BlockInput("MouseMoveOff")
     }
@@ -1150,6 +1167,10 @@ CraftWithCurrency(name, key) {
         MsgBox("Invalid resolution for " name ". Please set a valid resolution in the format 'widthxheight' (e.g., 1920x1080).")
         return
     }
+
+    if (Debounce("CraftWithCurrency", 100)) {
+        return
+    }
     
     state := SaveToggleState()
     ResetToggle()
@@ -1159,14 +1180,26 @@ CraftWithCurrency(name, key) {
         MouseMove(resolution.width, resolution.height, 0)
         Sleep(50)
         Click("right")
-        Sleep(75)
+        Sleep(50)
         mousePos.RestorePosition()
-        Sleep(75)
+        Sleep(25)
         Click("left")
     } finally {
         BlockInput("MouseMoveOff")
         RestoreToggleState(state)
     }
+}
+
+Debounce(fnName, cooldownTime := 1000) {
+    global LastExecutionTime
+
+    currentTime := A_TickCount
+    if (currentTime - LastExecutionTime.%fnName% < cooldownTime) {
+        return true
+    }
+    
+    LastExecutionTime.%fnName% := currentTime + cooldownTime
+    return false
 }
 
 SaveToggleState() {
