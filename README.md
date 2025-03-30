@@ -17,7 +17,7 @@ That said, use at your own risk! The tool is designed to reduce strain on your h
 ## Caveats
 
 - Game must be on your primary monitor for the overlays to work, other things should work fine.
-- Should not be started while you are in combat area as Dynamic Hotkeys are enabled by default (read more below).
+- Tool should not be started while you are in combat area as Dynamic Hotkeys are enabled by default (read more below).
 
 ## Installation
 
