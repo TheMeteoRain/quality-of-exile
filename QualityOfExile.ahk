@@ -5,7 +5,7 @@
 #Include "ClipboardSaver.ahk"
 #Include "GameInfo.ahk"
 
-ScriptVersion := "0.1.0-beta.7"
+ScriptVersion := "0.1.0-beta.8"
 GithubLink := "https://github.com/TheMeteoRain/quality-of-exile"
 DEBUG := false
 

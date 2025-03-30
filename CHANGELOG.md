@@ -5,17 +5,25 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
-- Introduced a debounce mechanism for hotkeys to prevent accidental multiple triggers, ensuring correct execution of hotkey actions.
+-
 
 ### Changed
 -
 
 ### Fixed
-- Stop reading `Client.txt` when game does not exist or is not active.
-- Hide all overlays when game does not exist or is not active.
+-
 
 ### Removed
 - 
+
+## [0.1.0-beta.8] - 2025-03-30
+
+### Added
+- Introduced a debounce mechanism for hotkeys to prevent accidental multiple triggers, ensuring correct execution of hotkey actions.
+
+### Fixed
+- Stop reading `Client.txt` when game does not exist or is not active.
+- Hide all overlays when game does not exist or is not active.
 
 ## [0.1.0-beta.7] - 2025-03-29
 
