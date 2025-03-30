@@ -537,7 +537,7 @@ Settings(*) {
     HotkeyGui.Add("Link", Format("x{} y{} w{}", pX*2, maxY + 35, w), Format('<a href="{}">Github / Documentation</a>', GithubLink))
 
     HotkeyGui.Add("Button", Format("x{} y{} w{} Default", 550/2-200/2, maxY, 200), "Save And Reload").OnEvent("Click", SaveConfigurations)
-    HotkeyGui.Add("Button", Format("x{} y{} w{}", 550/2-200/2, maxY + rowSize, 200), "Close").OnEvent("Click", (*) => HotkeyGui.Destroy())
+    HotkeyGui.Add("Button", Format("x{} y{} w{}", 550/2-200/2, maxY + rowSize, 200), "Close").OnEvent("Click", CloseConfigurations)
 
     HotkeyGui.Show()
     ControlFocus(HotkeyGui, HotkeyGui.Title)
@@ -549,6 +549,14 @@ ValidatePixel(oldValue, GuiCtrlObj, *) {
     if (!resolution) {
         GuiCtrlObj.Value := oldValue
     }
+}
+
+CloseConfigurations(*) {
+    global Game
+    HotkeyGui.Destroy()
+    ; if (Game.GameClientExists()) {
+    ;     WinActivate(Game.HWND)
+    ; }
 }
 
 SaveConfigurations(*) {
@@ -614,6 +622,9 @@ SaveConfigurations(*) {
     }
 
     Reload()
+    ; if (Game.HWND) {
+    ;     WinActivate(Game.HWND)
+    ; }
 }
 
 LoadConfigurations() {
