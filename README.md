@@ -16,7 +16,8 @@ That said, use at your own risk! The tool is designed to reduce strain on your h
 
 ## Caveats
 
-- Dynamic Hotkeys are enabled by default. If you launch the tool while in a town, they won't function properly until you enter a loading screen. (read more below)
+- If you choose to use a toggleable CTRL key, make sure to reassign your in-game hotkeys from CTRL+# to another location. Keep in mind that hotkeys don’t have to be tied to a modifier key—you can set them to a single key also, which is something I would recommend anyway.
+- Dynamic Hotkeys are enabled by default. If you launch the tool while in a combat area, they won't function properly until you enter a loading screen. (read more below)
 
 ## Installation
 
