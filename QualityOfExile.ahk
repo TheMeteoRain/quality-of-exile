@@ -1,13 +1,16 @@
-#Requires AutoHotkey v2.0
+﻿#Requires AutoHotkey v2.0
 #SingleInstance Force
 #MaxThreadsPerHotkey 2
 #Include "MousePositionSaver.ahk"
 #Include "ClipboardSaver.ahk"
 #Include "GameInfo.ahk"
 
-ScriptVersion := "0.1.0-beta.8"
+SetTitleMatchMode("3")
+ScriptVersion := "0.1.0-beta.9"
 GithubLink := "https://github.com/TheMeteoRain/quality-of-exile"
 DEBUG := false
+; https://www.autohotkey.com/docs/v2/misc/DPIScaling.htm#Workarounds
+DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
 
 if (A_Args.Length > 0) {
     ; debug
@@ -23,22 +26,7 @@ cportsExecutable := cportsPath . "\cports.exe" ; Check in the script's directory
 cportsDownloadURL := "https://www.nirsoft.net/utils/cports.zip" ; URL to the ZIP file
 cportsZipPath := DocumentPath . "\cports.zip"
 INI_FILE := DocumentPath "\data.ini"
-
-Initialize()
-
-if (!DEBUG) {
-    full_command_line := DllCall("GetCommandLine", "str")
-    if not (A_IsAdmin or RegExMatch(full_command_line, " /restart(?!\S)"))
-    {
-        try {
-            if A_IsCompiled
-                Run '*RunAs "' A_ScriptFullPath '" /restart'
-            else
-                Run '*RunAs "' A_AhkPath '" /restart "' A_ScriptFullPath '"'
-        }
-        ExitApp
-    }
-}
+STATE_FILE := DocumentPath "\state.ini"
 
 ; Initialize variables
 global LastExecutionTime := {
@@ -52,13 +40,17 @@ global CtrlToggled := false
 global ShiftToggled := false
 global ScrollSpam := false
 global OverlayGui, CtrlLabel, ShiftLabel, SpamLabel, HotkeyGui, HUDGui
+global clientFilePath, clientFile, clientFileReadFunc
+global DynamicHotkeysActivated := false
+global DynamicHotkeysState := "OFF"
+global RegExpCharacterLimit := 48
 global Game := GameInfo()
 global mousePos := MousePositionSaver()
 global clipboard := ClipboardSaver()
 global Hotkeys := Map()
 global Extra := Map()
 global Options :=  Map()
-global MouseDropdownOptions := ["", "MButton", "XButton1", "XButton2", "WheelDown", "WheelUp"]
+global MouseDropdownOptions := ["", "MButton", "XButton1", "XButton2"]
 global Configs := {
     EnterHideout: {
         name: "Enter Hideout",
@@ -152,7 +144,7 @@ global Configs := {
         coords: { x: 175, y: 90 }
     },
     OrbOfTransmutation: {
-        name: "Orb of Transmutation",
+        name: "Orb of Transmutation (D)",
         defaultHotkey: "",
         func: OrbOfTransmutation,
         blockKeyNativeFunction: true,
@@ -166,7 +158,7 @@ global Configs := {
         pixelSelect: true
     },
     OrbOfAlteration: {
-        name: "Orb of Alteration",
+        name: "Orb of Alteration (D)",
         defaultHotkey: "",
         func: OrbOfAlteration,
         blockKeyNativeFunction: true,
@@ -180,7 +172,7 @@ global Configs := {
         pixelSelect: true
     },
     OrbOfChance: {
-        name: "Orb of Chance",
+        name: "Orb of Chance (D)",
         defaultHotkey: "",
         func: CraftOrbOfChance,
         blockKeyNativeFunction: true,
@@ -194,7 +186,7 @@ global Configs := {
         pixelSelect: true
     },
     AlchemyOrb: {
-        name: "Alchemy Orb",
+        name: "Alchemy Orb (D)",
         defaultHotkey: "",
         func: CraftAlchemyOrb,
         blockKeyNativeFunction: true,
@@ -208,7 +200,7 @@ global Configs := {
         pixelSelect: true
     },
     OrbOfScouring: {
-        name: "Orb of Scouring",
+        name: "Orb of Scouring (D)",
         defaultHotkey: "",
         func: CraftOrbOfScouring,
         blockKeyNativeFunction: true,
@@ -222,7 +214,7 @@ global Configs := {
         pixelSelect: true
     },
     ChaosOrb: {
-        name: "Chaos Orb",
+        name: "Chaos Orb (D)",
         defaultHotkey: "",
         func: ChaosOrb,
         extraField: true,
@@ -384,6 +376,30 @@ Initialize() {
             ExitApp()
         }
     }
+
+    if (!DEBUG) {
+        full_command_line := DllCall("GetCommandLine", "str")
+        if not (A_IsAdmin or RegExMatch(full_command_line, " /restart(?!\S)"))
+        {
+            try {
+                if A_IsCompiled
+                    Run '*RunAs "' A_ScriptFullPath '" /restart'
+                else
+                    Run '*RunAs "' A_AhkPath '" /restart "' A_ScriptFullPath '"'
+            }
+            ExitApp
+        }
+    }
+}
+
+LoadState() {
+    global DynamicHotkeysActivated, DynamicHotkeysState
+
+    if (FileExist(STATE_FILE)) {
+        DynamicHotkeysActivated := IniRead(STATE_FILE, "STATE", "DynamicHotkeysActivated", 0)
+        DynamicHotkeysState := IniRead(STATE_FILE, "STATE", "DynamicHotkeysState", "Off")
+        FileDelete(STATE_FILE)
+    }
 }
 
 KillSwitch(*) {
@@ -470,24 +486,27 @@ Settings(*) {
     w := 150
     colSize := 175
     rowSize := 30
-    reduceGap := 10
+    gap := 10
     maxY := 0
 
     if (IsSet(HotkeyGui)) {
         HotkeyGui.Destroy()
     }
 
-    HotkeyGui := Gui("+AlwaysOnTop", "Quality of Exile")
+    HotkeyGui := Gui("+AlwaysOnTop +ToolWindow", "Quality of Exile")
     TabControl := HotkeyGui.Add("Tab3", "", ["Tab1","Tab2","Tab3"])
     
     TabControl.UseTab("Tab1")
-    HotkeyGui.Add("Text", Format("x{} y{}", pX, pY), "K: Keyboard keybind | M: Mouse keybind | Px: Pixel")
+    textCtrl := HotkeyGui.Add("Text", Format("x{} y{} w500", pX, pY), "(K): Keyboard keybind | (M): Mouse keybind | (Px): Pixel | (D): Dynamic Hotkey")
+    textCtrl.SetFont("w700")
 
     TabControl.UseTab("Tab2")
-    HotkeyGui.Add("Text", Format("x{} y{}", pX, pY), "K: Keyboard keybind | M: Mouse keybind | Px: Pixel")
+    textCtrl := HotkeyGui.Add("Text", Format("x{} y{} w500", pX, pY), "(K): Keyboard keybind | (M): Mouse keybind | (Px): Pixel | (D): Dynamic Hotkey")
+    textCtrl.SetFont("w700")
 
     TabControl.UseTab("Tab3")
-    HotkeyGui.Add("Text", Format("x{} y{}", pX, pY), "K: Keyboard keybind | M: Mouse keybind | Px: Pixel")
+    textCtrl := HotkeyGui.Add("Text", Format("x{} y{} w500", pX, pY), "(K): Keyboard keybind | (M): Mouse keybind | (Px): Pixel | (D): Dynamic Hotkey")
+    textCtrl.SetFont("w700")
 
 
     pixelSearchCtrls(conf, key, options, x1, y1, x2, y2) {
@@ -511,8 +530,8 @@ Settings(*) {
         textGuiControl := HotkeyGui.Add("Text", Format("x{} y{} w{}", x, y, w), config.name)
         textGuiControl.SetFont("bold")
         if (config.section == "Hotkey") {
-            keyboardLabel := HotkeyGui.Add("Text", Format("x{} y{} Center", x, y+rowSize+3-reduceGap), "K")
-            mainGuiControl := HotkeyGui.Add("Hotkey", Format("v{} x{} y{} w{}", key, x+10, y+rowSize-reduceGap, w), Hotkeys.Get(key, ""))
+            keyboardLabel := HotkeyGui.Add("Text", Format("x{} y{} Center", x, y+rowSize+3-gap), "K")
+            mainGuiControl := HotkeyGui.Add("Hotkey", Format("v{} x{} y{} w{}", key, x+10, y+rowSize-gap, w), Hotkeys.Get(key, ""))
             hotkeyValue := Hotkeys.Get(key, "")
             mainGuiControl.Value := hotkeyValue
             y := y+rowSize*2
@@ -522,8 +541,8 @@ Settings(*) {
 
 
             if (config.HasProp("mouseBind") and config.mouseBind) {
-                mouseLabel := HotkeyGui.Add("Text", Format("x{} y{} Center", x, y+3-reduceGap), "M")
-                guiDropdown := HotkeyGui.Add("DropDownList", Format("v{} x{} y{} w{}", key "_mouseDropdownOptions", x+10, y-reduceGap, w), MouseDropdownOptions)
+                mouseLabel := HotkeyGui.Add("Text", Format("x{} y{} Center", x, y+3-gap), "M")
+                guiDropdown := HotkeyGui.Add("DropDownList", Format("v{} x{} y{} w{}", key "_mouseDropdownOptions", x+10, y-gap, w), MouseDropdownOptions)
                 guiDropdown.OnEvent("Change", onChangeDropdownToHotkey.Bind(mainGuiControl))
                 mainGuiControl.OnEvent("Change", onChangeHotkeyToDropdown.Bind(guiDropdown))
 
@@ -540,36 +559,39 @@ Settings(*) {
                 if (config.HasProp("vars") and config.vars.Length > 0) {
                     for index, var in config.vars {
                         newY := index > 1 ? y+rowSize*index : y
-                        pixelSearchCtrls(config, var, "Readonly", x, newY-reduceGap, x, newY+rowSize-reduceGap)
+                        pixelSearchCtrls(config, var, "Readonly", x, newY-gap, x, newY+rowSize-gap)
                     }
                 } else {
-                    pixelSearchCtrls(config, key, "Readonly", x, y-reduceGap, x, y+rowSize-reduceGap)
+                    pixelSearchCtrls(config, key, "Readonly", x, y-gap, x, y+rowSize-gap)
                 }
                 y := y+rowSize
             }
 
             if (key == "HighlightShopItems") {
-                extraGuiControl := HotkeyGui.Add("Edit", Format("v{}_extra x{} y{} w{} Limit50 -VScroll h60", key, x+10, y-reduceGap, w), Extra.Get(key, ""))
+                regexp := Extra.Get(key, "")
+                characterLimitText := HotkeyGui.Add("Text", Format("x{} y{}", x+10, y+rowSize*2-gap), Format("{} / {}`ndon't include quotation marks", StrLen(regexp), RegExpCharacterLimit))
+                extraGuiControl := HotkeyGui.Add("Edit", Format("v{}_extra x{} y{} w{} Limit{} -VScroll h60", key, x+10, y-gap, w, RegExpCharacterLimit), regexp)
+                extraGuiControl.OnEvent("Change", UpdateCharacterLimit.Bind(characterLimitText))
             }
 
             if (key == "FillShipment") {
-                control := HotkeyGui.Add("Button", Format("v{}_extra x{} y{} w{}", key, x+10, y-reduceGap, w), "Shipment values")
+                control := HotkeyGui.Add("Button", Format("v{}_extra x{} y{} w{}", key, x+10, y-gap, w), "Shipment values")
                 control.OnEvent("Click", openSettlersShipmentUI)
             }
-            maxY := Max(y, maxY)
-            continue
         }
 
         if (config.section == "Options" or config.section == "Toggle") {
             if (key == "ToggleOverlayPosition") {
-                pixelSearchCtrls(config, key, "", x, y+rowSize-reduceGap, x, y+rowSize*2-reduceGap)
+                pixelSearchCtrls(config, key, "", x, y+rowSize-gap, x, y+rowSize*2-gap)
             } else {
-                HotkeyGui.Add("Text", Format("x{} y{} w{}", x, y+rowSize+4-reduceGap, w), "Enabled")
-                control := HotkeyGui.Add("Checkbox", Format("v{} x{} y{}", key, x+45, y+4+rowSize-reduceGap))
+                HotkeyGui.Add("Text", Format("x{} y{} w{}", x, y+rowSize+4-gap, w), "Enabled")
+                control := HotkeyGui.Add("Checkbox", Format("v{} x{} y{}", key, x+45, y+4+rowSize-gap))
                 control.Value := Hotkeys.Get(key, 0)
                 control.Tooltip := config.tooltip
             }
         }
+
+        maxY := Max(y, maxY)
     }
 
     TabControl.UseTab("")
@@ -580,9 +602,20 @@ Settings(*) {
     HotkeyGui.Add("Button", Format("x{} y{} w{} Default", 550/2-200/2, maxY, 200), "Save And Reload").OnEvent("Click", SaveConfigurations)
     HotkeyGui.Add("Button", Format("x{} y{} w{}", 550/2-200/2, maxY + rowSize, 200), "Close").OnEvent("Click", CloseConfigurations)
 
-    HotkeyGui.Show()
-    ControlFocus(HotkeyGui, HotkeyGui.Title)
+    maxY := Max(maxY + rowSize*2, maxY)
     ;OnMessage(0x0200, On_WM_MOUSEMOVE)
+
+    HotkeyGui.Show(Format("x{} y{} w{} h{}", Game.GameWindowCenterX-550/2, Game.GameWindowCenterY-475/2, 550, 475))
+    ControlFocus(HotkeyGui, HotkeyGui.Title)
+}
+
+ShowSettings(*) {
+    HotkeyGui.Show(Format("x{} y{} w{} h{}", Game.GameWindowCenterX-550/2, Game.GameWindowCenterY-550/2, 550, 550))
+    ControlFocus(HotkeyGui, HotkeyGui.Title)
+}
+
+HideSettings() {
+    HotkeyGui.Hide()
 }
 
 ValidatePixel(oldValue, GuiCtrlObj, *) {
@@ -592,16 +625,18 @@ ValidatePixel(oldValue, GuiCtrlObj, *) {
     }
 }
 
+UpdateCharacterLimit(LimitControl, RegExpControl, *) {
+    ControlSetText(Format("{} / {}`ndon't include quotation marks", StrLen(RegExpControl.Value), RegExpCharacterLimit), LimitControl)
+}
+
 CloseConfigurations(*) {
     global Game
-    HotkeyGui.Destroy()
-    ; if (Game.GameClientExists()) {
-    ;     WinActivate(Game.HWND)
-    ; }
+    HotkeyGui.Hide()
+    Game.FocusGameWindow()
 }
 
 SaveConfigurations(*) {
-    global Hotkeys, Options, Extra, Configs
+    global Hotkeys, Options, Extra, Configs, DynamicHotkeysActivated, DynamicHotkeysState
     controls := HotkeyGui.Submit()
 
     for key in controls.OwnProps() {
@@ -662,10 +697,10 @@ SaveConfigurations(*) {
         }
     }
 
+    IniWrite(DynamicHotkeysActivated, STATE_FILE, "STATE", "DynamicHotkeysActivated")
+    IniWrite(DynamicHotkeysState, STATE_FILE, "STATE", "DynamicHotkeysState")
     Reload()
-    ; if (Game.HWND) {
-    ;     WinActivate(Game.HWND)
-    ; }
+    Game.FocusGameWindow()
 }
 
 LoadConfigurations() {
@@ -699,7 +734,10 @@ LoadConfigurations() {
                     Hotkey("*" val, config.func)
                 } else {
                     HotIfWinActive(Game.Title)
-                    if (config.blockKeyNativeFunction) {
+                    if (config.toggleOnInstance) {
+                        ; dynamic hotkeys
+                        Hotkey("*" val, config.func)
+                    } else if (config.blockKeyNativeFunction) {
                         Hotkey("*" val, config.func)
                     } else {
                         Hotkey("~" val, config.func)
@@ -863,24 +901,24 @@ CreateHUD() {
     configHotkey := Hotkeys.Has("Settings") ? Hotkeys["Settings"] : "Not Set"
     killSwitchHotkey := Hotkeys.Has("KillSwitch") ? Hotkeys["KillSwitch"] : "Not Set"
 
-    HUDGui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20", "HUD")
+    HUDGui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20")
     HUDGui.BackColor := "20283f"
     WinSetTransColor("Black 150", HUDGui)  ; Make the background transparent
 
-    ctrl := HUDGui.Add("Text", "x5 y5 h30 cWhite", "Settings: " configHotkey)
+    ctrl := HUDGui.Add("Text", "x5 y5 h30 w100 cWhite", "Settings: " configHotkey)
     ctrl.SetFont("s6 q2")
-    ctrl := HUDGui.Add("Text", "x5 y23 h30 cWhite", "Kill Switch: " killSwitchHotkey)
+    ctrl := HUDGui.Add("Text", "x5 y23 h30 w100 cWhite", "Kill Switch: " killSwitchHotkey)
     ctrl.SetFont("s6 q2")
 }
 
-HideHud() {
+HideHUD() {
     global HUDGui
 
     if (IsSet(HUDGui)) {
         HUDGui.Hide()
     }
 }
-ShowHud() {
+ShowHUD() {
     global HUDGui
 
     if (IsSet(HUDGui)) {
@@ -1105,10 +1143,12 @@ PerformDivinationTrading(*) {
         ResetToggle()
     
         Send("^{Click}")
-        MouseMove(buttonResolution.width, buttonResolution.height, 0)
+        DllCall("SetCursorPos", "int", buttonResolution.width, "int", buttonResolution.height)
+        ; MouseMove(buttonResolution.width, buttonResolution.height, 0)
         Sleep(rand1)
         Click("left")
-        MouseMove(areaResolution.width, areaResolution.height, 0)
+        DllCall("SetCursorPos", "int", areaResolution.width, "int", areaResolution.height)
+        ; MouseMove(areaResolution.width, areaResolution.height, 0)
         Sleep(rand2)
         Send("^{Click}")
     
@@ -1132,7 +1172,7 @@ OpenStackedDivinationDeck(*) {
         mousePos.SavePosition()
 
         Click("right")
-        MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY, 0)
+        MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY)
         Sleep(100)
         Click("left")
         Sleep(75)
@@ -1155,7 +1195,7 @@ DropItem(*) {
         mousePos.SavePosition()
     
         Click("left")
-        MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY, 0)
+        MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY)
         Sleep(100)
         Click("left")
         Sleep(75)
@@ -1180,7 +1220,7 @@ OpenCurrencyTab() {
     mousePos.SavePosition()
     CurrencyTabX := Game.BlackBarSize + 985
     CurrencyTabY := 160
-    MouseMove(CurrencyTabX, CurrencyTabY, 1)
+    MoveMouse(CurrencyTabX, CurrencyTabY)
     Sleep(200)
     Click("left")
     mousePos.RestorePosition()
@@ -1228,7 +1268,7 @@ CraftWithCurrency(name, key) {
     try {
         BlockInput("MouseMove")
         mousePos.SavePosition()
-        MouseMove(resolution.width, resolution.height, 0)
+        MoveMouse(resolution.width, resolution.height)
         Sleep(50)
         Click("right")
         Sleep(50)
@@ -1251,6 +1291,10 @@ Debounce(fnName, cooldownTime := 1000) {
     
     LastExecutionTime.%fnName% := currentTime + cooldownTime
     return false
+}
+
+MoveMouse(x, y) {
+    DllCall("SetCursorPos", "int", x, "int", y)
 }
 
 SaveToggleState() {
@@ -1295,7 +1339,7 @@ HighlightShopItems(*) {
 
     clipboard.Save()
     clipboard.Clear()
-    clipboard.Set(Extra.Get("HighlightShopItems", "(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|ll g"))
+    clipboard.Set(Format("`"{}`"", Extra.Get("HighlightShopItems", "(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|ll g")))
     
     SendInput("^f")
     clipboard.Paste()
@@ -1402,53 +1446,72 @@ openSettlersShipmentUI(*) {
     ShipmentGui.Show()
 }
 
+Initialize()
+Game.AttachToGame()
 LoadConfigurations()
 LoadShipmentValues()
+LoadState()
 CreateToggleOverlay()
 CreateHUD()
 
-global clientFilePath
-global clientFile
-global count := 0
-global clientFileReadFunc
+; Client.txt file behaves odd but for our advantage
+; Client.txt file does not 
+DynamicHotkeys() {
+    global clientFilePath, DynamicHotkeysActivated, DynamicHotkeysState
+
+    FileModificationTime := FileGetTime(clientFilePath, "M")
+
+    LastModified := DateDiff(A_Now, FileModificationTime, "Seconds")
+    HotIfWinActive(Game.Title)
+
+    if (DynamicHotkeysActivated) {
+        SetDynamicHotkeysState(DynamicHotkeysState, false)
+        return
+    }
+
+    if (LastModified > 300 or Game.PreviousAttachTime) {
+        SetDynamicHotkeysState("Off", false)
+    } else {
+        SetDynamicHotkeysState("On", false)
+    }
+}
 
 Main() {
-    global Game, clientFilePath
+    global Game, clientFilePath, DynamicHotkeysActivated
 
-    Game := GameInfo()
-
-    if (Game.GameClientExists()) {
-        ShowToggleOverlay()
-        ShowHud()
-        GetPoEClientFilePath()
-        ListenToClientFile()
-    }
+    Game.AttachToGame()
+    GetPoEClientFilePath()
+    ListenToClientFile()
+    DynamicHotkeys()
+    ShowToggleOverlay()
+    ShowHUD()
+    SetTimer(Wrapper, 5000)
+    
 
     if (Game.GameClientNotActive()) {
         HideToggleOverlay()
-        HideHud()
+        HideHUD()
         ResetToggle()
-        UnlistenClientFile()
+        SetTimer(Wrapper, 0)
 
         if (!Game.GameClientExists()) {
-            Game.Reset()
+            UnlistenClientFile()
+            SetDynamicHotkeysState("Off")
         }
 
         Main()
     }
 }
-; Reset(*) {
-;     global game
+Wrapper(*) {
+    Game.CalculatePixels()
+    ShowToggleOverlay()
+    ShowHUD()
+}
 
-;     if (!Game.GameClientExists()) {
-;         Game.Reset()
-;         SetTimer(Reset, 0)
-;     }
-; }
 Main()
 
 GetPoEClientFilePath() {
-    global clientFilePath
+    global clientFilePath, Configs, Hotkeys
 
     if (IsSet(clientFilePath) and clientFilePath) {
         return
@@ -1472,7 +1535,7 @@ ListenToClientFile() {
     if (clientFile and !IsSet(clientFileReadFunc)) {
         clientFileReadFunc := ReadLogFile.Bind(clientFile)
         clientFile.Seek(0, 2)  ; Move to the end of the file
-        SetTimer(clientFileReadFunc, 1000)  ; Call ReadLogFile every 1000ms (1 second)
+        SetTimer(clientFileReadFunc, 1000)
     }
 }
 UnlistenClientFile() {
@@ -1495,29 +1558,36 @@ MatchPoe1Lines(line) {
     }
     return false
 }
+SetDynamicHotkeysState(state := "Off", setState := true) {
+    global Configs, Hotkeys, DynamicHotkeysActivated, DynamicHotkeysState
+
+    for key, config in Configs.OwnProps() {
+        if (config.toggleOnInstance and Hotkeys[key]) {
+            Hotkey("*" Hotkeys[key], config.func, state)
+        }
+    }
+    if (setState) {
+        DynamicHotkeysActivated := true
+        DynamicHotkeysState := state
+    }
+}
 ReadLogFile(clientFile) {
-    global Configs, Hotkeys
+    global Configs, Hotkeys, DynamicHotkeysActivated, DynamicHotkeysState
 
     if !IsObject(clientFile) {
         return  ; Ensure the file object is valid
     }
 
     if (newLines := clientFile.Read()) {
-        if (RegExMatch(newLines, "Generating level")) {
+        if (RegExMatch(newLines, "\[STARTUP\] Game Start|Connected to")) {
+            SetDynamicHotkeysState("Off")
+        } else if (RegExMatch(newLines, "Generating level")) {
             ResetToggle()
 
             if (MatchPoe1Lines(newLines) or MatchPoe2Lines(newLines)) {
-                for key, config in Configs.OwnProps() {
-                    if (config.toggleOnInstance and Hotkeys[key]) {
-                        Hotkey("*" Hotkeys[key], config.func, "On")
-                    }
-                }
+                SetDynamicHotkeysState("On")
             } else {
-                for key, config in Configs.OwnProps() {
-                    if (config.toggleOnInstance and Hotkeys[key]) {
-                        Hotkey("*" Hotkeys[key], config.func, "Off")
-                    }
-                }
+                SetDynamicHotkeysState("Off")
             }
         }
         
