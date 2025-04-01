@@ -876,14 +876,14 @@ CreateHUD() {
 HideHud() {
     global HUDGui
 
-    if (IsSet(OverlayGui)) {
+    if (IsSet(HUDGui)) {
         HUDGui.Hide()
     }
 }
 ShowHud() {
     global HUDGui
 
-    if (IsSet(OverlayGui)) {
+    if (IsSet(HUDGui)) {
         HUDGui.Show("x" Game.HudPosX " y" Game.HudPosY " w120 h40 NoActivate")
     }
 }
