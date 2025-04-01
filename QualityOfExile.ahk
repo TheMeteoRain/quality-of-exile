@@ -1,4 +1,4 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #SingleInstance Force
 #MaxThreadsPerHotkey 2
 #Include "MousePositionSaver.ahk"
@@ -896,10 +896,9 @@ CreateToggleOverlay() {
     }
 
     if (Hotkeys["ToggleCtrl"] or Hotkeys["ToggleShift"] or Hotkeys["CtrlClickSpamToggle"] or Hotkeys["ToggleCtrlKeybind"] or Hotkeys["ToggleShiftKeybind"]) {
-        OverlayGui := Gui()
+        OverlayGui := Gui("-Caption +AlwaysOnTop +ToolWindow +E0x20")
         OverlayGui.Title := "Toggle Overlay"
         OverlayGui.BackColor := "Black"
-        OverlayGui.Opt("-Caption +AlwaysOnTop +ToolWindow +E0x20")
         WinSetTransColor(OverlayGui.BackColor " 150", OverlayGui)
         CtrlLabel := OverlayGui.Add("Text", "x10 y10 w" Game.OverlayWidth / 2 " h30 vCtrlLabel", "Ctrl: OFF")
         CtrlLabel.SetFont("cWhite s12 w700 q2")
