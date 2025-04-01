@@ -14,7 +14,7 @@ class ClipboardSaver {
     }
 
     Paste() {
-        Send(A_Clipboard)
+        Send("^v")
     }
 
     Clear() {

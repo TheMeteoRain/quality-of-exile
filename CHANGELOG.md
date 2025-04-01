@@ -16,6 +16,16 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - 
 
+## [0.1.0-beta.9] - 2025-04-01
+
+### Added
+- Character counter for RegExp textbox.
+- Support for running game in windowed mode.
+- Support for running game in another monitor.
+
+### Changed
+- More checks for Dynamic Hotkeys, so they would function properly.
+
 ## [0.1.0-beta.8] - 2025-03-30
 
 ### Added

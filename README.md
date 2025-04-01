@@ -16,8 +16,7 @@ That said, use at your own risk! The tool is designed to reduce strain on your h
 
 ## Caveats
 
-- Game must be on your primary monitor for the overlays to work, other things should work fine.
-- Tool should not be started while you are in combat area as Dynamic Hotkeys are enabled by default or visit a town afterwards (read more below).
+- Dynamic Hotkeys are enabled by default. If you launch the tool while in a town, they won't function properly until you enter a loading screen. (read more below)
 
 ## Installation
 
@@ -50,7 +49,7 @@ Option 3:
   - Dynamic Hotkeys allow keys to serve dual purposes based on your current location in the game. 
   - For example, you can assign numbers (1, 2, 3, 4, 5) to Dynamic Hotkeys. In combat areas, these keys perform their default actions (e.g. using flasks). In towns, they execute specific macros (e.g. crafting). This effectively lets you "double-bind" keys for different contexts. This is to combat keybind bloat.
   - Dynamic Hotkeys are clearly marked in the list below.
-  - When the tool starts, Dynamic Hotkeys are enabled by default, executing their corresponding macros. It will begin tracking location on the first loading screen.
+  - **Dynamic Hotkeys are enabled by default. If you launch the tool while in a combat area, they won't function properly until you enter a loading screen.**
   - Uses local `Client.txt` file.
 - **Pixel Selection**
   - Allows you to select specific pixels where a hotkey will be triggered.
@@ -63,8 +62,19 @@ Option 3:
 
 To change keybinds, press F10 (default) to open the hotkey configuration window. You can customize this keybind to your preference. Note that all the keybinds must be pressed in-game, as this script doesn't recognize keys pressed outside of the game.
 
-How to reposition toggle overlay:
-![setting toggle overlay](assets/overlay.gif)
+Examples:
+
+Setup toggle overlay
+![Setup toggle overlay](assets/overlay.gif)
+
+Drop stacked divination deck
+![Drop stacked divination deck](assets/stacked_deck.gif)
+
+Trade full stack of divination cards
+![Trade full stack of divination cards](assets/trade_div.gif)
+
+Currency crafting
+![Currency crafting](assets/currency_crafting.gif)
 
 ## Hotkeys
 
@@ -72,7 +82,7 @@ How to reposition toggle overlay:
 Close TCP connections of Path of Exile process.
 
 ### Toggle CTRL
-Press the keybind once to hold CTRL. Press it again to release CTRL. You can also rebind CTRL to any key you want, maybe you have small macro keypad. My favourite is setting my mouse's side buttons to CTRL and SHIFT. So, I don't have to use pinky at all. 
+Press the keybind once to hold CTRL. Press it again to release CTRL. You can also rebind CTRL to any key you want, maybe you have small macro keypad. My favourite is setting my mouse's side buttons to CTRL and SHIFT. So, I don't have to use pinky at all. Pressing any other toggleable keybind will deactivate the previously toggled one.
 
 Use cases:
 - Move items from inventory to stash.
@@ -80,13 +90,13 @@ Use cases:
 - Pre-toggle before interacting with an NPC to trigger specific actions, such as opening the sell window or identifying items (PoE2:The Hooded One).
 
 ### Toggle SHIFT
-Press the keybind once to hold SHIFT. Press it again to release SHIFT. You can also rebind SHIFT to any key you want, maybe you have small macro keypad. My favourite is setting my mouse's side buttons to CTRL and SHIFT. So, I don't have to use pinky at all.
+Press the keybind once to hold SHIFT. Press it again to release SHIFT. You can also rebind SHIFT to any key you want, maybe you have small macro keypad. My favourite is setting my mouse's side buttons to CTRL and SHIFT. So, I don't have to use pinky at all. Pressing any other toggleable keybind will deactivate the previously toggled one.
 
 Use cases:
-- Use crafting items continuously (e.g. alterations, jewellers, fusings) without needing to hold down SHIFT yourself.
+- Use crafting currency continuously (e.g. alterations, jewellers, fusings) without needing to hold down SHIFT yourself.
 
 ### Spam Ctrl Click
-Holds CTRL and spams left click. Press it again to stop.
+Press the keybind once to hold CTRL and spams left click. Press it again to stop. Pressing any other toggleable keybind will deactivate the previously toggled one.
 
 Use cases:
 - Rabidly move items to the stash.
@@ -207,15 +217,27 @@ Inputs RegExp into any window with search functionality.
 1. Open a window with search functionality.
 2. Press the assigned keybind.
 
-Default RegExp: `(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|ll g`
+Default RegExp: `(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|y: r`
 
 This default RegExp is designed to target:
 - 4-6 linked items.
 - 6-socket items.
-- +1 wands.
-- Movement speed boots.
+- Rare items.
+- Movement speed 10% and 15%.
 
-You can customize the RegExp to suit your specific needs, enabling you to search for items with your own criteria.
+For PoE2 vendors I would recommend:
+- Physical damage: `y: \+|ts: S|y: (r|m)|\d+% i.+mov|ph.*da`
+- Elemental damage: `y: \+|ts: S|y: (r|m)|\d+% i.+mov|\d [cfl].+da`
+
+Both targets:
+- Quality.
+- Sockets.
+- Movement speed.
+- Rare items.
+- Magic items.
+- Physical or Elemental damage.
+
+You can customize the RegExp to suit your specific needs, enabling you to search for items with your own criteria. Don't include quotation marks. Field will accepts 48 characters and the last 2 are reserved for quotation marks.
 
 ## Support
 If Quality of Exile has helped you play more comfortably and you'd like to show your appreciation, consider buying me a coffee! P.S. Accidentally spent way too much time on this.
