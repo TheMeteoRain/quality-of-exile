@@ -1173,7 +1173,7 @@ OpenStackedDivinationDeck(*) {
 
         Click("right")
         Sleep(10)
-        MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY)
+        MoveMouse(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY)
         Sleep(100)
         Click("left")
         Sleep(75)
@@ -1197,7 +1197,7 @@ DropItem(*) {
     
         Click("left")
         Sleep(10)
-        MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY)
+        MoveMouse(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY)
         Sleep(100)
         Click("left")
         Sleep(75)

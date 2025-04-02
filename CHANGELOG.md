@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Random occurence of character moving instead of drop item and opening stacked deck macro executing properly.
--
+- Multi monitor setup calculations.
 
 ### Removed
 - 

@@ -68,8 +68,6 @@ class GameInfo {
 
             this.GameWindowCenterX := x + width / 2
             this.GameWindowCenterY := y + height / 2
-            this.ScreenWidth := A_ScreenWidth
-            this.ScreenHeight := A_ScreenHeight
             this.GamePosX := x
             this.GamePosY := y
             this.GameTitleBarHeight := height - ch - 9
@@ -78,12 +76,8 @@ class GameInfo {
             monCount := MonitorGetCount()
             Loop monCount {
                 MonitorGetWorkArea(A_Index, &mx, &my, &mw, &mh)
-            
                 ; Check if the window's center is within this monitor's bounds
-                if (A_Index > 1 && this.GameWindowCenterX >= mx && this.GameWindowCenterX < mx + mw && this.GameWindowCenterY >= my && this.GameWindowCenterY < my + mh) {
-                    this.ScreenWidth := mw - this.ScreenWidth
-                    this.ScreenHeight := mh - this.ScreenHeight
-    
+                if (this.GameWindowCenterX >= mx && this.GameWindowCenterX < mx + mw && this.GameWindowCenterY >= my && this.GameWindowCenterY < my + mh) {                    
                     monitor := A_Index
                     break
                 }
@@ -92,19 +86,14 @@ class GameInfo {
             borderSizeX := SysGet(32) ;SM_CXSIZEFRAME = horizontal border size
             this.GameWidth := width >= this.GameMaxWidth ? this.GameMaxWidth : width
             this.GameHeight := height
-            this.BlackBarSize := this.Windowed ? 0 : (this.ScreenWidth - this.GameWidth == 0 ? 0 : (this.ScreenWidth - this.GameWidth) / 2)
 
-            this.OverlayPosX := this.GamePosX + this.BlackBarSize + this.GameWidth - this.OverlayWidth
+            this.OverlayPosX := this.GamePosX + this.GameWidth - this.OverlayWidth
             this.OverlayPosY := this.GamePosY + this.GameHeight - this.OverlayHeight - this.OverlayHeight/2
-            this.HudPosX := (this.GamePosX + this.GameWidth + this.BlackBarSize + (this.Windowed ? -borderSizeX*2 : 0)) - 150
+            this.HudPosX := (this.GamePosX + this.GameWidth + (this.Windowed ? -borderSizeX*2 : 0)) - 150
             this.HudPosY := this.GamePosY + (this.Windowed ? this.GameTitleBarHeight : 0)
 
-            this.ScreenMiddleX := (this.BlackBarSize * 2 + this.GameWidth) / 2
-            this.ScreenMiddleY := this.GameHeight / 2
-            this.ScreenMiddleWithInventoryX := this.ScreenMiddleX - Round(125 * (this.ScreenWidth / 1280) ** 0.55)
-            this.ScreenMiddleWithInventoryY := Round(this.ScreenMiddleY - (this.ScreenMiddleY/10))
-
-
+            this.ScreenMiddleWithInventoryX := this.GameWindowCenterX - Round(125 * (this.GameWindowCenterX / 1280) ** 0.55)
+            this.ScreenMiddleWithInventoryY := Round(this.GameWindowCenterY - (this.GameWindowCenterY/10))
         }
     }
 
