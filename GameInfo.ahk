@@ -84,7 +84,7 @@ class GameInfo {
             }
 
             borderSizeX := SysGet(32) ;SM_CXSIZEFRAME = horizontal border size
-            this.GameWidth := width >= this.GameMaxWidth ? this.GameMaxWidth : width
+            this.GameWidth := width
             this.GameHeight := height
 
             this.OverlayPosX := this.GamePosLeft + this.GameWidth - this.OverlayWidth
