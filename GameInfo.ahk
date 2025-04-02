@@ -11,8 +11,8 @@ class GameInfo {
 
     GameWidth := 0
     GameHeight := 0
-    GamePosX := 0
-    GamePosY := 0
+    GamePosLeft := 0
+    GamePosTop := 0
     ScreenWidth := 0
     ScreenHeight := 0
     ScreenMiddleX := 0
@@ -50,7 +50,7 @@ class GameInfo {
         exStyle := WinGetExStyle(this.HWND)
         gameWidth := width >= this.GameMaxWidth ? this.GameMaxWidth : width
 
-        isGameMoved := this.GamePosX != x or this.GamePosY != y or this.GameHeight != height or this.GameWidth != gameWidth
+        isGameMoved := this.GamePosLeft != x or this.GamePosTop != y or this.GameHeight != height or this.GameWidth != gameWidth
 
         this.Windowed := false
         ; Check for styles typically absent in exclusive fullscreen
@@ -68,8 +68,8 @@ class GameInfo {
 
             this.GameWindowCenterX := x + width / 2
             this.GameWindowCenterY := y + height / 2
-            this.GamePosX := x
-            this.GamePosY := y
+            this.GamePosLeft := x
+            this.GamePosTop := y
             this.GameTitleBarHeight := height - ch - 9
 
             monitor := 1
@@ -87,10 +87,10 @@ class GameInfo {
             this.GameWidth := width >= this.GameMaxWidth ? this.GameMaxWidth : width
             this.GameHeight := height
 
-            this.OverlayPosX := this.GamePosX + this.GameWidth - this.OverlayWidth
-            this.OverlayPosY := this.GamePosY + this.GameHeight - this.OverlayHeight - this.OverlayHeight/2
-            this.HudPosX := (this.GamePosX + this.GameWidth + (this.Windowed ? -borderSizeX*2 : 0)) - 150
-            this.HudPosY := this.GamePosY + (this.Windowed ? this.GameTitleBarHeight : 0)
+            this.OverlayPosX := this.GamePosLeft + this.GameWidth - this.OverlayWidth
+            this.OverlayPosY := this.GamePosTop + this.GameHeight - this.OverlayHeight - this.OverlayHeight/2
+            this.HudPosX := (this.GamePosLeft + this.GameWidth + (this.Windowed ? -borderSizeX*2 : 0)) - 150
+            this.HudPosY := this.GamePosTop + (this.Windowed ? this.GameTitleBarHeight : 0)
 
             this.ScreenMiddleWithInventoryX := this.GameWindowCenterX - Round(125 * (this.GameWindowCenterX / 1280) ** 0.55)
             this.ScreenMiddleWithInventoryY := Round(this.GameWindowCenterY - (this.GameWindowCenterY/10))
