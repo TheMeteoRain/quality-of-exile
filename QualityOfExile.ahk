@@ -1,4 +1,4 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #SingleInstance Force
 #MaxThreadsPerHotkey 2
 #Include "MousePositionSaver.ahk"
@@ -1162,7 +1162,7 @@ PerformDivinationTrading(*) {
 OpenStackedDivinationDeck(*) {
     global mousePos
 
-    if (Debounce("OpenStackedDivinationDeck", 175)) {
+    if (Debounce("OpenStackedDivinationDeck", 185)) {
         return
     }
 
@@ -1172,6 +1172,7 @@ OpenStackedDivinationDeck(*) {
         mousePos.SavePosition()
 
         Click("right")
+        Sleep(10)
         MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY)
         Sleep(100)
         Click("left")
@@ -1185,7 +1186,7 @@ OpenStackedDivinationDeck(*) {
 DropItem(*) {
     global mousePos, clipboard
 
-    if (Debounce("DropItem", 175)) {
+    if (Debounce("DropItem", 185)) {
         return
     }
 
@@ -1195,6 +1196,7 @@ DropItem(*) {
         mousePos.SavePosition()
     
         Click("left")
+        Sleep(10)
         MouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY)
         Sleep(100)
         Click("left")
