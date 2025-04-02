@@ -1,4 +1,4 @@
-#Requires AutoHotkey v2.0
+﻿#Requires AutoHotkey v2.0
 #SingleInstance Force
 #MaxThreadsPerHotkey 2
 #Include "MousePositionSaver.ahk"
@@ -1071,7 +1071,7 @@ StartCtrlClickSpam() {
 
     ShiftUp()
     CtrlDown()
-    SetTimer(ClickSpam, Random(30, 50))
+    SetTimer(ClickSpam, Random(75, 100))
 }
 
 ClickSpam() {
