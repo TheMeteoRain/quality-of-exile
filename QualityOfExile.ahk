@@ -1218,14 +1218,7 @@ OpenKingsmarch(*) {
 }
 
 OpenCurrencyTab() {
-    global mousePos
-    mousePos.SavePosition()
-    CurrencyTabX := Game.BlackBarSize + 985
-    CurrencyTabY := 160
-    MoveMouse(CurrencyTabX, CurrencyTabY)
-    Sleep(200)
-    Click("left")
-    mousePos.RestorePosition()
+    ; wasn't really useful, maybe try again later
 }
 
 CraftAlchemyOrb(*) {

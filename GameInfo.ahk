@@ -4,7 +4,6 @@ class GameInfo {
     ProcessPath := ""
     Titles := ["PathOfExile.exe", "PathOfExileSteam.exe"]
     Title := ""
-    GameMaxWidth := 3460
     Windowed := false
     PreviousAttachTime := 0
     AttachTime := 0
@@ -13,13 +12,8 @@ class GameInfo {
     GameHeight := 0
     GamePosLeft := 0
     GamePosTop := 0
-    ScreenWidth := 0
-    ScreenHeight := 0
-    ScreenMiddleX := 0
-    ScreenMiddleY := 0
     ScreenMiddleWithInventoryX := 0
     ScreenMiddleWithInventoryY := 0
-    BlackBarSize := 0
     GameWindowCenterX := 0
     GameWindowCenterY := 0
 
@@ -48,9 +42,8 @@ class GameInfo {
         }
         style := WinGetStyle(this.HWND)
         exStyle := WinGetExStyle(this.HWND)
-        gameWidth := width >= this.GameMaxWidth ? this.GameMaxWidth : width
 
-        isGameMoved := this.GamePosLeft != x or this.GamePosTop != y or this.GameHeight != height or this.GameWidth != gameWidth
+        isGameMoved := this.GamePosLeft != x or this.GamePosTop != y or this.GameHeight != height or this.GameWidth != width
 
         this.Windowed := false
         ; Check for styles typically absent in exclusive fullscreen
