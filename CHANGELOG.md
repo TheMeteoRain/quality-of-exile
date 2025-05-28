@@ -17,6 +17,18 @@ All notable changes to this project will be documented in this file.
 ### Removed
 - 
 
+## [0.1.0-beta.10] - 2025-05-28
+
+### Added
+- Multi game support. Added hotkeys for Last Epoch.
+
+### Changed
+- Updated README.md
+
+### Fixed
+- Random occurence of character moving instead of drop item and opening stacked deck macro executing properly.
+- Multi monitor setup calculations.
+
 ## [0.1.0-beta.9] - 2025-04-01
 
 ### Added

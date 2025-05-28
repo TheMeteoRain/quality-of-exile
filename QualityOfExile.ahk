@@ -6,7 +6,7 @@
 #Include "GameInfo.ahk"
 
 SetTitleMatchMode("3")
-ScriptVersion := "0.1.0-beta.9"
+ScriptVersion := "0.1.0-beta.10"
 GithubLink := "https://github.com/TheMeteoRain/quality-of-exile"
 DEBUG := false
 ; https://www.autohotkey.com/docs/v2/misc/DPIScaling.htm#Workarounds
@@ -35,6 +35,9 @@ global LastExecutionTime := {
     PerformDivinationTrading: 0,
     DropItem: 0,
     OpenStackedDivinationDeck: 0,
+    TransferMaterialsWInventory: 0,
+    TransferMaterialsWOInventory: 0,
+    ShatterItem: 0,
 }
 global CtrlToggled := false
 global ShiftToggled := false
@@ -61,9 +64,10 @@ global Configs := {
         mouseBind: false,
         tooltip: "How to use: press hotkey to enter hideout.",
         toggleOnInstance: false,
-        tab: "Tab1",
+        tab: "General",
         section: "Hotkey",
-        coords: { x: 0, y: 0 }
+        coords: { x: 0, y: 0 },
+        game: "PathOfExile",
     },
     EnterKingsmarch: {
         name: "Enter Kingsmarch",
@@ -74,9 +78,10 @@ global Configs := {
         mouseBind: false,
         tooltip: "How to use: press hotkey to enter Kingsmarch.",
         toggleOnInstance: false,
-        tab: "Tab1",
+        tab: "General",
         section: "Hotkey",
-        coords: { x: 175, y: 0 }
+        coords: { x: 175, y: 0 },
+        game: "PathOfExile",
     },
     OpenStackedDivinationDeck: {
         name: "Open Stacked Divination Deck",
@@ -86,9 +91,10 @@ global Configs := {
         mouseBind: true,
         tooltip: "How to use: hover over the desired divination stack in your inventory and press this hotkey. Only usable in outdoor areas, since you cannot drop cards in hideout or similar areas.",
         toggleOnInstance: false,
-        tab: "Tab3",
+        tab: "PoE (2)",
         section: "Hotkey",
-        coords: { x: 175, y: 0 }
+        coords: { x: 175, y: 0 },
+        game: "PathOfExile",
     },
     TradeDivinationCard: {
         name: "Trade Divination Card",
@@ -99,11 +105,12 @@ global Configs := {
         mouseBind: false,
         tooltip: "How to use: open divination card trade screen and press this hotkey, while hovering over the desired full divination card stack in your inventory.",
         toggleOnInstance: false,
-        tab: "Tab3",
+        tab: "PoE (2)",
         section: "Hotkey",
         coords: { x: 350, y: 0 },
         pixelSelect: true,
-        vars: ["TradeDivinationCardButton", "TradeDivinationCardItemArea"]
+        vars: ["TradeDivinationCardButton", "TradeDivinationCardItemArea"],
+        game: "PathOfExile",
     },
     DropItem: {
         name: "Drop Item From Inventory",
@@ -113,9 +120,10 @@ global Configs := {
         blockKeyNativeFunction: true,
         tooltip: "How to use: hover over item in your inventory and press this hotkey.",
         toggleOnInstance: false,
-        tab: "Tab3",
+        tab: "PoE (2)",
         section: "Hotkey",
-        coords: { x: 0, y: 0 }
+        coords: { x: 0, y: 0 },
+        game: "PathOfExile",
     },
     FillShipment: {
         name: "Fill Shipments",
@@ -126,9 +134,10 @@ global Configs := {
         mouseBind: true,
         tooltip: "TODO",
         toggleOnInstance: false,
-        tab: "Tab3",
+        tab: "PoE (2)",
         section: "Hotkey",
-        coords: { x: 0, y: 90 }
+        coords: { x: 0, y: 90 },
+        game: "PathOfExile",
     },
     HighlightShopItems: {
         name: "Enter RegExp",
@@ -139,9 +148,10 @@ global Configs := {
         mouseBind: true,
         tooltip: "TODO",
         toggleOnInstance: false,
-        tab: "Tab3",
+        tab: "PoE (2)",
         section: "Hotkey",
-        coords: { x: 175, y: 90 }
+        coords: { x: 175, y: 90 },
+        game: "PathOfExile",
     },
     OrbOfTransmutation: {
         name: "Orb of Transmutation (D)",
@@ -152,10 +162,11 @@ global Configs := {
         mouseBind: false,
         tooltip: "TODO",
         toggleOnInstance: true,
-        tab: "Tab2",
+        tab: "PoE (1)",
         section: "Hotkey",
         coords: { x: 0, y: 0 },
-        pixelSelect: true
+        pixelSelect: true,
+        game: "PathOfExile",
     },
     OrbOfAlteration: {
         name: "Orb of Alteration (D)",
@@ -166,10 +177,11 @@ global Configs := {
         mouseBind: false,
         tooltip: "TODO",
         toggleOnInstance: true,
-        tab: "Tab2",
+        tab: "PoE (1)",
         section: "Hotkey",
         coords: { x: 175, y: 0 },
-        pixelSelect: true
+        pixelSelect: true,
+        game: "PathOfExile",
     },
     OrbOfChance: {
         name: "Orb of Chance (D)",
@@ -180,10 +192,11 @@ global Configs := {
         mouseBind: false,
         tooltip: "TODO",
         toggleOnInstance: true,
-        tab: "Tab2",
+        tab: "PoE (1)",
         section: "Hotkey",
         coords: { x: 350, y: 0 },
-        pixelSelect: true
+        pixelSelect: true,
+        game: "PathOfExile",
     },
     AlchemyOrb: {
         name: "Alchemy Orb (D)",
@@ -194,10 +207,11 @@ global Configs := {
         mouseBind: false,
         tooltip: "TODO",
         toggleOnInstance: true,
-        tab: "Tab2",
+        tab: "PoE (1)",
         section: "Hotkey",
         coords: { x: 0, y: 120 },
-        pixelSelect: true
+        pixelSelect: true,
+        game: "PathOfExile",
     },
     OrbOfScouring: {
         name: "Orb of Scouring (D)",
@@ -208,10 +222,11 @@ global Configs := {
         mouseBind: false,
         tooltip: "TODO",
         toggleOnInstance: true,
-        tab: "Tab2",
+        tab: "PoE (1)",
         section: "Hotkey",
         coords: { x: 175, y: 120 },
-        pixelSelect: true
+        pixelSelect: true,
+        game: "PathOfExile",
     },
     ChaosOrb: {
         name: "Chaos Orb (D)",
@@ -222,10 +237,11 @@ global Configs := {
         mouseBind: false,
         tooltip: "TODO",
         toggleOnInstance: true,
-        tab: "Tab2",
+        tab: "PoE (1)",
         section: "Hotkey",
         coords: { x: 350, y: 120 },
-        pixelSelect: true
+        pixelSelect: true,
+        game: "PathOfExile",
     },
     KillSwitch: {
         name: "Kill Switch",
@@ -235,7 +251,7 @@ global Configs := {
         mouseBind: false,
         tooltip: "TODO",
         toggleOnInstance: false,
-        tab: "Tab1",
+        tab: "General",
         section: "Hotkey",
         coords: { x: 175, y: 60 }
     },
@@ -247,7 +263,7 @@ global Configs := {
         mouseBind: false,
         tooltip: "TODO",
         toggleOnInstance: false,
-        tab: "Tab1",
+        tab: "General",
         section: "Hotkey",
         coords: { x: 0, y: 60 }
     },
@@ -259,7 +275,7 @@ global Configs := {
         mouseBind: true,
         tooltip: "TODO",
         toggleOnInstance: false,
-        tab: "Tab1",
+        tab: "General",
         section: "Hotkey",
         coords: { x: 175, y: 240 }
     },
@@ -271,7 +287,7 @@ global Configs := {
         mouseBind: true,
         tooltip: "TODO",
         toggleOnInstance: false,
-        tab: "Tab1",
+        tab: "General",
         section: "Hotkey",
         coords: { x: 350, y: 240 }
     },
@@ -284,7 +300,7 @@ global Configs := {
         tooltip: "TODO",
         toggleOnInstance: false,
         coords: { x: 0, y: 240 },
-        tab: "Tab1",
+        tab: "General",
         section: "Hotkey"
     },
     ForceLogout: {
@@ -295,7 +311,7 @@ global Configs := {
         mouseBind: false,
         tooltip: "TODO",
         toggleOnInstance: false,
-        tab: "Tab1",
+        tab: "General",
         section: "Hotkey",
         coords: { x: 350, y: 0 }
     },
@@ -305,7 +321,7 @@ global Configs := {
         func: ToggleCtrl, 
         tooltip: "TODO", 
         section: "Toggle", 
-        tab: "Tab1", 
+        tab: "General", 
         toggleOnInstance: false, 
         coords: { x: 175, y: 150 }
     },
@@ -315,19 +331,66 @@ global Configs := {
         func: ToggleShift,
         tooltip: "TODO",
         section: "Toggle",
-        tab: "Tab1",
+        tab: "General",
         toggleOnInstance: false,
         coords: { x: 350, y: 150 }
     },
     ToggleOverlayPosition: {
-        field: "SelectPixel",
         name: "Toggle Overlay Position",
         tooltip: "TODO",
         section: "Options",
-        tab: "Tab1",
+        tab: "General",
         toggleOnInstance: false,
         pixelSelect: true,
         coords: { x: 0, y: 150 }
+    },
+    TransferMaterialsWInventory: {
+        name: "Transfer Materials (w/ inventory open)",
+        defaultHotkey: "",
+        func: TransferMaterialsWInventory,
+        blockKeyNativeFunction: true,
+        mouseBind: false,
+        extraField: true,
+        tooltip: "TODO",
+        tab: "Last Epoch",
+        section: "Hotkey",
+        coords: { x: 0, y: 0 },
+        pixelSelect: true,
+        toggleOnInstance: false,
+        game: "LastEpoch",
+       ; vars: ["TransferMaterialsButton", "TransferMaterialsSort"],
+    },
+    TransferMaterialsWOInventory: {
+        name: "Transfer Materials (w/o inventory open)",
+        defaultHotkey: "",
+        func: TransferMaterialsWOInventory,
+        blockKeyNativeFunction: true,
+        mouseBind: false,
+        extraField: true,
+        tooltip: "TODO",
+        tab: "Last Epoch",
+        section: "Hotkey",
+        coords: { x: 175, y: 0 },
+        pixelSelect: true,
+        toggleOnInstance: false,
+        game: "LastEpoch",
+        ;vars: ["TransferMaterialsButton", "TransferMaterialsSort"],
+    },
+    ShatterItem: {
+        name: "Shatter Item",
+        defaultHotkey: "",
+        func: ShatterItem,
+        blockKeyNativeFunction: true,
+        mouseBind: false,
+        extraField: true,
+        tooltip: "TODO",
+        tab: "Last Epoch",
+        section: "Hotkey",
+        coords: { x: 350, y: 0 },
+        pixelSelect: true,
+        toggleOnInstance: false,
+        game: "LastEpoch",
+        vars: ["ShatterItemRuneSelection", "ShatterItemShatterRune", "ShatterItemButton"],
     },
 }
 
@@ -441,7 +504,7 @@ TerminateTCP(*) {
 
         if (found) {
             if (FileGetSize(tempFile) > 0) {
-                ; if log file has content it, then the tcp connection is still alive, close the game
+                ; if log file has content, then the tcp connection is still alive, close the game
                 ProcessClose(Game.PID)
                 MsgBox("Could not terminate TCP connections with cports. Closing game to be safe. This should not happen. Send an issue in: " GithubLink)
             }
@@ -494,17 +557,21 @@ Settings(*) {
     }
 
     HotkeyGui := Gui("+AlwaysOnTop +ToolWindow", "Quality of Exile")
-    TabControl := HotkeyGui.Add("Tab3", "", ["Tab1","Tab2","Tab3"])
+    TabControl := HotkeyGui.Add("PoE (2)", "", ["General","PoE (1)","PoE (2)", "Last Epoch"])
     
-    TabControl.UseTab("Tab1")
+    TabControl.UseTab("General")
     textCtrl := HotkeyGui.Add("Text", Format("x{} y{} w500", pX, pY), "(K): Keyboard keybind | (M): Mouse keybind | (Px): Pixel | (D): Dynamic Hotkey")
     textCtrl.SetFont("w700")
 
-    TabControl.UseTab("Tab2")
+    TabControl.UseTab("PoE (1)")
     textCtrl := HotkeyGui.Add("Text", Format("x{} y{} w500", pX, pY), "(K): Keyboard keybind | (M): Mouse keybind | (Px): Pixel | (D): Dynamic Hotkey")
     textCtrl.SetFont("w700")
 
-    TabControl.UseTab("Tab3")
+    TabControl.UseTab("PoE (2)")
+    textCtrl := HotkeyGui.Add("Text", Format("x{} y{} w500", pX, pY), "(K): Keyboard keybind | (M): Mouse keybind | (Px): Pixel | (D): Dynamic Hotkey")
+    textCtrl.SetFont("w700")
+
+    TabControl.UseTab("Last Epoch")
     textCtrl := HotkeyGui.Add("Text", Format("x{} y{} w500", pX, pY), "(K): Keyboard keybind | (M): Mouse keybind | (Px): Pixel | (D): Dynamic Hotkey")
     textCtrl.SetFont("w700")
 
@@ -529,6 +596,8 @@ Settings(*) {
 
         textGuiControl := HotkeyGui.Add("Text", Format("x{} y{} w{}", x, y, w), config.name)
         textGuiControl.SetFont("bold")
+        textGuiControl.GetPos(&cX, &cY, &cW, &cH)
+        y := y + cH - gap
         if (config.section == "Hotkey") {
             keyboardLabel := HotkeyGui.Add("Text", Format("x{} y{} Center", x, y+rowSize+3-gap), "K")
             mainGuiControl := HotkeyGui.Add("Hotkey", Format("v{} x{} y{} w{}", key, x+10, y+rowSize-gap, w), Hotkeys.Get(key, ""))
@@ -556,15 +625,16 @@ Settings(*) {
             }
 
             if (config.HasProp("pixelSelect") and config.pixelSelect) {
+                newY := y
                 if (config.HasProp("vars") and config.vars.Length > 0) {
                     for index, var in config.vars {
-                        newY := index > 1 ? y+rowSize*index : y
+                        newY := index > 1 ? newY+rowSize*2 : newY
                         pixelSearchCtrls(config, var, "Readonly", x, newY-gap, x, newY+rowSize-gap)
                     }
                 } else {
                     pixelSearchCtrls(config, key, "Readonly", x, y-gap, x, y+rowSize-gap)
                 }
-                y := y+rowSize
+                y := newY+rowSize
             }
 
             if (key == "HighlightShopItems") {
@@ -708,6 +778,10 @@ LoadConfigurations() {
 
     try {
         for key, config in Configs.OwnProps() {
+            if (config.HasProp("game") and config.game != Game.Name) {
+                continue
+            }
+
             if (config.HasProp("pixelSelect") and config.pixelSelect) {
                 if (config.HasProp("vars") and config.vars.Length > 0) {
                     for index, var in config.vars {
@@ -734,7 +808,7 @@ LoadConfigurations() {
                     Hotkey("*" val, config.func)
                 } else {
                     HotIfWinActive(Game.Title)
-                    if (config.toggleOnInstance) {
+                    if (config.HasProp("toggleOnInstance") and config.toggleOnInstance) {
                         ; dynamic hotkeys
                         Hotkey("*" val, config.func)
                     } else if (config.blockKeyNativeFunction) {
@@ -792,7 +866,7 @@ LoadConfigurations() {
             ; Hotkey("*Space", ResetToggleSpace)
         }
     } catch Error as e {
-        LogError("Could not load configurations." e, true)
+        ;LogError("Could not load configurations." e, true)
         KillSwitch()
     }
 }
@@ -812,6 +886,16 @@ SelectPixel(control, pixelTextControl, config, *) {
                 name := "Trade Divination Card Button"
             } else if (control.Name == "TradeDivinationCardItemAreaPixelSelect") {
                 name := "Trade Divination Card Item Area"
+            } else if (control.Name == "TransferMaterialsButtonPixelSelect") {
+                name := "Transfer Materials Button"
+            } else if (control.Name == "TransferMaterialsSortPixelSelect") {
+                name := "Sort Button"
+            } else if (control.Name == "ShatterItemButtonPixelSelect") {
+                name := "Shatter Item Button"
+            } else if (control.Name == "ShatterItemRuneSelectionPixelSelect") {
+                name := "Shatter Item Rune Selection"
+            } else if (control.Name == "ShatterItemShatterRunePixelSelect") {
+                name := "Shatter Item Shatter Rune"
             }
         }
     
@@ -1173,7 +1257,7 @@ OpenStackedDivinationDeck(*) {
 
         Click("right")
         Sleep(10)
-        MoveMouse(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY)
+        CustomMouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY)
         Sleep(100)
         Click("left")
         Sleep(75)
@@ -1197,7 +1281,7 @@ DropItem(*) {
     
         Click("left")
         Sleep(10)
-        MoveMouse(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY)
+        CustomMouseMove(Game.ScreenMiddleWithInventoryX, Game.ScreenMiddleWithInventoryY)
         Sleep(100)
         Click("left")
         Sleep(75)
@@ -1217,8 +1301,146 @@ OpenKingsmarch(*) {
     SendInput("{Enter}/kingsmarch{Enter}")
 }
 
-OpenCurrencyTab() {
-    ; wasn't really useful, maybe try again later
+ShatterItem(*) {
+
+    runeSelectionResolution := ParseAndValidatePixel("Shatter Item", "ShatterItemRuneSelection")
+    shatterRuneResolution := ParseAndValidatePixel("Shatter Item", "ShatterItemShatterRune")
+    buttonResolution := ParseAndValidatePixel("Shatter Item", "ShatterItemButton")
+
+    if (!buttonResolution or !runeSelectionResolution or !shatterRuneResolution) {
+        return
+    }
+
+    if (Debounce("ShatterItem", 100)) {
+        return
+    }
+
+    state := SaveToggleState()
+    ResetToggle()
+    try {
+        BlockInput("MouseMove")
+        mousePos.SavePosition()
+        SendInput("{Shift down}")
+        Sleep(50)
+        Send("!{Click Right}")
+        Sleep(50)
+        SendInput("{Shift up}")
+        Sleep(50)
+        CustomMouseMove(runeSelectionResolution.width, runeSelectionResolution.height)
+        Sleep(50)
+        Click("left")
+        Sleep(50)
+        CustomMouseMove(shatterRuneResolution.width, shatterRuneResolution.height)
+        Sleep(50)
+        Click("left")
+        Sleep(50)
+        CustomMouseMove(buttonResolution.width, buttonResolution.height)
+        Sleep(50)
+        Click("left")
+        Sleep(50)
+        mousePos.RestorePosition()
+    } finally {
+        SendInput("{Shift up}")
+        BlockInput("MouseMoveOff")
+        RestoreToggleState(state)
+    }
+}
+
+ParseAndValidatePixel(name, variable) {
+    if (!Extra.Has(variable) or !Extra.Get(variable)) {
+        MsgBox("Set pixel for " name ". Use the Pixel Search button in settings (" Hotkeys["Settings"] ").")
+        return false
+    }
+
+    resolution := ParseResolution(Extra[variable])
+    if (!resolution) {
+        MsgBox("Invalid resolution for " name ". Please set a valid resolution in the format 'widthxheight' (e.g., 1920x1080).")
+        return false
+    }
+
+    return resolution
+}
+
+TransferMaterialsWOInventory(*) {
+    global mousePos
+
+    if (!Extra.Has("TransferMaterialsWOInventory") or !Extra.Get("TransferMaterialsWOInventory")) {
+        MsgBox("Set pixel for Transfer Materials. Use the Pixel Search button in settings (" Hotkeys["Settings"] ").")
+        return
+    }
+
+    resolution := ParseResolution(Extra["TransferMaterialsWOInventory"])
+    if (!resolution) {
+        MsgBox("Invalid resolution for Transfer Materials. Please set a valid resolution in the format 'widthxheight' (e.g., 1920x1080).")
+        return
+    }
+
+    if (Debounce("TransferMaterialsWOInventory", 100)) {
+        return
+    }
+    
+    state := SaveToggleState()
+    ResetToggle()
+    try {
+        if (GetKeyState("LButton", "P")) {
+            Click("left up")
+        }
+        SendInput("i")
+        BlockInput("MouseMove")
+        mousePos.SavePosition()
+        CustomMouseMove(resolution.width, resolution.height)
+        Sleep(50)
+        Click("left")
+        Sleep(50)
+        mousePos.RestorePosition()
+    } finally {
+        if (GetKeyState("LButton", "P")) {
+            Click("left down")
+        }
+        SendInput("i")
+        BlockInput("MouseMoveOff")
+        RestoreToggleState(state)
+    }
+}
+
+TransferMaterialsWInventory(*) {
+    global mousePos
+
+    if (!Extra.Has("TransferMaterialsWInventory") or !Extra.Get("TransferMaterialsWInventory")) {
+        MsgBox("Set pixel for Transfer Materials. Use the Pixel Search button in settings (" Hotkeys["Settings"] ").")
+        return
+    }
+
+    resolution := ParseResolution(Extra["TransferMaterialsWInventory"])
+    if (!resolution) {
+        MsgBox("Invalid resolution for Transfer Materials. Please set a valid resolution in the format 'widthxheight' (e.g., 1920x1080).")
+        return
+    }
+
+    if (Debounce("TransferMaterialsWInventory", 100)) {
+        return
+    }
+    
+    state := SaveToggleState()
+    ResetToggle()
+    try {
+        if (GetKeyState("LButton", "P")) {
+            Click("left up")
+        }
+        BlockInput("MouseMove")
+        mousePos.SavePosition()
+        CustomMouseMove(resolution.width, resolution.height)
+        Sleep(50)
+        Click("left")
+        Sleep(50)
+        mousePos.RestorePosition()
+    } finally {
+        if (GetKeyState("LButton", "P")) {
+            Click("left down")
+        }
+        BlockInput("MouseMoveOff")
+        RestoreToggleState(state)
+    }
 }
 
 CraftAlchemyOrb(*) {
@@ -1263,7 +1485,7 @@ CraftWithCurrency(name, key) {
     try {
         BlockInput("MouseMove")
         mousePos.SavePosition()
-        MoveMouse(resolution.width, resolution.height)
+        CustomMouseMove(resolution.width, resolution.height)
         Sleep(50)
         Click("right")
         Sleep(50)
@@ -1288,7 +1510,7 @@ Debounce(fnName, cooldownTime := 1000) {
     return false
 }
 
-MoveMouse(x, y) {
+CustomMouseMove(x, y) {
     DllCall("SetCursorPos", "int", x, "int", y)
 }
 
@@ -1449,8 +1671,6 @@ LoadState()
 CreateToggleOverlay()
 CreateHUD()
 
-; Client.txt file behaves odd but for our advantage
-; Client.txt file does not 
 DynamicHotkeys() {
     global clientFilePath, DynamicHotkeysActivated, DynamicHotkeysState
 
@@ -1475,9 +1695,13 @@ Main() {
     global Game, clientFilePath, DynamicHotkeysActivated
 
     Game.AttachToGame()
-    GetPoEClientFilePath()
-    ListenToClientFile()
-    DynamicHotkeys()
+
+    if (Game.GameIsPathOfExile()) {
+        GetPoEClientFilePath()
+        ListenToClientFile()
+        DynamicHotkeys()
+    }
+    
     ShowToggleOverlay()
     ShowHUD()
     SetTimer(Wrapper, 5000)
@@ -1489,7 +1713,7 @@ Main() {
         ResetToggle()
         SetTimer(Wrapper, 0)
 
-        if (!Game.GameClientExists()) {
+        if (Game.GameIsPathOfExile() and !Game.GameClientExists()) {
             UnlistenClientFile()
             SetDynamicHotkeysState("Off")
         }

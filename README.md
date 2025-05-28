@@ -78,9 +78,28 @@ Trade full stack of divination cards
 ![Trade full stack of divination cards](assets/trade_div.gif)
 
 Currency crafting
-![Currency crafting](assets/currency_crafting.gif)
+![Crafting with currency](assets/currency_crafting.gif)
 
 ## Hotkeys
+
+- [Logout Macro](#logout-macro)
+- [Toggle CTRL](#toggle-ctrl)
+- [Toggle SHIFT](#toggle-shift)
+- [Spam Ctrl Click](#spam-ctrl-click)
+- [Kill Switch](#kill-switch)
+- [Enter Hideout](#enter-hideout)
+- [Enter League Specific Area](#enter-league-specific-area)
+- [Orb of Transmutation (Dynamic Hotkey)](#orb-of-transmutation-dynamic-hotkey)
+- [Orb of Alteration (Dynamic Hotkey)](#orb-of-alteration-dynamic-hotkey)
+- [Orb of Chance (Dynamic Hotkey)](#orb-of-chance-dynamic-hotkey)
+- [Alchemy Orb (Dynamic Hotkey)](#alchemy-orb-dynamic-hotkey)
+- [Orb of Scouring (Dynamic Hotkey)](#orb-of-scouring-dynamic-hotkey)
+- [Chaos Orb (Dynamic Hotkey)](#chaos-orb-dynamic-hotkey)
+- [Trade Full Stack of Divination Cards](#trade-full-stack-of-divination-cards)
+- [Open Stacked Divination Deck](#open-stacked-divination-deck)
+- [Drop Item From Inventory](#drop-item-from-inventory)
+- [Fill Shipments](#fill-shipments)
+- [Enter RegExp](#enter-regexp)
 
 ### Logout Macro
 Close TCP connections of Path of Exile process.

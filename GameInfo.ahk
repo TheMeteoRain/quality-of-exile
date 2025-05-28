@@ -2,8 +2,9 @@ class GameInfo {
     HWND := 0
     PID := 0
     ProcessPath := ""
-    Titles := ["PathOfExile.exe", "PathOfExileSteam.exe"]
+    Titles := ["PathOfExile.exe", "PathOfExileSteam.exe", "Last Epoch.exe"]
     Title := ""
+    Name := ""
     Windowed := false
     PreviousAttachTime := 0
     AttachTime := 0
@@ -90,6 +91,14 @@ class GameInfo {
         }
     }
 
+    GameIsPathOfExile() {
+        return (this.Title == "ahk_exe PathOfExile.exe" or this.Title == "ahk_exe PathOfExileSteam.exe")
+    }
+
+    GameIsLastEpoch() {
+        return (this.Title == "ahk_exe Last Epoch.exe")
+    }
+
     AttachToGame() {
         gameProcessFound := false
         while (!this.HWND) {
@@ -102,6 +111,11 @@ class GameInfo {
                     this.PID := WinGetPID(exe)
                     this.ProcessPath := ProcessGetPath(this.PID)
                     this.HWND := this.GameClientActive(exe)
+                    if (this.GameIsPathOfExile()) {
+                        this.Name := "PathOfExile"
+                    } else if (this.GameIsLastEpoch()) {
+                        this.Name := "LastEpoch"
+                    }
 
                     break
                 }
