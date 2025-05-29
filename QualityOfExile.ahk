@@ -6,13 +6,14 @@
 #Include "MousePositionSaver.ahk"
 #Include "ClipboardSaver.ahk"
 #Include "GameInfo.ahk"
+#Include "version.ahk"
 
 FileEncoding("UTF-8")
 SetTitleMatchMode("2")
 AHK_VERSION_REQUIRED := "2.0.0"
 DocumentPath := A_MyDocuments "\QualityOfExile"
 LogPath := A_MyDocuments "\QualityOfExile\log.txt"
-versionFile := A_ScriptDir "\version.txt"
+versionFile := A_ScriptDir "\version.ahk"
 GithubLink := "https://github.com/TheMeteoRain/quality-of-exile"
 DEBUG := false
 cportsPath := DocumentPath "\cports"
@@ -21,8 +22,7 @@ cportsDownloadURL := "https://www.nirsoft.net/utils/cports.zip" ; URL to the ZIP
 cportsZipPath := DocumentPath "\cports.zip"
 INI_FILE := DocumentPath "\data.ini"
 STATE_FILE := DocumentPath "\state.ini"
-ScriptVersion := "unknown"
-NewestVersion := "unknown"
+global NewestVersion := VERSION
 
 LogError(msg, e := unset, showMsgBox := false) {
     if (showMsgBox) {
@@ -61,17 +61,10 @@ DestroyGui(GuiCtrl, *) {
     }
 }
 
-if FileExist(versionFile) {
-    ScriptVersion := Trim(FileRead(versionFile))
-} else {
-    LogError("Version file not found. Program might be corrupted. Re-download program.", , true)
-}
-NewestVersion := ScriptVersion
-
 SplashGui := Gui("+AlwaysOnTop -Caption +ToolWindow", "Quality of Exile - Splash Screen")
-SplashGui.Add("Text", "Center", "Running Quality of Exile`nVersion: " ScriptVersion)
+SplashGui.Add("Text", "Center", "Running Quality of Exile`nVersion: " VERSION)
 SplashGui.Show()
-LogMessage("Starting Quality of Exile version: " ScriptVersion)
+LogMessage("Starting Quality of Exile version: " VERSION)
 Sleep(2000)
 SplashGui.Destroy()
 
@@ -454,6 +447,8 @@ global Configs := {
 }
 
 Initialize() {
+    global NewestVersion, VERSION
+
     CreateProgramDocumentPath() {
         if (!DirExist(DocumentPath)) {
             DirCreate(DocumentPath)
@@ -526,45 +521,65 @@ Initialize() {
         }
     }
 
-    CheckForUpdates() {
+    CheckForUpdates() {       
+        global NewestVersion, VERSION
+
         try {
             LogMessage("Checking for updates.")
+            releasesFile := DocumentPath . "\releases.json"
+
+            if (FileExist(releasesFile)) {
+                FileDelete(releasesFile)
+            }
+
+            LogMessage("Downloading releases.json.")
             Download("https://api.github.com/repos/themeteorain/quality-of-exile/releases", DocumentPath . "\releases.json")
             Releases := FileRead(DocumentPath . "\releases.json")
 
             LogMessage("Parsing version.")
-            if (RegExMatch(Releases, '"tag_name"\s*:\s*"v([^"]+)"', &Match)) {
-                NewestVersion := Match[1]
+            if (RegExMatch(Releases, '"tag_name"\s*:\s*"v([^"]+)"', &match)) {
+                NewestVersion := Trim(match[1])
+                LogMessage("Updated version found: " NewestVersion)
             }
 
             GetNewerReleaseBodies(json, currentVersion) {
                 bodies := "No changelog available."
-                pos := 1
-                while RegExMatch(json, '"tag_name"\s*:\s*"v([^"]+)"[\s\S]+?"body"\s*:\s*"((?:[^"\\]|\\.)*)"', &m, pos) {
-                    version := m[1]
-                    body := m[2]
-                    pos := m.Pos(0) + m.Len(0)
-                    if (VerCompare(version, currentVersion) > 0) {
-                        body := StrReplace(body, '\r\n', "`n")
-                        body := StrReplace(body, '\n', "`n")
-                        body := StrReplace(body, '\"', '"')
 
-                        if (A_Index == 1) {
-                            bodies := body
+                try {
+                    pos := 1
+                    while RegExMatch(json, '"tag_name"\s*:\s*"v([^"]+)"[\s\S]+?"body"\s*:\s*"((?:[^"\\]|\\.)*)"', &m, pos) {
+                        version := m[1]
+                        body := m[2]
+                        pos := m.Pos(0) + m.Len(0)
+
+                        if (VerCompare(version, currentVersion)) {
+                            body := StrReplace(body, '\r\n', "`n")
+                            body := StrReplace(body, '\n', "`n")
+                            body := StrReplace(body, '\"', '"')
+    
+                            if (A_Index == 1) {
+                                bodies := body
+                            } else {
+                                bodies := bodies "`n`n`n" body
+                            }
                         } else {
-                            bodies := bodies "`n`n`n" body
+                            break
                         }
                     }
+                } catch Error  as e {
+                    LogError("Failed to parse changelog.", e, false)
                 }
+
                 return bodies
             }
-            LogMessage("Parsing changelog.")
-            Changelog := GetNewerReleaseBodies(Releases, ScriptVersion)
 
-            LogMessage("Compare versions.")
-            if (VerCompare(NewestVersion, ScriptVersion) > 0) {
+            LogMessage("Comparing versions. NewestVersion: " NewestVersion ", VERSION: " VERSION)
+            if (VerCompare(NewestVersion, VERSION)) {
+                LogMessage("Parsing changelog.")
+                Changelog := GetNewerReleaseBodies(Releases, VERSION)
+
                 VersionGui := Gui("", "Quality of Exile - Update Available")
-                VersionGui.Add("Text", "", "Update Available.`nCurrent version: " ScriptVersion "`nNew version available: " NewestVersion "`n`nContinue with update? It will only take a moment, and the script will automatically restart.")
+                VersionGui.Add("Text", "", "Update Available.`nCurrent version: " VERSION "`nNew version available: " NewestVersion "`n`nContinue with update? It will only take a moment, and the script will automatically restart.")
                 VersionGui.Add("Edit", "w600 h300 +ReadOnly +VScroll +HScroll", Changelog)
                 UpdateButton := VersionGui.Add("Button", "Default Section", "Update")
                 UpdateButton.OnEvent("Click", UpdateScript)
@@ -587,7 +602,7 @@ Initialize() {
                 DownloadPath := A_ScriptDir "\QualityOfExile.tmp.exe"
             } else {
                 ; file is .ahk
-                DownloadURL := "https://github.com/TheMeteoRain/quality-of-exile/archive/refs/tags/v" NewestVersion ".zip"
+                DownloadURL := "https://github.com/TheMeteoRain/quality-of-exile/releases/download/v" NewestVersion "/quality-of-exile-" NewestVersion ".zip"
                 DownloadPath := DocumentPath "\qualityofexile.zip"
             }
             
@@ -632,7 +647,7 @@ Initialize() {
 
             try {
                 ; TODO: fix path
-                tarCommand := Format("tar -xf {} -C {}", DownloadPath, DocumentPath)
+                tarCommand := Format("tar -xf {} -C {}", DownloadPath, A_ScriptDir)
                 LogMessage("Running tar command: " tarCommand)
                 RunWait(A_ComSpec . " /c " . tarCommand, "", "Hide")
                 LogMessage("Tar command completed.")
@@ -861,7 +876,7 @@ Settings(*) {
 
     TabControl.UseTab("")
 
-    HotkeyGui.Add("Text", Format("x{} y{} w{} Center", 0, maxY, 200), "QualityOfExile version:`n" ScriptVersion)
+    HotkeyGui.Add("Text", Format("x{} y{} w{} Center", 0, maxY, 200), "QualityOfExile version:`n" VERSION)
     HotkeyGui.Add("Link", Format("x{} y{} w{}", pX*2, maxY + 35, w), Format('<a href="{}">Github / Documentation</a>', GithubLink))
 
     HotkeyGui.Add("Button", Format("x{} y{} w{} Default", 550/2-200/2, maxY, 200), "Save And Reload").OnEvent("Click", SaveConfigurations)
