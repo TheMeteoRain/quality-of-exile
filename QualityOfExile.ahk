@@ -552,7 +552,7 @@ Initialize() {
                         body := m[2]
                         pos := m.Pos(0) + m.Len(0)
 
-                        if (VerCompare(version, currentVersion)) {
+                        if (VerCompare(version, currentVersion) == 1) {
                             body := StrReplace(body, '\r\n', "`n")
                             body := StrReplace(body, '\n', "`n")
                             body := StrReplace(body, '\"', '"')
@@ -573,8 +573,7 @@ Initialize() {
                 return bodies
             }
 
-            LogMessage("Comparing versions. NewestVersion: " NewestVersion ", VERSION: " VERSION)
-            if (VerCompare(NewestVersion, VERSION)) {
+            if (VerCompare(NewestVersion, VERSION) == 1) {
                 LogMessage("Parsing changelog.")
                 Changelog := GetNewerReleaseBodies(Releases, VERSION)
 
