@@ -55,6 +55,16 @@ LogMessage(msg, level := "Normal", showMsgBox := false) {
     )
 }
 
+CleanLogFileIfTooBig() {
+    if (FileExist(LogPath)) {
+        fileSize := FileGetSize(LogPath)
+        if (fileSize > 536870912) { ; 512MB
+            FileDelete(LogPath)
+            LogMessage("Log file was too big (" fileSize "), deleting it.")
+        }
+    }
+}
+
 DestroyGui(GuiCtrl, *) {
     if (IsSet(GuiCtrl)) {
         GuiCtrl.gui.Destroy()
@@ -600,7 +610,7 @@ Initialize() {
             if (A_IsCompiled) {
                 ; file is .exe
                 DownloadURL := "https://github.com/TheMeteoRain/quality-of-exile/releases/download/v" NewestVersion "/QualityOfExile.exe"
-                DownloadPath := A_ScriptDir "\QualityOfExile.tmp.exe"
+                DownloadPath := DocumentPath "\QualityOfExile.tmp.exe"
             } else {
                 ; file is .ahk
                 DownloadURL := "https://github.com/TheMeteoRain/quality-of-exile/releases/download/v" NewestVersion "/quality-of-exile-" NewestVersion ".zip"
