@@ -65,6 +65,7 @@ jobs:
           in: QualityOfExile.ahk
           out: QualityOfExile.exe
           arch: x64
+          icon: assets/favicon.ico
           
       - uses: actions/upload-artifact@v4
         with:
