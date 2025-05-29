@@ -4,18 +4,20 @@ Feeling strained, exile?
 
 ## Motivation
 
-For a long time, I've been experiencing discomfort in my left pinky from frequently having to hold modifier keys (CTRL and SHIFT). To alleviate this, I created a small script that toggles modifier keys. Over time, I expanded the tool to hotkey other repetitive tasks to give my hands a break from the constant wrist movements and click spamming. My goal is not to hotkey anything that could compromise the integrity of the game, but simply to make the experience more comfortable (mostly in towns) and enjoyable without the pain. This tool is intended for anyone who faces similar issues, especially as they deal with the strain that can come with age.
+For a long time, I've been experiencing discomfort in my left pinky from frequently having to hold modifier keys (CTRL and SHIFT). To alleviate this, I created a small script that toggles those modifier keys. Over time, I expanded the tool to hotkey over other repetitive tasks to give my hands a break from the constant wrist movements and click spamming. My goal is not to hotkey anything that could compromise the integrity of the game, but simply to make the experience more comfortable (mostly in towns) and enjoyable without the pain. This tool is intended for anyone who faces similar issues, especially as they deal with the strain that can come with age.
 
-Like all tools of this nature, this one also falls into a gray area. There are tools that can achieve same results but not within one tool. You'd have to use multiple tools or even combine them. Morally I don't see the harm for being able to keep playing without discomfort or pain. Personally it allows me to enjoy the game more, something I might otherwise have to give up due to discomfort. I will be expanding the tool and adding features as I encounter them, but again I won't be automating anything. Game is supposed to be played yourself.
+Like all tools of this nature, this one also falls into a gray area. There are tools that can achieve same results but not within one tool. You'd have to use multiple tools or even combine them. Morally I don't see the harm for being able to keep playing without discomfort or pain. Personally it allows me to enjoy the game more, something I might otherwise have to give up due to discomfort. I will be expanding the tool and adding features as I encounter them. To clarify again, there won't be any automation scripts. Game is supposed to be played yourself.
 
 That said, use at your own risk! The tool is designed to reduce strain on your hands, allowing you to play comfortably for longer periods, whether in a single session or over time.
 
 ## Requirements
 
-- Windows PC
+- Windows 11 PC
 
 ## Caveats
 
+- Windows 10 has not been tested.
+- Might not work with external macro keypads. Intention is that it would work. Currently I don't own one, so it is hard to test.
 - If you choose to use a toggleable CTRL key, make sure to reassign your in-game hotkeys from CTRL+# to another location. Keep in mind that hotkeys don’t have to be tied to a modifier key—you can set them to a single key also, which is something I would recommend anyway.
 - Dynamic Hotkeys are enabled by default. If you launch the tool while in a combat area, they won't function properly until you enter a loading screen. (read more below)
 
@@ -23,18 +25,18 @@ That said, use at your own risk! The tool is designed to reduce strain on your h
 
 Option 1:
 - Install [AHK2](https://www.autohotkey.com/)
-- Download [.zip file](https://github.com/TheMeteoRain/quality-of-exile/releases) for the source codes
+- Download [.zip file](https://github.com/TheMeteoRain/quality-of-exile/releases) named: `quality-of-exile-x.x.x.zip`
 - Unpack
 - Run QualityOfExile.ahk
 
 Option 2:
+- Download [.exe file](https://github.com/TheMeteoRain/quality-of-exile/releases) (it will be recognized as virus)
+- Run it
+
+Option 3 (advanced users, also not recommended):
 - Install [AHK2](https://www.autohotkey.com/)
 - Clone repository
 - Run QualityOfExile.ahk
-
-Option 3:
-- Download [.exe file](https://github.com/TheMeteoRain/quality-of-exile/releases) (it will be recognized as virus)
-- Run it
 
 ## Features
 - **Read Local Client.txt File**
@@ -66,17 +68,17 @@ To change keybinds, press F10 (default) to open the hotkey configuration window.
 Examples:
 
 Setup toggle overlay
-![Setup toggle overlay](https://themeteorain.github.io/quality-of-exile/overlay.gif)
+![Setup toggle overlay](https://raw.githubusercontent.com/themeteorain/quality-of-exile/gh-pages/overlay.gif)
 
 
 Drop stacked divination deck
-![Drop stacked divination deck](https://themeteorain.github.io/quality-of-exile/stacked_deck.gif)
+![Drop stacked divination deck](https://raw.githubusercontent.com/themeteorain/quality-of-exile/gh-pages/stacked_deck.gif)
 
 Trade full stack of divination cards
-![Trade full stack of divination cards](https://themeteorain.github.io/quality-of-exile/trade_div.gif)
+![Trade full stack of divination cards](https://raw.githubusercontent.com/themeteorain/quality-of-exile/gh-pages/trade_div.gif)
 
 Currency crafting
-![Crafting with currency](https://themeteorain.github.io/quality-of-exile/currency_crafting.gif)
+![Crafting with currency](https://raw.githubusercontent.com/themeteorain/quality-of-exile/gh-pages/currency_crafting.gif)
 
 ## Hotkeys
 
@@ -103,7 +105,7 @@ Currency crafting
 Close TCP connections of Path of Exile process.
 
 ### Toggle CTRL
-Press the keybind once to hold CTRL. Press it again to release CTRL. You can also rebind CTRL to any key you want, maybe you have small macro keypad. My favourite is setting my mouse's side buttons to CTRL and SHIFT. So, I don't have to use pinky at all. Pressing any other toggleable keybind will deactivate the previously toggled one.
+Press the keybind once to toggle CTRL. Press it again to release CTRL. You can also rebind CTRL to any key you want, maybe you have small macro keypad. My favourite is setting my mouse's side buttons to CTRL and SHIFT. So, I don't have to use pinky at all. Pressing any other toggleable keybind will deactivate the previously toggled one.
 
 Use cases:
 - Move items from inventory to stash.
@@ -111,13 +113,13 @@ Use cases:
 - Pre-toggle before interacting with an NPC to trigger specific actions, such as opening the sell window or identifying items (PoE2:The Hooded One).
 
 ### Toggle SHIFT
-Press the keybind once to hold SHIFT. Press it again to release SHIFT. You can also rebind SHIFT to any key you want, maybe you have small macro keypad. My favourite is setting my mouse's side buttons to CTRL and SHIFT. So, I don't have to use pinky at all. Pressing any other toggleable keybind will deactivate the previously toggled one.
+Press the keybind once to toggle SHIFT. Press it again to release SHIFT. You can also rebind SHIFT to any key you want, maybe you have small macro keypad. My favourite is setting my mouse's side buttons to CTRL and SHIFT. So, I don't have to use pinky at all. Pressing any other toggleable keybind will deactivate the previously toggled one.
 
 Use cases:
 - Use crafting currency continuously (e.g. alterations, jewellers, fusings) without needing to hold down SHIFT yourself.
 
 ### Spam Ctrl Click
-Press the keybind once to hold CTRL and spams left click. Press it again to stop. Pressing any other toggleable keybind will deactivate the previously toggled one.
+Press the keybind once to activate: the script will hold CTRL and rapidly spam left click. Press the keybind again to stop. Activating any other toggleable keybind will automatically deactivate this action.
 
 Use cases:
 - Rabidly move items to the stash.
