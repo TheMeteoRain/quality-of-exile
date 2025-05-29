@@ -22,7 +22,7 @@ cportsDownloadURL := "https://www.nirsoft.net/utils/cports.zip" ; URL to the ZIP
 cportsZipPath := DocumentPath "\cports.zip"
 INI_FILE := DocumentPath "\data.ini"
 STATE_FILE := DocumentPath "\state.ini"
-global NewestVersion := VERSION
+NewestVersion := VERSION
 
 LogError(msg, e := unset, showMsgBox := false) {
     if (showMsgBox) {
@@ -32,8 +32,8 @@ LogError(msg, e := unset, showMsgBox := false) {
     if (e) {
         FileAppend(
             Format(
-                "Level: {}, Time: {}, Message: {}, A_IsCompiled: {}, Error: {}, Details: {}, File: {}, Line: {}, Extra: {}`n",
-                "Error", A_NowUTC, msg, A_IsCompiled, e.what, e.message, e.file, e.line, e.extra ? e.extra : ""
+                "Level: {}, Version: {}, Time: {}, Message: {}, A_IsCompiled: {}, Error: {}, Details: {}, File: {}, Line: {}, Extra: {}`n",
+                "Error", VERSION, A_NowUTC, msg, A_IsCompiled, e.what, e.message, e.file, e.line, e.extra ? e.extra : ""
             ),
             LogPath
         )
@@ -48,8 +48,8 @@ LogMessage(msg, level := "Normal", showMsgBox := false) {
     }
     FileAppend(
         Format(
-            "Level: {}, Time: {}, Message: {}, A_IsCompiled: {}`n",
-            "Normal", A_NowUTC, msg, A_IsCompiled
+            "Level: {}, Version: {}, Time: {}, Message: {}, A_IsCompiled: {}`n",
+            "Normal", VERSION, A_NowUTC, msg, A_IsCompiled
         ),
         LogPath
     )
