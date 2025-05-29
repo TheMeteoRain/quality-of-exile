@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.0-beta.11](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.0-beta.8...v0.1.0-beta.11) (2025-05-29)
+
+
+### Features
+
+* Automatic update detection ([fe7d78d](https://github.com/TheMeteoRain/quality-of-exile/commit/fe7d78d0aa317864af82868e7f081a4422a40e1c))
+
+
+### Bug Fixes
+
+* Use correct value ([6a80a39](https://github.com/TheMeteoRain/quality-of-exile/commit/6a80a3973a1b5dc751941618e9f8578ad7db4a2d))
+
+
+### Miscellaneous Chores
+
+* release 0.1.0-beta.10 ([aa02d69](https://github.com/TheMeteoRain/quality-of-exile/commit/aa02d699cf8cf6d304445bbd59afebee2c068e25))
+
 ## [Unreleased]
 
 ### Added
