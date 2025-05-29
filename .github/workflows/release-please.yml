@@ -25,7 +25,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: simple
 
-  update-files:
+  update-pr-files:
     needs: release-please
     runs-on: ubuntu-latest
     if: ${{ needs.release-please.outputs.prs_created == 'true' }}
@@ -52,22 +52,6 @@ jobs:
           git commit --amend --no-edit
           git push --force-with-lease
 
-  upload-zip-to-release:
-    needs: release-please
-    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-    
-      - name: Zip files
-        run: zip quality-of-exile-${{ needs.release-please.outputs.version }}.zip *.ahk version.txt LICENSE README.md
-
-      - name: Upload assets to release
-        uses: jaywcjlove/github-action-upload-assets@main
-        with:
-          tag: v${{ needs.release-please.outputs.version }}
-          asset-path: '["./quality-of-exile-${{ needs.release-please.outputs.version }}.zip"]'
-
   compile-ahk-to-exe:
     needs: release-please
     if: ${{ needs.release-please.outputs.releases_created == 'true' }}
@@ -87,10 +71,22 @@ jobs:
           name: quality-of-exile-exe
           path: QualityOfExile.exe
           
-  upload-exe-to-release:
+  upload-files-to-release:
     needs: [release-please, compile-ahk-to-exe]
+    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Zip files
+        run: zip quality-of-exile-${{ needs.release-please.outputs.version }}.zip *.ahk version.txt LICENSE README.md
+
+      - name: Upload assets to release
+        uses: jaywcjlove/github-action-upload-assets@main
+        with:
+          tag: v${{ needs.release-please.outputs.version }}
+          asset-path: '["./quality-of-exile-${{ needs.release-please.outputs.version }}.zip"]'
+
       - uses: actions/download-artifact@v4
         with:
           name: quality-of-exile-exe
