@@ -68,16 +68,19 @@ To change keybinds, press F10 (default) to open the hotkey configuration window.
 Examples:
 
 Setup toggle overlay
+
 ![Setup toggle overlay](https://raw.githubusercontent.com/themeteorain/quality-of-exile/gh-pages/overlay.gif)
 
-
 Drop stacked divination deck
+
 ![Drop stacked divination deck](https://raw.githubusercontent.com/themeteorain/quality-of-exile/gh-pages/stacked_deck.gif)
 
 Trade full stack of divination cards
+
 ![Trade full stack of divination cards](https://raw.githubusercontent.com/themeteorain/quality-of-exile/gh-pages/trade_div.gif)
 
 Currency crafting
+
 ![Crafting with currency](https://raw.githubusercontent.com/themeteorain/quality-of-exile/gh-pages/currency_crafting.gif)
 
 ## Hotkeys
