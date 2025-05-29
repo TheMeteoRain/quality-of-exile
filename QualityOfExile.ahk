@@ -32,8 +32,8 @@ LogError(msg, e := unset, showMsgBox := false) {
     if (e) {
         FileAppend(
             Format(
-                "Level: {}, Version: {}, Time: {}, Message: {}, A_IsCompiled: {}, Error: {}, Details: {}, File: {}, Line: {}, Extra: {}`n",
-                "Error", VERSION, A_NowUTC, msg, A_IsCompiled, e.what, e.message, e.file, e.line, e.extra ? e.extra : ""
+                "Level: {}, Version: {}, Time: {}, A_IsCompiled: {}, Error: {}, Details: {}, File: {}, Line: {}, Extra: {}, Message: {}`n",
+                "Error", VERSION, A_NowUTC, A_IsCompiled, e.what, e.message, e.file, e.line, e.extra ? e.extra : "", msg
             ),
             LogPath
         )
@@ -48,8 +48,8 @@ LogMessage(msg, level := "Normal", showMsgBox := false) {
     }
     FileAppend(
         Format(
-            "Level: {}, Version: {}, Time: {}, Message: {}, A_IsCompiled: {}`n",
-            "Normal", VERSION, A_NowUTC, msg, A_IsCompiled
+            "Level: {}, Version: {}, Time: {}, A_IsCompiled: {}, Message: {}`n",
+            "Normal", VERSION, A_NowUTC, A_IsCompiled, msg
         ),
         LogPath
     )
