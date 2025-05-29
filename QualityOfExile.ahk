@@ -557,7 +557,7 @@ Settings(*) {
     }
 
     HotkeyGui := Gui("+AlwaysOnTop +ToolWindow", "Quality of Exile")
-    TabControl := HotkeyGui.Add("PoE (2)", "", ["General","PoE (1)","PoE (2)", "Last Epoch"])
+    TabControl := HotkeyGui.Add("Tab3", "", ["General", "PoE (1)", "PoE (2)", "Last Epoch"])
     
     TabControl.UseTab("General")
     textCtrl := HotkeyGui.Add("Text", Format("x{} y{} w500", pX, pY), "(K): Keyboard keybind | (M): Mouse keybind | (Px): Pixel | (D): Dynamic Hotkey")
