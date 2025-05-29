@@ -36,16 +36,13 @@ jobs:
       - uses: actions/checkout@v4
     
       - name: Zip files
-        run: zip quality-of-exile-${{ needs.release-please.outputs.version }}.zip *.ahk version.txt LICENSE 
+        run: zip quality-of-exile-${{ needs.release-please.outputs.version }}.zip *.ahk version.txt LICENSE README.md
 
-      - uses: gittools/actions/gitreleasemanager/addasset@v3.2.1
-        name: Add asset to a release with GitReleaseManager
+      - name: Upload assets to release
+        uses: jaywcjlove/github-action-upload-assets@main
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          owner: ${{ github.repository_owner }}
-          repository: ${{ env.REPOSITORY }}
-          milestone: ${{ needs.release-please.outputs.version }}
-          assets: quality-of-exile-${{ needs.release-please.outputs.version }}.zip
+          tag: v${{ needs.release-please.outputs.version }}
+          asset-path: '["./quality-of-exile-${{ needs.release-please.outputs.version }}.zip"]'
 
   compile-ahk-to-exe:
     needs: release-please
@@ -73,11 +70,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
     
-      - uses: gittools/actions/gitreleasemanager/addasset@v3.2.1
-        name: Add asset to a release with GitReleaseManager
+      - name: Upload assets to release
+        uses: jaywcjlove/github-action-upload-assets@main
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          owner: ${{ github.repository_owner }}
-          repository: ${{ env.REPOSITORY }}
-          milestone: ${{ needs.release-please.outputs.version }}
-          assets: ${{ needs.compile-ahk-to-exe.outputs.exe }}
+          tag: v${{ needs.release-please.outputs.version }}
+          asset-path: '["${{ needs.compile-ahk-to-exe.outputs.exe }}"]'
