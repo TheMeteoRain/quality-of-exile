@@ -525,6 +525,7 @@ Initialize() {
             releasesFile := DocumentPath . "\releases.json"
 
             if (FileExist(releasesFile)) {
+                LogMessage("Delete old release.json file.")
                 FileDelete(releasesFile)
             }
 
@@ -584,6 +585,11 @@ Initialize() {
             }
         } catch Error  as e {
             LogError("Failed to check for updates. Please check your internet connection and try again.", e, true)
+        } finally {
+            if (FileExist(releasesFile)) {
+                LogMessage("Delete release.json file.")
+                FileDelete(releasesFile)
+            }
         }
 
         UpdateScript(GuiCtrl, *) {
