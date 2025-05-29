@@ -1,34 +1,93 @@
 ﻿#Requires AutoHotkey v2.0
-#SingleInstance Force
+; SingleInstance is handled manually
+; 'Force' does not kill the previous instance when script is elavated to admin privileges
+#SingleInstance Off
 #MaxThreadsPerHotkey 2
 #Include "MousePositionSaver.ahk"
 #Include "ClipboardSaver.ahk"
 #Include "GameInfo.ahk"
 
-SetTitleMatchMode("3")
-ScriptVersion := "0.1.0-beta.10"
+FileEncoding("UTF-8")
+SetTitleMatchMode("2")
+AHK_VERSION_REQUIRED := "2.0.0"
+DocumentPath := A_MyDocuments "\QualityOfExile"
+LogPath := A_MyDocuments "\QualityOfExile\log.txt"
+versionFile := A_ScriptDir "\version.txt"
 GithubLink := "https://github.com/TheMeteoRain/quality-of-exile"
 DEBUG := false
-; https://www.autohotkey.com/docs/v2/misc/DPIScaling.htm#Workarounds
-DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
+cportsPath := DocumentPath "\cports"
+cportsExecutable := cportsPath "\cports.exe" ; Check in the script's directory
+cportsDownloadURL := "https://www.nirsoft.net/utils/cports.zip" ; URL to the ZIP file
+cportsZipPath := DocumentPath "\cports.zip"
+INI_FILE := DocumentPath "\data.ini"
+STATE_FILE := DocumentPath "\state.ini"
+ScriptVersion := "unknown"
+NewestVersion := "unknown"
 
-if (A_Args.Length > 0) {
-    ; debug
-    if (RegExMatch(A_Args[1], "DEBUG=(true|false)", &match)) {
-        DEBUG := (match[1] = "true")
+LogError(msg, e := unset, showMsgBox := false) {
+    if (showMsgBox) {
+        MsgBox(msg)
+    }
+
+    if (e) {
+        FileAppend(
+            Format(
+                "Level: {}, Time: {}, Message: {}, A_IsCompiled: {}, Error: {}, Details: {}, File: {}, Line: {}, Extra: {}`n",
+                "Error", A_NowUTC, msg, A_IsCompiled, e.what, e.message, e.file, e.line, e.extra ? e.extra : ""
+            ),
+            LogPath
+        )
+    } else {
+        LogMessage(msg, "Error", showMsgBox)
     }
 }
 
-DocumentPath := A_MyDocuments "\QualityOfExile"
-ErrorPath := A_MyDocuments "\QualityOfExile\error.txt"
-cportsPath := DocumentPath . "\cports"
-cportsExecutable := cportsPath . "\cports.exe" ; Check in the script's directory
-cportsDownloadURL := "https://www.nirsoft.net/utils/cports.zip" ; URL to the ZIP file
-cportsZipPath := DocumentPath . "\cports.zip"
-INI_FILE := DocumentPath "\data.ini"
-STATE_FILE := DocumentPath "\state.ini"
+LogMessage(msg, level := "Normal", showMsgBox := false) {
+    if (showMsgBox) {
+        MsgBox(msg)
+    }
+    FileAppend(
+        Format(
+            "Level: {}, Time: {}, Message: {}, A_IsCompiled: {}`n",
+            "Normal", A_NowUTC, msg, A_IsCompiled
+        ),
+        LogPath
+    )
+}
 
-; Initialize variables
+DestroyGui(GuiCtrl, *) {
+    if (IsSet(GuiCtrl)) {
+        GuiCtrl.gui.Destroy()
+    }
+}
+
+if FileExist(versionFile) {
+    ScriptVersion := Trim(FileRead(versionFile))
+} else {
+    LogError("Version file not found. Program might be corrupted. Re-download program.", , true)
+}
+NewestVersion := ScriptVersion
+
+SplashGui := Gui("+AlwaysOnTop -Caption +ToolWindow", "Quality of Exile - Splash Screen")
+SplashGui.Add("Text", "Center", "Running Quality of Exile`nVersion: " ScriptVersion)
+SplashGui.Show()
+LogMessage("Starting Quality of Exile version: " ScriptVersion)
+Sleep(2000)
+SplashGui.Destroy()
+
+If (VerCompare(A_AhkVersion, AHK_VERSION_REQUIRED) == -1) {
+	LogMessage("You need AutoHotkey v" AHK_VERSION_REQUIRED " or later to run this script. `n`nPlease go to http://ahkscript.org/download and download a recent version.", true)
+	ExitApp()
+}
+
+; https://www.autohotkey.com/docs/v2/misc/DPIScaling.htm#Workarounds
+DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
+
+for _, arg in A_Args {
+    if RegExMatch(arg, "i)^DEBUG=(true|false)$", &m)
+        DEBUG := (m[1] = "true")
+}
+
 global LastExecutionTime := {
     TerminateTCP: 0,
     CraftWithCurrency: 0,
@@ -395,11 +454,22 @@ global Configs := {
 }
 
 Initialize() {
-    if (!FileExist(DocumentPath)) {
-        DirCreate(DocumentPath)
+    CreateProgramDocumentPath() {
+        if (!DirExist(DocumentPath)) {
+            DirCreate(DocumentPath)
+        }
     }
-    
-    If !FileExist(cportsExecutable) {
+    DownloadCports() {
+        if FileExist(cportsExecutable) {
+            LogMessage("CurrPorts already exists at: " cportsExecutable)
+            return
+        }
+
+        ; if last download made some progress, start from clean slate
+        if (DirExist(cportsPath)) {
+            DirDelete(cportsPath, true)
+        }
+
         ; Download cports
         try {
             Download(cportsDownloadURL, cportsZipPath)
@@ -423,7 +493,7 @@ Initialize() {
     
         ; Create dir
         DirCreate(cportsPath)
-        if (!FileExist(cportsPath)) {
+        if (!DirExist(cportsPath)) {
             MsgBox("Something went wrong")
             LogError("Could not create dir for cports", e)
             ExitApp()
@@ -435,24 +505,162 @@ Initialize() {
         FileDelete(cportsZipPath)
     
         if !FileExist(cportsExecutable) {
-            MsgBox("Error downloading or extracting CurrPorts. Please ensure you have internet access and try again.")
+            LogError("Error downloading or extracting CurrPorts. Please ensure you have internet access and try again.", , true)
             ExitApp()
         }
     }
 
-    if (!DEBUG) {
-        full_command_line := DllCall("GetCommandLine", "str")
-        if not (A_IsAdmin or RegExMatch(full_command_line, " /restart(?!\S)"))
-        {
-            try {
-                if A_IsCompiled
-                    Run '*RunAs "' A_ScriptFullPath '" /restart'
-                else
-                    Run '*RunAs "' A_AhkPath '" /restart "' A_ScriptFullPath '"'
+    RestartAsAdmin() {
+        if (!DEBUG) {
+            full_command_line := DllCall("GetCommandLine", "str")
+            if not (A_IsAdmin or RegExMatch(full_command_line, " /restart(?!\S)"))
+            {
+                try {
+                    if A_IsCompiled
+                        Run '*RunAs "' A_ScriptFullPath '" /restart'
+                    else
+                        Run '*RunAs "' A_AhkPath '" /restart "' A_ScriptFullPath '"'
+                }
+                ExitApp
             }
-            ExitApp
         }
     }
+
+    CheckForUpdates() {
+        try {
+            LogMessage("Checking for updates.")
+            Download("https://api.github.com/repos/themeteorain/quality-of-exile/releases", DocumentPath . "\releases.json")
+            Releases := FileRead(DocumentPath . "\releases.json")
+
+            LogMessage("Parsing version.")
+            if (RegExMatch(Releases, '"tag_name"\s*:\s*"v([^"]+)"', &Match)) {
+                NewestVersion := Match[1]
+            }
+
+            GetNewerReleaseBodies(json, currentVersion) {
+                bodies := "No changelog available."
+                pos := 1
+                while RegExMatch(json, '"tag_name"\s*:\s*"v([^"]+)"[\s\S]+?"body"\s*:\s*"((?:[^"\\]|\\.)*)"', &m, pos) {
+                    version := m[1]
+                    body := m[2]
+                    pos := m.Pos(0) + m.Len(0)
+                    if (VerCompare(version, currentVersion) > 0) {
+                        body := StrReplace(body, '\r\n', "`n")
+                        body := StrReplace(body, '\n', "`n")
+                        body := StrReplace(body, '\"', '"')
+
+                        if (A_Index == 1) {
+                            bodies := body
+                        } else {
+                            bodies := bodies "`n`n`n" body
+                        }
+                    }
+                }
+                return bodies
+            }
+            LogMessage("Parsing changelog.")
+            Changelog := GetNewerReleaseBodies(Releases, ScriptVersion)
+
+            LogMessage("Compare versions.")
+            if (VerCompare(NewestVersion, ScriptVersion) > 0) {
+                VersionGui := Gui("", "Quality of Exile - Update Available")
+                VersionGui.Add("Text", "", "Update Available.`nCurrent version: " ScriptVersion "`nNew version available: " NewestVersion "`n`nContinue with update? It will only take a moment, and the script will automatically restart.")
+                VersionGui.Add("Edit", "w600 h300 +ReadOnly +VScroll +HScroll", Changelog)
+                UpdateButton := VersionGui.Add("Button", "Default Section", "Update")
+                UpdateButton.OnEvent("Click", UpdateScript)
+                SkipButton := VersionGui.Add("Button", "YS", "Skip")
+                SkipButton.OnEvent("Click", DestroyGui)
+                VersionGui.Show()
+            }
+        } catch Error  as e {
+            LogError("Failed to check for updates. Please check your internet connection and try again.", e, true)
+        }
+
+        UpdateScript(GuiCtrl, *) {
+            DestroyGui(GuiCtrl)
+            DownloadURL := ""
+            DownloadPath := ""
+
+            if (A_IsCompiled) {
+                ; file is .exe
+                DownloadURL := "https://github.com/TheMeteoRain/quality-of-exile/releases/download/v" NewestVersion "/QualityOfExile.exe"
+                DownloadPath := A_ScriptDir "\QualityOfExile.tmp.exe"
+            } else {
+                ; file is .ahk
+                DownloadURL := "https://github.com/TheMeteoRain/quality-of-exile/archive/refs/tags/v" NewestVersion ".zip"
+                DownloadPath := DocumentPath "\qualityofexile.zip"
+            }
+            
+            LogMessage("Download update. DownloadURL: " DownloadURL ", DownloadPath: " DownloadPath)
+            try {
+                Download(DownloadURL, DownloadPath)
+            } catch  Error as e {
+                LogError("Failed to download update. Please check your internet connection and try again. Optionally send an issue at: " GithubLink, e, true)
+                ExitApp()
+            }
+
+            if (A_IsCompiled) {
+                helperPath := DocumentPath "\update_helper.ahk"
+                if (FileExist(helperPath)) {
+                    LogMessage("Delete old helper file.")
+                    FileDelete(helperPath)
+                }
+
+                try {
+                    LogMessage("Creating a helper file for updating .exe file.")
+                    currentExePath := A_ScriptFullPath
+                    helperScript := Format('
+                    (
+                        #Requires AutoHotkey v2.0
+                        SetTitleMatchMode("2")
+                        DetectHiddenWindows(true)
+                        WinWaitClose("{}")
+                        Sleep 1000
+                        FileMove("{}", "{}", true)
+                        Run("{}")
+                    )', A_ScriptName, DownloadPath, currentExePath, currentExePath)
+                    FileAppend(helperScript, helperPath)
+
+                    LogMessage("Running helper file to update .exe file.")
+                    Run(helperPath)
+                } catch Error as e {
+                    LogError("Failed to update. Try again or send an issue at: " GithubLink, e, true)
+                } finally {
+                    ExitApp()
+                }
+            }
+
+            try {
+                ; TODO: fix path
+                tarCommand := Format("tar -xf {} -C {}", DownloadPath, DocumentPath)
+                LogMessage("Running tar command: " tarCommand)
+                RunWait(A_ComSpec . " /c " . tarCommand, "", "Hide")
+                LogMessage("Tar command completed.")
+            } catch Error as e {
+                LogError("Failed to extract updated files from .zip. Try again or send an issue at: " GithubLink, e, true)
+                ExitApp()
+            } finally {
+                if (FileExist(DownloadPath)) {
+                    LogMessage("Delete .zip file.")
+                    FileDelete(DownloadPath)
+                }
+            }
+            
+            try {
+                LogMessage("Running updated file.")
+                Run(A_ScriptFullPath)
+            } catch Error  as e {
+                LogError("Failed to run updated file. Try again or send an issue at: " GithubLink, e, true)
+            } finally {
+                ExitApp()
+            }
+        }
+    }
+
+    RestartAsAdmin()
+    CreateProgramDocumentPath()
+    CheckForUpdates()
+    DownloadCports()
 }
 
 LoadState() {
@@ -527,19 +735,6 @@ TerminateTCP(*) {
     }
 }
 
-LogError(msg, e, showMsgBox := false) {
-    if (showMsgBox) {
-        MsgBox(msg)
-    }
-    FileAppend("An error occurred while running the script:`n`n"
-    . "Time: " A_NowUTC "`n"
-    . "Message: " msg "`n"
-    . "Error: " e.what "`n"
-    . "Details: " e.message "`n"
-    . "File: " e.file "`n"
-    . "Line: " e.line "`n"
-    . (e.extra ? "Additional Info: " e.extra "`n" : ""), ErrorPath, "UTF-16")
-}
 Settings(*) {
     global Hotkeys, Extra, Options, HotkeyGui, Configs
     ; padding x
