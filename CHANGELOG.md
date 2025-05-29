@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.0-beta.12](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.0-beta.11...v0.1.0-beta.12) (2025-05-29)
+
+
+### Miscellaneous Chores
+
+* release 0.1.0-beta.12 just to test self updating functionality ([cddd417](https://github.com/TheMeteoRain/quality-of-exile/commit/cddd4173a937eb5b899445665e2c684f799cd010))
+
 ## [0.1.0-beta.11](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.0-beta.8...v0.1.0-beta.11) (2025-05-29)
 
 
