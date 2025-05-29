@@ -64,7 +64,7 @@ DestroyGui(GuiCtrl, *) {
 SplashGui := Gui("+AlwaysOnTop -Caption +ToolWindow", "Quality of Exile - Splash Screen")
 SplashGui.Add("Text", "Center", "Running Quality of Exile`nVersion: " VERSION)
 SplashGui.Show()
-LogMessage("Starting Quality of Exile version: " VERSION)
+LogMessage("################################### Starting Quality of Exile version: " VERSION)
 Sleep(2000)
 SplashGui.Destroy()
 
@@ -447,8 +447,6 @@ global Configs := {
 }
 
 Initialize() {
-    global NewestVersion, VERSION
-
     CreateProgramDocumentPath() {
         if (!DirExist(DocumentPath)) {
             DirCreate(DocumentPath)
@@ -521,9 +519,7 @@ Initialize() {
         }
     }
 
-    CheckForUpdates() {       
-        global NewestVersion, VERSION
-
+    CheckForUpdates() {
         try {
             LogMessage("Checking for updates.")
             releasesFile := DocumentPath . "\releases.json"
@@ -539,7 +535,7 @@ Initialize() {
             LogMessage("Parsing version.")
             if (RegExMatch(Releases, '"tag_name"\s*:\s*"v([^"]+)"', &match)) {
                 NewestVersion := Trim(match[1])
-                LogMessage("Updated version found: " NewestVersion)
+                LogMessage("Latest version fetched: " NewestVersion)
             }
 
             GetNewerReleaseBodies(json, currentVersion) {
