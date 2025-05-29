@@ -3,6 +3,9 @@ on:
     branches:
       - main
 
+env:
+  REPOSITORY: 'quality-of-exile'
+
 permissions:
   contents: write
   pull-requests: write
@@ -18,18 +21,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Copy files to publish to separate dir
-        run: |
-          mkdir dist
-          cp *.ahk LICENSE version.txt dist/
-      
       - uses: googleapis/release-please-action@v4
         id: release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: simple
-          path: dist
-          
+
+  upload-files-to-release:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+    
+      - name: Zip files
+        run: zip quality-of-exile-${{ needs.release-please.outputs.version }}.zip *.ahk version.txt LICENSE 
+
+      - uses: gittools/actions/gitreleasemanager/addasset@v3.2.1
+        name: Add asset to a release with GitReleaseManager
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          owner: ${{ github.repository_owner }}
+          repository: ${{ env.REPOSITORY }}
+          milestone: ${{ needs.release-please.outputs.version }}
+          assets: quality-of-exile-${{ needs.release-please.outputs.version }}.zip
+
   compile-ahk-to-exe:
     needs: release-please
     if: ${{ needs.release-please.outputs.releases_created == 'true' }}
@@ -43,11 +59,11 @@ jobs:
         id: build-x64
         with:
           in: QualityOfExile.ahk
-          out: dist/QualityOfExile.exe
+          out: QualityOfExile.exe
           arch: x64
           
       - id: file
-        run: echo "exe=dist/QualityOfExile.exe" >> $env:GITHUB_OUTPUT
+        run: echo "exe=QualityOfExile.exe" >> $env:GITHUB_OUTPUT
           
   upload-exe-to-release:
     needs: [release-please, compile-ahk-to-exe]
@@ -61,6 +77,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           owner: ${{ github.repository_owner }}
-          repository: 'quality-of-exile'
+          repository: ${{ env.REPOSITORY }}
           milestone: ${{ needs.release-please.outputs.version }}
           assets: ${{ needs.compile-ahk-to-exe.outputs.exe }}
