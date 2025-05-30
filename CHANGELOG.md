@@ -30,26 +30,13 @@ All notable changes to this project will be documented in this file.
 * Handle .ahk self updating process correctly ([bcdbc15](https://github.com/TheMeteoRain/quality-of-exile/commit/bcdbc1582482f0f0058678c20c7821ffc30b7a5b))
 * Remove gif images from main branch ([49273a2](https://github.com/TheMeteoRain/quality-of-exile/commit/49273a2a5b90245f58b8f585df0253f762044d0b))
 * Use correct tab value ([ac9571c](https://github.com/TheMeteoRain/quality-of-exile/commit/ac9571c9c0f54ccef93ac9ffceaee8046bf74eef))
+* Random occurence of character moving instead of dropping an item or dropping stacked deck.
+* Multi monitor setup calculations.
 
 
 ### Miscellaneous Chores
 
 * release 0.1.0-beta.10 ([aa02d69](https://github.com/TheMeteoRain/quality-of-exile/commit/aa02d699cf8cf6d304445bbd59afebee2c068e25))
-
-## [Unreleased]
-
-### Added
--
-
-### Changed
-- 
-
-### Fixed
-- Random occurence of character moving instead of drop item and opening stacked deck macro executing properly.
-- Multi monitor setup calculations.
-
-### Removed
-- 
 
 ## [0.1.0-beta.10] - 2025-05-28
 
