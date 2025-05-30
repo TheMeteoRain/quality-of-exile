@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.0-beta.13](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.0-beta.12...v0.1.0-beta.13) (2025-05-30)
+
+
+### Features
+
+* Running application again will kill the previous process ([1c0a69f](https://github.com/TheMeteoRain/quality-of-exile/commit/1c0a69fde8f5c75aa76c5036c12b1c2590a5264d))
+
 ## [0.1.0-beta.12](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.0-beta.11...v0.1.0-beta.12) (2025-05-29)
 
 
