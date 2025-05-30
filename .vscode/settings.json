@@ -1,0 +1,25 @@
+{
+    "AHK++.v2.formatter": {
+        "arrayStyle": "expand",
+        "braceStyle": "One True Brace",
+        "breakChainedMethods": true,
+        "ignoreComment": false,
+        "indentBetweenHotIfDirectives": false,
+        "indentString": "  ",
+        "keywordStartWithUppercase": false,
+        "maxPreserveNewlines": 2,
+        "objectStyle": "expand",
+        "preserveNewlines": true,
+        "spaceAfterDoubleColon": true,
+        "spaceBeforeConditional": true,
+        "spaceInEmptyParen": false,
+        "spaceInOther": true,
+        "spaceInParen": false,
+        "switchCaseAlignment": false,
+        "symbolWithSameCase": false,
+        "whitespaceBeforeInlineComment": "",
+        "wrapLineLength": 120
+    },
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "mark-wiemer.vscode-autohotkey-plus-plus"
+}
