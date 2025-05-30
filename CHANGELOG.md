@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+The format is based on [Keep a Changelog](http://keepachangelog.com/)
+and this project adheres to [Semantic Versioning](http://semver.org/).
+
 ## [0.1.0-beta.13](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.0-beta.12...v0.1.0-beta.13) (2025-05-30)
 
 
