@@ -11,6 +11,25 @@ SetTitleMatchMode("3")
 #Include "ClipboardSaver.ahk"
 #Include "MousePositionSaver.ahk"
 
+KillOldRunningProcess() {
+  mutexFile := Q_ProgramPathDir "\quality_of_exile.lock"
+
+  if FileExist(mutexFile) {
+    oldPID := Trim(FileRead(mutexFile), "`r`n ")
+    ; Try to close the old process
+    try ProcessClose(oldPID)
+    WinWaitClose("ahk_pid " oldPID, "", 2000) ; Wait for the process to close
+  }
+  PID := DllCall("GetCurrentProcessId")
+  ; Write our PID to the mutex file
+  if FileExist(mutexFile) {
+    FileDelete(mutexFile)
+  }
+  FileAppend(PID, mutexFile)
+  ; Clean up the mutex file on exit
+  OnExit((*) => FileDelete(mutexFile))
+}
+
 CheckAutoHotkeyVersion() {
   if (VerCompare(A_AhkVersion, AHK_VERSION_REQUIRED) == -1) {
     LogError(
@@ -42,6 +61,7 @@ SplashScreen() {
 }
 
 CheckAutoHotkeyVersion()
+KillOldRunningProcess()
 CleanLogFileIfTooBig()
 SplashScreen()
 
