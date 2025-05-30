@@ -9,7 +9,7 @@
 #Include "version.ahk"
 
 FileEncoding("UTF-8")
-SetTitleMatchMode("2")
+SetTitleMatchMode("3")
 AHK_VERSION_REQUIRED := "2.0.0"
 DocumentPath := A_MyDocuments "\QualityOfExile"
 LogPath := A_MyDocuments "\QualityOfExile\log.txt"
