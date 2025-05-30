@@ -23,36 +23,54 @@ cportsZipPath := DocumentPath "\cports.zip"
 INI_FILE := DocumentPath "\data.ini"
 STATE_FILE := DocumentPath "\state.ini"
 NewestVersion := VERSION
+OnError(OnErrorCallback)
 
-LogError(msg, e := unset, showMsgBox := false) {
-    if (showMsgBox) {
-        MsgBox(msg)
+ErrorStringify(e) {
+    errStr := ""
+    for key, val in e.OwnProps() {
+        errStr .= Format('{}: "{}", ', key, RegExReplace(val, "[\r\n\t]", ""))
     }
+    errStr := Trim(errStr, ", ")
 
-    if (e) {
-        FileAppend(
-            Format(
-                "Level: {}, Version: {}, Time: {}, A_IsCompiled: {}, Error: {}, Details: {}, File: {}, Line: {}, Extra: {}, Message: {}`n",
-                "Error", VERSION, A_NowUTC, A_IsCompiled, e.what, e.message, e.file, e.line, e.extra ? e.extra : "", msg
-            ),
-            LogPath
-        )
-    } else {
-        LogMessage(msg, "Error", showMsgBox)
-    }
+    return errStr
+}
+OnErrorCallback(e, mode) {
+    LogMessage("Fatal", "An error occurred in the script.", e)
 }
 
-LogMessage(msg, level := "Normal", showMsgBox := false) {
-    if (showMsgBox) {
-        MsgBox(msg)
+LogMessage(level := "Info", msg := unset, err := unset, showMsgBox := false) {
+    if (IsSet(msg)) {
+        text := unset
+
+        if (showMsgBox) {
+            MsgBox(msg)
+        }
+
+        if (IsSet(err)) {
+            text := Format(
+                "Level: {}, Version: {}, Time: {}, A_IsCompiled: {}, Message: {}, Error::: {} `n",
+                level, VERSION, A_NowUTC, A_IsCompiled, msg, ErrorStringify(err)
+            )
+        } else {
+            text := Format(
+                "Level: {}, Version: {}, Time: {}, A_IsCompiled: {}, Message: {} `n",
+                level, VERSION, A_NowUTC, A_IsCompiled, msg
+            )
+        }
+
+        FileAppend(text, LogPath)
     }
-    FileAppend(
-        Format(
-            "Level: {}, Version: {}, Time: {}, A_IsCompiled: {}, Message: {}`n",
-            "Normal", VERSION, A_NowUTC, A_IsCompiled, msg
-        ),
-        LogPath
-    )
+}
+LogError(msg := unset, err := unset, showMsgBox := false) {
+    LogMessage("Error", msg, err, showMsgBox)
+}
+LogDebug(msg := unset, showMsgBox := false) {
+    if (DEBUG) {
+        LogMessage("Debug", msg, , showMsgBox)
+    }
+}
+LogInfo(msg := unset, showMsgBox := false) {
+    LogMessage("Info", msg, , showMsgBox)
 }
 
 CleanLogFileIfTooBig() {
@@ -60,7 +78,7 @@ CleanLogFileIfTooBig() {
         fileSize := FileGetSize(LogPath)
         if (fileSize > 536870912) { ; 512MB
             FileDelete(LogPath)
-            LogMessage("Log file was too big (" fileSize "), deleting it.")
+            LogInfo("Log file was too big (" fileSize "), deleting it.")
         }
     }
 }
@@ -74,12 +92,12 @@ DestroyGui(GuiCtrl, *) {
 SplashGui := Gui("+AlwaysOnTop -Caption +ToolWindow", "Quality of Exile - Splash Screen")
 SplashGui.Add("Text", "Center", "Running Quality of Exile`nVersion: " VERSION)
 SplashGui.Show()
-LogMessage("################################### Starting Quality of Exile version: " VERSION)
+LogInfo("################################### Starting Quality of Exile version: " VERSION)
 Sleep(2000)
 SplashGui.Destroy()
 
 If (VerCompare(A_AhkVersion, AHK_VERSION_REQUIRED) == -1) {
-	LogMessage("You need AutoHotkey v" AHK_VERSION_REQUIRED " or later to run this script. `n`nPlease go to http://ahkscript.org/download and download a recent version.", true)
+	LogError("You need AutoHotkey v" AHK_VERSION_REQUIRED " or later to run this script. `n`nPlease go to http://ahkscript.org/download and download a recent version.", true)
 	ExitApp()
 }
 
@@ -464,7 +482,7 @@ Initialize() {
     }
     DownloadCports() {
         if FileExist(cportsExecutable) {
-            LogMessage("CurrPorts already exists at: " cportsExecutable)
+            LogInfo("CurrPorts already exists at: " cportsExecutable)
             return
         }
 
@@ -531,22 +549,22 @@ Initialize() {
 
     CheckForUpdates() {
         try {
-            LogMessage("Checking for updates.")
+            LogInfo("Checking for updates.")
             releasesFile := DocumentPath . "\releases.json"
 
             if (FileExist(releasesFile)) {
-                LogMessage("Delete old release.json file.")
+                LogInfo("Delete old release.json file.")
                 FileDelete(releasesFile)
             }
 
-            LogMessage("Downloading releases.json.")
+            LogInfo("Downloading releases.json.")
             Download("https://api.github.com/repos/themeteorain/quality-of-exile/releases", DocumentPath . "\releases.json")
             Releases := FileRead(DocumentPath . "\releases.json")
 
-            LogMessage("Parsing version.")
+            LogInfo("Parsing version.")
             if (RegExMatch(Releases, '"tag_name"\s*:\s*"v([^"]+)"', &match)) {
                 NewestVersion := Trim(match[1])
-                LogMessage("Latest version fetched: " NewestVersion)
+                LogInfo("Latest version fetched: " NewestVersion)
             }
 
             GetNewerReleaseBodies(json, currentVersion) {
@@ -581,7 +599,7 @@ Initialize() {
             }
 
             if (VerCompare(NewestVersion, VERSION) == 1) {
-                LogMessage("Parsing changelog.")
+                LogInfo("Parsing changelog.")
                 Changelog := GetNewerReleaseBodies(Releases, VERSION)
 
                 VersionGui := Gui("", "Quality of Exile - Update Available")
@@ -597,7 +615,7 @@ Initialize() {
             LogError("Failed to check for updates. Please check your internet connection and try again.", e, true)
         } finally {
             if (FileExist(releasesFile)) {
-                LogMessage("Delete release.json file.")
+                LogInfo("Delete release.json file.")
                 FileDelete(releasesFile)
             }
         }
@@ -617,7 +635,7 @@ Initialize() {
                 DownloadPath := DocumentPath "\qualityofexile.zip"
             }
             
-            LogMessage("Download update. DownloadURL: " DownloadURL ", DownloadPath: " DownloadPath)
+            LogInfo("Download update. DownloadURL: " DownloadURL ", DownloadPath: " DownloadPath)
             try {
                 Download(DownloadURL, DownloadPath)
             } catch  Error as e {
@@ -628,12 +646,12 @@ Initialize() {
             if (A_IsCompiled) {
                 helperPath := DocumentPath "\update_helper.ahk"
                 if (FileExist(helperPath)) {
-                    LogMessage("Delete old helper file.")
+                    LogInfo("Delete old helper file.")
                     FileDelete(helperPath)
                 }
 
                 try {
-                    LogMessage("Creating a helper file for updating .exe file.")
+                    LogInfo("Creating a helper file for updating .exe file.")
                     currentExePath := A_ScriptFullPath
                     helperScript := Format('
                     (
@@ -647,7 +665,7 @@ Initialize() {
                     )', A_ScriptName, DownloadPath, currentExePath, currentExePath)
                     FileAppend(helperScript, helperPath)
 
-                    LogMessage("Running helper file to update .exe file.")
+                    LogInfo("Running helper file to update .exe file.")
                     Run(helperPath)
                 } catch Error as e {
                     LogError("Failed to update. Try again or send an issue at: " GithubLink, e, true)
@@ -659,21 +677,21 @@ Initialize() {
             try {
                 ; TODO: fix path
                 tarCommand := Format("tar -xf {} -C {}", DownloadPath, A_ScriptDir)
-                LogMessage("Running tar command: " tarCommand)
+                LogInfo("Running tar command: " tarCommand)
                 RunWait(A_ComSpec . " /c " . tarCommand, "", "Hide")
-                LogMessage("Tar command completed.")
+                LogInfo("Tar command completed.")
             } catch Error as e {
                 LogError("Failed to extract updated files from .zip. Try again or send an issue at: " GithubLink, e, true)
                 ExitApp()
             } finally {
                 if (FileExist(DownloadPath)) {
-                    LogMessage("Delete .zip file.")
+                    LogInfo("Delete .zip file.")
                     FileDelete(DownloadPath)
                 }
             }
             
             try {
-                LogMessage("Running updated file.")
+                LogInfo("Running updated file.")
                 Run(A_ScriptFullPath)
             } catch Error  as e {
                 LogError("Failed to run updated file. Try again or send an issue at: " GithubLink, e, true)
