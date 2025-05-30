@@ -10,6 +10,12 @@ Like all tools of this nature, this one also falls into a gray area. There are t
 
 That said, use at your own risk! The tool is designed to reduce strain on your hands, allowing you to play comfortably for longer periods, whether in a single session or over time.
 
+## Supported Games
+
+- Path of Exile 1
+- Path of Exile 2
+- Last Epoch
+
 ## Requirements
 
 - Windows 11 PC
