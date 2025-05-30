@@ -89,6 +89,13 @@ Currency crafting
 
 ![Crafting with currency](https://raw.githubusercontent.com/themeteorain/quality-of-exile/gh-pages/currency_crafting.gif)
 
+## Support
+If Quality of Exile has helped you play more comfortably and you'd like to show your appreciation, consider buying me a coffee! P.S. Accidentally spent way too much time on this.
+
+
+<a href="https://www.buymeacoffee.com/MeteoRain" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
+
 ## Hotkeys
 
 - [Logout Macro](#logout-macro)
@@ -249,7 +256,7 @@ Inputs RegExp into any window with search functionality.
 1. Open a window with search functionality.
 2. Press the assigned keybind.
 
-Default RegExp: `(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|y: r`
+Default RegExp (PoE1): `(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|y: r`
 
 This default RegExp is designed to target:
 - 4-6 linked items.
@@ -257,22 +264,22 @@ This default RegExp is designed to target:
 - Rare items.
 - Movement speed 10% and 15%.
 
-For PoE2 vendors I would recommend:
-- Physical damage: `y: \+|ts: S|y: (r|m)|\d+% i.+mov|ph.*da`
-- Elemental damage: `y: \+|ts: S|y: (r|m)|\d+% i.+mov|\d [cfl].+da`
+For PoE2 starter vendors I would recommend:
 
-Both targets:
+> [!NOTE]
+> Supposed to be used on the vendor who sells weapons and armour. Not on the wand and potion seller.
+
+- Physical damage: `rare|y: \+|ts: S|speed|l damage$|kills$`
+- Elemental damage: `rare|y: \+|ts: S|speed|[dge] damage$|kills$`
+- Physical and Elemental damage: `rare|y: \+|ts: S|speed|[ldge] damage$|kills$`
+
+
+
+These targets:
 - Quality.
 - Sockets.
-- Movement speed.
+- Speed items (boots, weapons).
 - Rare items.
-- Magic items.
-- Physical or Elemental damage.
+- Physical or Elemental damage, or both.
 
 You can customize the RegExp to suit your specific needs, enabling you to search for items with your own criteria. Don't include quotation marks. Field will accepts 48 characters and the last 2 are reserved for quotation marks.
-
-## Support
-If Quality of Exile has helped you play more comfortably and you'd like to show your appreciation, consider buying me a coffee! P.S. Accidentally spent way too much time on this.
-
-
-<a href="https://www.buymeacoffee.com/MeteoRain" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
