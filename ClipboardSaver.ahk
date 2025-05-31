@@ -6,11 +6,19 @@ class ClipboardSaver {
   }
 
   Save() {
+    Sleep(50)
     this.OriginalClipboard := A_Clipboard
+    Sleep(50)
   }
 
   Copy() {
     Send("^c")
+    Sleep(50)
+  }
+
+  CopyWithAlt() {
+    Send("!^c")
+    Sleep(50)
   }
 
   Paste() {
@@ -22,8 +30,9 @@ class ClipboardSaver {
   }
 
   Restore() {
-    Sleep(100)
+    Sleep(50)
     A_Clipboard := this.OriginalClipboard
+    Sleep(50)
   }
 
   Set(value) {
