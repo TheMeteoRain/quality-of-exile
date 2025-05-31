@@ -51,13 +51,21 @@ CleanLogFileIfTooBig() {
 }
 
 SplashScreen() {
+  if (!A_IsAdmin) {
+    return
+  }
   SplashGui := Gui("+AlwaysOnTop -Caption +ToolWindow", "Quality of Exile - Splash Screen")
   SplashGui.Add("Text", "Center", "Running Quality of Exile`nVersion: " VERSION)
   SplashGui.Show()
   LogInfo("################################### Starting Quality of Exile version: " VERSION)
-  Sleep(2000)
-  SplashGui.Destroy()
-  SplashGui := unset
+  SetTimer(DestroySplashScreen, -2000)
+
+  DestroySplashScreen() {
+    if (IsSet(SplashGui)) {
+      SplashGui.Destroy()
+      SplashGui := unset
+    }
+  }
 }
 
 RestartAsAdmin() {
