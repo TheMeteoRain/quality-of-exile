@@ -56,7 +56,8 @@ SplashScreen() {
     return
   }
   SplashGui := Gui("+AlwaysOnTop -Caption +ToolWindow", "Quality of Exile - Splash Screen")
-  SplashGui.Add("Text", "Center", "Running Quality of Exile`nVersion: " VERSION)
+  SplashGui.BackColor := MAIN_COLOR
+  SplashGui.Add("Text", "Center cWhite", "Running Quality of Exile`nVersion: " VERSION)
   SplashGui.Show()
   LogInfo("################################### Starting Quality of Exile version: " VERSION)
   SetTimer(DestroySplashScreen, -2000)
