@@ -76,8 +76,11 @@ GetNewerReleaseBodies(json, currentVersion) {
 
   try {
     pos := 1
-    while RegExMatch(json, '"tag_name"\s*:\s*"v([^"]+)"[\s\S]+?"body"\s*:\s*"((?:[^"\\]|\\.)*)"', &m,
-      pos) {
+    while RegExMatch(
+      json, '"tag_name"\s*:\s*"v([^"]+)"[\s\S]+?"body"\s*:\s*"((?:[^"\\]|\\.)*)"',
+      &m,
+      pos
+    ) {
       version := m[1]
       body := m[2]
       pos := m.Pos(0) + m.Len(0)
