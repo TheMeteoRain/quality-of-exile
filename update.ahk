@@ -233,7 +233,18 @@ CheckForUpdates() {
       VersionGui.Show()
     }
   } catch Error as e {
-    LogError("Failed to check for updates. Please check your internet connection and try again.", e, true)
+    LogError(
+      Format("
+        (
+          Failed to check for updates.
+          Please check your internet connection and try again by starting the application again.
+          Program will continue to run with current version: '{}'
+        )",
+        VERSION
+      ),
+      e,
+      true
+    )
   } finally {
     if (FileExist(releasesFile)) {
       LogInfo("Delete release.json file.")
