@@ -44,16 +44,26 @@ class ClipboardSaver {
   }
 
   IsItem() {
-    result := false
-
     this.Save()
     this.Copy()
-
-    Sleep(10)
-    if (RegExMatch(this.Get(), "Item Class")) {
-      result := true
+    cp := this.Get()
+    this.Restore()
+    if (RegExMatch(cp, "Item Class")) {
+      return true
     }
 
-    return result
+    return false
+  }
+
+  IsWeapon() {
+    this.Save()
+    this.Copy()
+    cp := this.Get()
+    this.Restore()
+    if (RegExMatch(cp, "Attacks per Second: ")) {
+      return true
+    }
+
+    return false
   }
 }
