@@ -11,6 +11,12 @@ OnExit(OnExitCallback)
 
 OnExitCallback(ExitReason, ExitCode) {
   LogInfo(Format("Exiting Quality of Exile with reason: {} and code: {}", ExitReason, ExitCode))
+  if (ExitReason != "Reload" and FileExist(STATE_FILE)) {
+    FileDelete(STATE_FILE)
+  }
+}
+OnErrorCallback(ThrownValue, ErrorMode) {
+  LogMessage("Fatal", "An error occurred in the script.", ThrownValue)
 }
 
 ErrorStringify(e) {
@@ -22,8 +28,9 @@ ErrorStringify(e) {
 
   return errStr
 }
-OnErrorCallback(e, mode) {
-  LogMessage("Fatal", "An error occurred in the script.", e)
+
+OneLineText(text) {
+  return RegExReplace(text, "[\r\n\t]", "")
 }
 
 LogMessage(level := "Info", msg := unset, err := unset, showMsgBox := false) {
@@ -37,12 +44,12 @@ LogMessage(level := "Info", msg := unset, err := unset, showMsgBox := false) {
     if (IsSet(err)) {
       text := Format(
         "Level: {}, Version: {}, Time: {}, A_IsCompiled: {}, Message: {}, Error::: {} `n",
-        level, VERSION, A_NowUTC, A_IsCompiled, msg, ErrorStringify(err)
+        level, VERSION, A_NowUTC, A_IsCompiled, OneLineText(msg), ErrorStringify(err)
       )
     } else {
       text := Format(
         "Level: {}, Version: {}, Time: {}, A_IsCompiled: {}, Message: {} `n",
-        level, VERSION, A_NowUTC, A_IsCompiled, msg
+        level, VERSION, A_NowUTC, A_IsCompiled, OneLineText(msg)
       )
     }
 
