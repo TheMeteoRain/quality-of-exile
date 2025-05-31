@@ -193,6 +193,8 @@ UpdateScript(GuiCtrl, *) {
 }
 
 CheckForUpdates() {
+  global LATEST_VERSION
+
   try {
     LogInfo("Checking for updates.")
     releasesFile := Q_ProgramPathDir . "\releases.json"
