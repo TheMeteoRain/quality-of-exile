@@ -11,6 +11,13 @@ LoadState() {
   }
 }
 
+SaveState() {
+  global DynamicHotkeysActivated, DynamicHotkeysState
+
+  IniWrite(DynamicHotkeysActivated, STATE_FILE, "STATE", "DynamicHotkeysActivated")
+  IniWrite(DynamicHotkeysState, STATE_FILE, "STATE", "DynamicHotkeysState")
+}
+
 TerminateTCP(*) {
   global LastExecutionTime
   Critical
@@ -322,7 +329,7 @@ CloseConfigurations(*) {
 }
 
 SaveConfigurations(*) {
-  global Hotkeys, Options, Extra, Configs, DynamicHotkeysActivated, DynamicHotkeysState
+  global Hotkeys, Options, Extra, Configs
   controls := HotkeyGui.Submit()
 
   for key in controls.OwnProps() {
@@ -389,8 +396,7 @@ SaveConfigurations(*) {
     }
   }
 
-  IniWrite(DynamicHotkeysActivated, STATE_FILE, "STATE", "DynamicHotkeysActivated")
-  IniWrite(DynamicHotkeysState, STATE_FILE, "STATE", "DynamicHotkeysState")
+  SaveState()
   Reload()
   Game.FocusGameWindow()
 }
