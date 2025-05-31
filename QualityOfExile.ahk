@@ -6,6 +6,7 @@
 
 FileEncoding("UTF-8")
 SetTitleMatchMode("3")
+#Include "globals.ahk"
 #Include "log.ahk"
 #Include "GameInfo.ahk"
 #Include "ClipboardSaver.ahk"

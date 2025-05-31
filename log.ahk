@@ -1,5 +1,4 @@
 #Requires AutoHotkey v2.0
-#Include "globals.ahk"
 
 for _, arg in A_Args {
   if RegExMatch(arg, "i)^DEBUG=(true|false)$", &m)
