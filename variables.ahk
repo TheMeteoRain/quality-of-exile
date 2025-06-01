@@ -30,6 +30,8 @@ global MouseDropdownOptions := [
   "XButton1",
   "XButton2"
 ]
+global X_GAP := 175
+global Y_GAP := 30
 global Configs := {
   EnterHideout: {
     name: "Enter Hideout",
@@ -60,7 +62,7 @@ global Configs := {
     tab: "General",
     section: "Hotkey",
     coords: {
-      x: 175,
+      x: X_GAP,
       y: 0
     },
     game: "PathOfExile",
@@ -76,7 +78,7 @@ global Configs := {
     tab: "PoE (2)",
     section: "Hotkey",
     coords: {
-      x: 175,
+      x: X_GAP,
       y: 0
     },
     game: "PathOfExile",
@@ -93,7 +95,7 @@ global Configs := {
     tab: "PoE (2)",
     section: "Hotkey",
     coords: {
-      x: 350,
+      x: X_GAP * 2,
       y: 0
     },
     pixelSelect: true,
@@ -132,7 +134,7 @@ global Configs := {
     section: "Hotkey",
     coords: {
       x: 0,
-      y: 90
+      y: Y_GAP * 3
     },
     game: "PathOfExile",
   },
@@ -148,8 +150,8 @@ global Configs := {
     tab: "PoE (2)",
     section: "Hotkey",
     coords: {
-      x: 175,
-      y: 90
+      x: X_GAP,
+      y: Y_GAP * 3
     },
     game: "PathOfExile",
   },
@@ -183,7 +185,7 @@ global Configs := {
     tab: "PoE (1)",
     section: "Hotkey",
     coords: {
-      x: 175,
+      x: X_GAP,
       y: 0
     },
     pixelSelect: true,
@@ -201,7 +203,7 @@ global Configs := {
     tab: "PoE (1)",
     section: "Hotkey",
     coords: {
-      x: 350,
+      x: X_GAP * 2,
       y: 0
     },
     pixelSelect: true,
@@ -220,7 +222,7 @@ global Configs := {
     section: "Hotkey",
     coords: {
       x: 0,
-      y: 120
+      y: Y_GAP * 4
     },
     pixelSelect: true,
     game: "PathOfExile",
@@ -237,8 +239,8 @@ global Configs := {
     tab: "PoE (1)",
     section: "Hotkey",
     coords: {
-      x: 175,
-      y: 120
+      x: X_GAP,
+      y: Y_GAP * 4
     },
     pixelSelect: true,
     game: "PathOfExile",
@@ -255,8 +257,8 @@ global Configs := {
     tab: "PoE (1)",
     section: "Hotkey",
     coords: {
-      x: 350,
-      y: 120
+      x: X_GAP * 2,
+      y: Y_GAP * 4
     },
     pixelSelect: true,
     game: "PathOfExile",
@@ -272,8 +274,8 @@ global Configs := {
     tab: "General",
     section: "Hotkey",
     coords: {
-      x: 175,
-      y: 60
+      x: X_GAP,
+      y: Y_GAP * 2
     }
   },
   Settings: {
@@ -288,7 +290,7 @@ global Configs := {
     section: "Hotkey",
     coords: {
       x: 0,
-      y: 60
+      y: Y_GAP * 2
     }
   },
   ToggleCtrlKeybind: {
@@ -302,8 +304,8 @@ global Configs := {
     tab: "General",
     section: "Hotkey",
     coords: {
-      x: 175,
-      y: 240
+      x: X_GAP,
+      y: Y_GAP * 8
     }
   },
   ToggleShiftKeybind: {
@@ -317,8 +319,8 @@ global Configs := {
     tab: "General",
     section: "Hotkey",
     coords: {
-      x: 350,
-      y: 240
+      x: X_GAP * 2,
+      y: Y_GAP * 8
     }
   },
   CtrlClickSpamToggle: {
@@ -331,7 +333,7 @@ global Configs := {
     toggleOnInstance: false,
     coords: {
       x: 0,
-      y: 240
+      y: Y_GAP * 8
     },
     tab: "General",
     section: "Hotkey"
@@ -347,7 +349,7 @@ global Configs := {
     tab: "General",
     section: "Hotkey",
     coords: {
-      x: 350,
+      x: X_GAP * 2,
       y: 0
     }
   },
@@ -360,8 +362,8 @@ global Configs := {
     tab: "General",
     toggleOnInstance: false,
     coords: {
-      x: 175,
-      y: 150
+      x: X_GAP,
+      y: Y_GAP * 5
     }
   },
   ToggleShift: {
@@ -373,8 +375,8 @@ global Configs := {
     tab: "General",
     toggleOnInstance: false,
     coords: {
-      x: 350,
-      y: 150
+      x: X_GAP * 2,
+      y: Y_GAP * 5
     }
   },
   ToggleOverlayPosition: {
@@ -386,7 +388,7 @@ global Configs := {
     pixelSelect: true,
     coords: {
       x: 0,
-      y: 150
+      y: Y_GAP * 5
     }
   },
   TransferMaterialsWInventory: {
@@ -419,7 +421,7 @@ global Configs := {
     tab: "Last Epoch",
     section: "Hotkey",
     coords: {
-      x: 175,
+      x: X_GAP,
       y: 0
     },
     pixelSelect: true,
@@ -438,7 +440,7 @@ global Configs := {
     tab: "Last Epoch",
     section: "Hotkey",
     coords: {
-      x: 350,
+      x: X_GAP * 2,
       y: 0
     },
     pixelSelect: true,
