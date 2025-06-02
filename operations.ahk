@@ -1103,88 +1103,71 @@ CheckMapModifiers() {
 }
 
 ; league specific
-global ShipmentData := [
-  {
-    name: "Crimson Iron Ore",
-    var: "CrimsonIronOre",
-    value: 0
-  },
-  {
-    name: "Orichalcum Ore",
-    var: "OrichalcumOre",
-    value: 0
-  },
-  {
-    name: "Petrified Amber Ore",
-    var: "PetrifiedAmberOre",
-    value: 0
-  },
-  {
-    name: "Bishmut Ore",
-    var: "BishmutOre",
-    value: 0
-  },
-  {
-    name: "Verisium Ore",
-    var: "VerisiumOre",
-    value: 0
-  },
-  {
-    name: "Crimson Iron Bar",
-    var: "CrimsonIronBar",
-    value: 0
-  },
-  {
-    name: "Orichalcum Bar",
-    var: "OrichalcumBar",
-    value: 0
-  },
-  {
-    name: "Petrified Amber Bar",
-    var: "PetrifiedAmberBar",
-    value: 0
-  },
-  {
-    name: "Bishmut Bar",
-    var: "BishmutBar",
-    value: 0
-  },
-  {
-    name: "Verisium Bar",
-    var: "VerisiumBar",
-    value: 0
-  },
-  {
-    name: "Wheat",
-    var: "Wheat",
-    value: 0
-  },
-  {
-    name: "Corn",
-    var: "Corn",
-    value: 0
-  },
-  {
-    name: "Pumpkin",
-    var: "Pumpkin",
-    value: 0
-  },
-  {
-    name: "Orgourd",
-    var: "Orgourd",
-    value: 0
-  },
-  {
-    name: "Blue Zanthimum",
-    var: "BlueZanthimum",
-    value: 0
-  },
-  {
-    name: "Thaumaturgic Dust",
-    var: "ThaumaturgicDust",
-    value: 0
-  },
-]
+global ShipmentData := [{
+  name: "Crimson Iron Ore",
+  var: "CrimsonIronOre",
+  value: 0
+}, {
+  name: "Orichalcum Ore",
+  var: "OrichalcumOre",
+  value: 0
+}, {
+  name: "Petrified Amber Ore",
+  var: "PetrifiedAmberOre",
+  value: 0
+}, {
+  name: "Bishmut Ore",
+  var: "BishmutOre",
+  value: 0
+}, {
+  name: "Verisium Ore",
+  var: "VerisiumOre",
+  value: 0
+}, {
+  name: "Crimson Iron Bar",
+  var: "CrimsonIronBar",
+  value: 0
+}, {
+  name: "Orichalcum Bar",
+  var: "OrichalcumBar",
+  value: 0
+}, {
+  name: "Petrified Amber Bar",
+  var: "PetrifiedAmberBar",
+  value: 0
+}, {
+  name: "Bishmut Bar",
+  var: "BishmutBar",
+  value: 0
+}, {
+  name: "Verisium Bar",
+  var: "VerisiumBar",
+  value: 0
+}, {
+  name: "Wheat",
+  var: "Wheat",
+  value: 0
+}, {
+  name: "Corn",
+  var: "Corn",
+  value: 0
+}, {
+  name: "Pumpkin",
+  var: "Pumpkin",
+  value: 0
+}, {
+  name: "Orgourd",
+  var: "Orgourd",
+  value: 0
+}, {
+  name: "Blue Zanthimum",
+  var: "BlueZanthimum",
+  value: 0
+}, {
+  name: "Thaumaturgic Dust",
+  var: "ThaumaturgicDust",
+  value: 0
+},]
 FillShipments(*) {
   global ShipmentData
   ResetToggle()
