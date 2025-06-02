@@ -1,6 +1,7 @@
 #Requires AutoHotkey v2.0
 #Include "variables.ahk"
 #Include "functions\LastEpoch.ahk"
+#Include "functions\CalculateWeaponDPS.ahk"
 
 LoadState() {
   global DynamicHotkeysActivated, DynamicHotkeysState
@@ -1323,4 +1324,47 @@ ReadLogFile(clientFile) {
       }
     }
   }
+}
+
+HideWeaponDPS() {
+  global DPSGui
+
+  if (IsSet(DPSGui)) {
+    DPSGui.Destroy()
+    DPSGui := unset
+    Sleep(100)
+  }
+}
+
+WeaponDPS(*) {
+  global DPSGui, clipboard
+
+  if (Debounce("WeaponDPS", 250)) {
+    return
+  }
+
+  HideWeaponDPS()
+  SetTimer(HideWeaponDPS, 0)
+  clipboard.Save()
+  clipboard.Clear()
+  clipboard.CopyWithAlt()
+  item := clipboard.Get()
+  clipboard.Restore()
+
+  DPSGui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20")
+  DPSGui.BackColor := MAIN_COLOR
+  WinSetTransparent("255", DPSGui)
+
+  try {
+    GuiCtrl := CalculateWeaponDPS(item, DPSGui)
+    if (!GuiCtrl) {
+      return
+    }
+  } catch Error as e {
+    LogError("CalculateWeaponDPS", e)
+  }
+
+  MouseGetPos(&mouseX, &mouseY)
+  DPSGui.Show("NoActivate x" mouseX " y" mouseY)
+  SetTimer(HideWeaponDPS, -5000)
 }

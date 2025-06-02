@@ -9,11 +9,12 @@ global LastExecutionTime := {
   TransferMaterialsWInventory: 0,
   TransferMaterialsWOInventory: 0,
   ShatterItem: 0,
+  WeaponDPS: 0,
 }
 global CtrlToggled := false
 global ShiftToggled := false
 global ScrollSpam := false
-global OverlayGui, CtrlLabel, ShiftLabel, SpamLabel, HotkeyGui, HUDGui
+global DPSGui := unset
 global clientFilePath, clientFile, clientFileReadFunc
 global DynamicHotkeysActivated := false
 global DynamicHotkeysState := "OFF"
@@ -261,6 +262,25 @@ global Configs := {
       y: Y_GAP * 4
     },
     pixelSelect: true,
+    game: "PathOfExile",
+  },
+  CalcWeaponDPS: {
+    name: "Calc Weapon DPS",
+    canBeDisabled: true,
+    defaultHotkey: "",
+    func: WeaponDPS,
+    extraField: false,
+    blockKeyNativeFunction: true,
+    mouseBind: false,
+    tooltip: "TODO",
+    toggleOnInstance: false,
+    tab: "PoE (1)",
+    section: "Hotkey",
+    coords: {
+      x: 0,
+      y: Y_GAP * 8
+    },
+    pixelSelect: false,
     game: "PathOfExile",
   },
   KillSwitch: {
