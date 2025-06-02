@@ -96,7 +96,7 @@ If Quality of Exile has helped you play more comfortably and you'd like to show 
 ## Hotkeys
 
 - [Kill Switch](#kill-switch)
-- [Toggle all keybinds](#toggle-all-keybinds)
+- [Master keybind (activate/deactivate other keybinds)](#master-keybind-activatedeactivate-other-keybinds)
 - [Enter Hideout](#enter-hideout)
 - [Enter League Specific Area](#enter-league-specific-area)
 - [Toggle CTRL](#toggle-ctrl)
@@ -121,8 +121,8 @@ Kill the program. In case of there is a bug, you can press this to kill the prog
 How to use:
 1. Press the assigned keybind.
 
-### Toggle all keybinds
-Allows to enable/disable all keybinds. In case you have set your keybinds to characters `a-Z1-9` and you need to use them i.e. for chatting. Activating this will show [overlay status](#setup-toggle-overlay) for toggleable keybinds. 
+### Master keybind (activate/deactivate other keybinds)
+Allows to enable/disable all keybinds. In case you have set your keybinds to characters `a-Z1-9` and you need to use them i.e. for chatting or for any other reason. Activating this will show [overlay status](#setup-toggle-overlay) and shows this keybind's status.
 
 How to use:
 1. Press the assigned keybind to disable keybinds.
@@ -141,7 +141,7 @@ How to use:
 1. Press the assigned keybind. (in town)
 
 ### Toggle CTRL
-Press the keybind once to toggle CTRL. Press it again to release CTRL. You can also register a new key for CTRL, maybe you have small macro keypad. Registering a new key won't interfere with the CTRL key itself. If you register a new key you ultimately have two CTRL keys. Pressing any other toggleable keybind will deactivate the previously toggled one. Activating this will show [overlay status](#setup-toggle-overlay) for toggleable keybinds. 
+Press the keybind once to toggle CTRL. Press it again to release CTRL. You can also register a new key for CTRL, maybe you have small macro keypad. Registering a new key won't interfere with the CTRL key itself. If you register a new key you ultimately have two CTRL keys. Pressing any other toggleable keybind will deactivate the previously toggled one. Activating this will show [overlay status](#setup-toggle-overlay) and shows this keybind's status.
 
 Use cases:
 - Move items from inventory to stash.
@@ -149,13 +149,13 @@ Use cases:
 - Pre-toggle before interacting with an NPC to trigger specific actions, such as opening the sell window or identifying items (PoE2:The Hooded One).
 
 ### Toggle SHIFT
-Press the keybind once to toggle SHIFT. Press it again to release SHIFT. You can also register a new key for SHIFT, maybe you have small macro keypad. Registering a new key won't interfere with the SHIFT key itself. If you register a new key you ultimately have two SHIFT keys. Pressing any other toggleable keybind will deactivate the previously toggled one. Activating this will show [overlay status](#setup-toggle-overlay) for toggleable keybinds. 
+Press the keybind once to toggle SHIFT. Press it again to release SHIFT. You can also register a new key for SHIFT, maybe you have small macro keypad. Registering a new key won't interfere with the SHIFT key itself. If you register a new key you ultimately have two SHIFT keys. Pressing any other toggleable keybind will deactivate the previously toggled one. Activating this will show [overlay status](#setup-toggle-overlay) and shows this keybind's status.
 
 Use cases:
 - Use crafting currency continuously (e.g. alterations, jewellers, fusings) without needing to hold down SHIFT yourself.
 
 ### Spam Left Click With Ctrl
-Press the keybind once to activate: the script will hold CTRL and rapidly spam left click. Press the keybind again to stop. Activating any other toggleable keybind will automatically deactivate this action. Activating this will show [overlay status](#setup-toggle-overlay) for toggleable keybinds. 
+Press the keybind once to activate: the script will hold CTRL and rapidly spam left click. Press the keybind again to stop. Activating any other toggleable keybind will automatically deactivate this action. Activating this will show [overlay status](#setup-toggle-overlay) and shows this keybind's status.
 
 Use cases:
 - Quickly move items to the stash.
