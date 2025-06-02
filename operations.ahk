@@ -104,8 +104,8 @@ Settings(*) {
   HotkeyGui := Gui("+AlwaysOnTop +ToolWindow", "Quality of Exile")
   TabControl := HotkeyGui.Add("Tab3", "", [
     "General",
-    "PoE (1)",
-    "PoE (2)",
+    "PoE (A)",
+    "PoE (B)",
     "Last Epoch"
   ])
 
@@ -116,14 +116,14 @@ Settings(*) {
   )
   textCtrl.SetFont("w700")
 
-  TabControl.UseTab("PoE (1)")
+  TabControl.UseTab("PoE (A)")
   textCtrl := HotkeyGui.Add(
     "Text", Format("x{} y{} w500", pX, pY),
     "(K): Keyboard keybind | (M): Mouse keybind | (Px): Pixel | (D): Dynamic Hotkey"
   )
   textCtrl.SetFont("w700")
 
-  TabControl.UseTab("PoE (2)")
+  TabControl.UseTab("PoE (B)")
   textCtrl := HotkeyGui.Add("Text", Format("x{} y{} w500", pX, pY),
   "(K): Keyboard keybind | (M): Mouse keybind | (Px): Pixel | (D): Dynamic Hotkey")
   textCtrl.SetFont("w700")

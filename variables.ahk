@@ -83,7 +83,7 @@ global Configs := {
     mouseBind: true,
     tooltip: "How to use: hover over the desired divination stack in your inventory and press this hotkey. Only usable in outdoor areas, since you cannot drop cards in hideout or similar areas.",
     toggleOnInstance: false,
-    tab: "PoE (2)",
+    tab: "PoE (B)",
     section: "Hotkey",
     coords: {
       x: X_GAP,
@@ -101,7 +101,7 @@ global Configs := {
     mouseBind: false,
     tooltip: "How to use: open divination card trade screen and press this hotkey, while hovering over the desired full divination card stack in your inventory.",
     toggleOnInstance: false,
-    tab: "PoE (2)",
+    tab: "PoE (B)",
     section: "Hotkey",
     coords: {
       x: X_GAP * 2,
@@ -123,7 +123,7 @@ global Configs := {
     blockKeyNativeFunction: true,
     tooltip: "How to use: hover over item in your inventory and press this hotkey.",
     toggleOnInstance: false,
-    tab: "PoE (2)",
+    tab: "PoE (B)",
     section: "Hotkey",
     coords: {
       x: 0,
@@ -141,7 +141,7 @@ global Configs := {
     mouseBind: true,
     tooltip: "TODO",
     toggleOnInstance: false,
-    tab: "PoE (2)",
+    tab: "PoE (B)",
     section: "Hotkey",
     coords: {
       x: 0,
@@ -159,7 +159,7 @@ global Configs := {
     mouseBind: true,
     tooltip: "TODO",
     toggleOnInstance: false,
-    tab: "PoE (2)",
+    tab: "PoE (B)",
     section: "Hotkey",
     coords: {
       x: X_GAP,
@@ -177,7 +177,7 @@ global Configs := {
     mouseBind: false,
     tooltip: "TODO",
     toggleOnInstance: true,
-    tab: "PoE (1)",
+    tab: "PoE (A)",
     section: "Hotkey",
     coords: {
       x: 0,
@@ -196,7 +196,7 @@ global Configs := {
     mouseBind: false,
     tooltip: "TODO",
     toggleOnInstance: true,
-    tab: "PoE (1)",
+    tab: "PoE (A)",
     section: "Hotkey",
     coords: {
       x: X_GAP,
@@ -215,7 +215,7 @@ global Configs := {
     mouseBind: false,
     tooltip: "TODO",
     toggleOnInstance: true,
-    tab: "PoE (1)",
+    tab: "PoE (A)",
     section: "Hotkey",
     coords: {
       x: X_GAP * 2,
@@ -234,7 +234,7 @@ global Configs := {
     mouseBind: false,
     tooltip: "TODO",
     toggleOnInstance: true,
-    tab: "PoE (1)",
+    tab: "PoE (A)",
     section: "Hotkey",
     coords: {
       x: 0,
@@ -253,7 +253,7 @@ global Configs := {
     mouseBind: false,
     tooltip: "TODO",
     toggleOnInstance: true,
-    tab: "PoE (1)",
+    tab: "PoE (A)",
     section: "Hotkey",
     coords: {
       x: X_GAP,
@@ -272,7 +272,7 @@ global Configs := {
     mouseBind: false,
     tooltip: "TODO",
     toggleOnInstance: true,
-    tab: "PoE (1)",
+    tab: "PoE (A)",
     section: "Hotkey",
     coords: {
       x: X_GAP * 2,
@@ -291,7 +291,7 @@ global Configs := {
     mouseBind: false,
     tooltip: "TODO",
     toggleOnInstance: false,
-    tab: "PoE (1)",
+    tab: "PoE (A)",
     section: "Hotkey",
     coords: {
       x: 0,
