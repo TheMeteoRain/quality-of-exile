@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.1-beta.14](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.0-beta.14...v0.1.1-beta.14) (2025-06-02)
+
+
+### Bug Fixes
+
+* Stop checking for updates if application was gracefully reloaded ([44d1c01](https://github.com/TheMeteoRain/quality-of-exile/commit/44d1c014ac0ef8fe30b382c52975bd1d4dac343d))
+
 ## [0.1.0-beta.14](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.0-beta.13...v0.1.0-beta.14) (2025-06-02)
 
 
