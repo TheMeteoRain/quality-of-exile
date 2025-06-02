@@ -333,7 +333,7 @@ global Configs := {
     }
   },
   ToggleHotkeys: {
-    name: "Enable/Disable Hotkeys",
+    name: "Master Hotkey`n(toggle other hotkeys)",
     canBeDisabled: false,
     defaultHotkey: "",
     func: ToggleHotkeys,
