@@ -645,18 +645,17 @@ CreateToggleOverlay() {
     return
   }
 
-  if (Hotkeys["ToggleCtrl"] or Hotkeys["ToggleShift"] or Hotkeys["CtrlClickSpamToggle"] or Hotkeys[
-    "ToggleCtrlKeybind"] or Hotkeys["ToggleShiftKeybind"]) {
+  if (CheckForAnyToggleableKeybinds()) {
     OverlayGui := Gui("-Caption +AlwaysOnTop +ToolWindow +E0x20")
     OverlayGui.Title := "Toggle Overlay"
     OverlayGui.BackColor := "Black"
     WinSetTransColor(OverlayGui.BackColor " 150", OverlayGui)
-    CtrlLabel := OverlayGui.Add("Text", "x10 y10 w" Game.OverlayWidth / 2 " h30 vCtrlLabel", "Ctrl: OFF")
-    CtrlLabel.SetFont("cWhite s12 w700 q2")
-    ShiftLabel := OverlayGui.Add("Text", "x10 y40 w" Game.OverlayWidth / 2 " h30 vShiftLabel", "Shift: OFF")
-    ShiftLabel.SetFont("cWhite s12 w700 q2")
-    SpamLabel := OverlayGui.Add("Text", "x" Game.OverlayWidth / 2 " y10 w" Game.OverlayWidth / 2 " h30 vSpam")
-    SpamLabel.SetFont("cRed s12 w700 q2")
+    CtrlLabel := OverlayGui.Add("Text", "x10 y10 w" Game.OverlayWidth / 2 " h30 vCtrlLabel", "CTRL:❌")
+    CtrlLabel.SetFont("cWhite s15 q5")
+    ShiftLabel := OverlayGui.Add("Text", "x10 y40 w" Game.OverlayWidth / 2 " h30 vShiftLabel", "SHIFT:❌")
+    ShiftLabel.SetFont("cWhite s15 q5")
+    SpamLabel := OverlayGui.Add("Text", "x" Game.OverlayWidth / 2 " y6 w" Game.OverlayWidth / 2 " h30 vSpam")
+    SpamLabel.SetFont("c4cff70 s20 q5")
   }
 }
 ShowToggleOverlay() {
@@ -689,11 +688,19 @@ HideToggleOverlay() {
   OverlayGui.Hide()
 }
 
-ResetToggle(*) {
+CheckForAnyToggleableKeybinds() {
   global Hotkeys
 
-  if (Hotkeys["ToggleCtrl"] or Hotkeys["ToggleShift"] or Hotkeys["CtrlClickSpamToggle"] or Hotkeys[
-    "ToggleCtrlKeybind"] or Hotkeys["ToggleShiftKeybind"]) {
+  return (
+    Hotkeys["ToggleCtrl"] or Hotkeys["ToggleShift"] or
+    Hotkeys["CtrlClickSpamToggle"] or Hotkeys["ToggleCtrlKeybind"] or
+    Hotkeys["ToggleShiftKeybind"] or Hotkeys["ToggleHotkeys"]
+  )
+}
+
+ResetToggle(*) {
+
+  if (CheckForAnyToggleableKeybinds()) {
     StopClickSpam()
     CtrlUp()
     ShiftUp()
@@ -756,15 +763,15 @@ ToggleShift(*) {
 CtrlDown() {
   global CtrlToggled
   SendInput("{Ctrl down}")
-  CtrlLabel.Text := "Ctrl: ON ***"
-  CtrlLabel.SetFont("cRed")
+  CtrlLabel.Text := "CTRL:✅"
+  CtrlLabel.SetFont("c4cff70")
   CtrlToggled := true
 }
 
 CtrlUp() {
   global CtrlToggled
   SendInput("{Ctrl up}")
-  CtrlLabel.Text := "Ctrl: OFF"
+  CtrlLabel.Text := "CTRL:❌"
   CtrlLabel.SetFont("cWhite")
   CtrlToggled := false
 }
@@ -772,15 +779,15 @@ CtrlUp() {
 ShiftDown() {
   global ShiftToggled
   SendInput("{Shift down}")
-  ShiftLabel.Text := "Shift: ON ***"
-  ShiftLabel.SetFont("cRed")
+  ShiftLabel.Text := "SHIFT:✅"
+  ShiftLabel.SetFont("c4cff70")
   ShiftToggled := true
 }
 
 ShiftUp() {
   global ShiftToggled
   SendInput("{Shift up}")
-  ShiftLabel.Text := "Shift: OFF"
+  ShiftLabel.Text := "SHIFT:❌"
   ShiftLabel.SetFont("cWhite")
   ShiftToggled := false
 }
@@ -789,7 +796,7 @@ StartCtrlClickSpam() {
   global ScrollSpam, SpamLabel
 
   ScrollSpam := true
-  SpamLabel.Text := "SPAM!"
+  SpamLabel.Text := "🖱️❗"
 
   ShiftUp()
   CtrlDown()
