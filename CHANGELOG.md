@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.0-beta.14](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.0-beta.13...v0.1.0-beta.14) (2025-06-02)
+
+
+### Features
+
+* Add master keybind to activate/deactivate other keybinds ([56ee1e7](https://github.com/TheMeteoRain/quality-of-exile/commit/56ee1e7ee4c0910e5873cf651e3966ddd838884e))
+* Add weapon dps calculation ([16d7ee9](https://github.com/TheMeteoRain/quality-of-exile/commit/16d7ee91ece654c2c45a51fc8a382da4210ca1ef))
+* Prettify overlay UI ([a60427e](https://github.com/TheMeteoRain/quality-of-exile/commit/a60427e8baf658385191ec4c9c070c8502a0bac3))
+
+
+### Bug Fixes
+
+* Add waiting in-between copy and pasting ([9585b05](https://github.com/TheMeteoRain/quality-of-exile/commit/9585b054e2f1908f4daaaf11350e99b7551b97d7))
+* Issue with fetching latest version ([c21af8a](https://github.com/TheMeteoRain/quality-of-exile/commit/c21af8a35e17302b8c15fab7c5bf93d782694506))
+* Rename Master hotkey ([73714c3](https://github.com/TheMeteoRain/quality-of-exile/commit/73714c30da7500e11ce2a12db123616ddb015980))
+* Rename tabs to prevent confusion ([d94bcf8](https://github.com/TheMeteoRain/quality-of-exile/commit/d94bcf8bb52c4dd37fe0f39fe357bbf46e2fcbb1))
+* Show splash screen once program is running as admin ([5e804ad](https://github.com/TheMeteoRain/quality-of-exile/commit/5e804ad226f7987daa854786e1f5961dc6685bd0))
+
+
+### Miscellaneous Chores
+
+* release 0.1.0-beta.14 ([6342582](https://github.com/TheMeteoRain/quality-of-exile/commit/63425826b14498e9421c0e90a530738b8e7850d1))
+
 ## [0.1.0-beta.13](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.0-beta.12...v0.1.0-beta.13) (2025-05-30)
 
 
