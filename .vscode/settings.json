@@ -1,8 +1,8 @@
 {
     "AHK++.v2.formatter": {
-        "arrayStyle": "expand",
+        "arrayStyle": "none",
         "braceStyle": "One True Brace",
-        "breakChainedMethods": true,
+        "breakChainedMethods": false,
         "ignoreComment": false,
         "indentBetweenHotIfDirectives": false,
         "indentString": "  ",
