@@ -282,7 +282,7 @@ global Configs := {
     game: "PathOfExile",
   },
   CalcWeaponDPS: {
-    name: "Calc Weapon DPS",
+    name: "Calc. Weapon DPS",
     canBeDisabled: true,
     defaultHotkey: "",
     func: WeaponDPS,
