@@ -13,6 +13,7 @@ OnExitCallback(ExitReason, ExitCode) {
   if (ExitReason != "Reload" and FileExist(STATE_FILE)) {
     FileDelete(STATE_FILE)
   }
+  IniWrite(ExitReason, BOOT_FILE, "BOOT", "ExitReason")
 }
 OnErrorCallback(ThrownValue, ErrorMode) {
   LogMessage("Fatal", "An error occurred in the script.", ThrownValue)

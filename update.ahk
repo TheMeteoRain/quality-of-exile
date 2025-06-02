@@ -259,6 +259,12 @@ CheckForUpdates() {
 
 }
 
+ExitReason := IniRead(BOOT_FILE, "BOOT", "ExitReason", "")
 CreateProgramPathDir()
-CheckForUpdates()
 DownloadCports()
+if (ExitReason != "Reload") {
+  CheckForUpdates()
+}
+if (FileDelete(BOOT_FILE)) {
+  FileDelete(BOOT_FILE)
+}

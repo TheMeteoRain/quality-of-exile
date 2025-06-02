@@ -13,5 +13,6 @@ DEBUG := false
 AHK_VERSION_REQUIRED := "2.0.0"
 INI_FILE := Q_ProgramPathDir "\data.ini"
 STATE_FILE := Q_ProgramPathDir "\state.ini"
+BOOT_FILE := Q_ProgramPathDir "\boot.ini"
 LATEST_VERSION := VERSION
 MAIN_COLOR := "20283f"
