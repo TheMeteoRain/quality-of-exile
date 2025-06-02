@@ -434,17 +434,15 @@ LoadConfigurations() {
         }
 
         if (val && key == "KillSwitch") {
-          HotIf()
-          Hotkey("*" val, config.func)
+          RegisterHotkey("*" val, config.func, "On", config.canBeDisabled, "")
         } else {
-          HotIfWinActive(Game.Title)
           if (config.HasProp("toggleOnInstance") and config.toggleOnInstance) {
             ; dynamic hotkeys
-            Hotkey("*" val, config.func)
+            RegisterHotkey("*" val, config.func, "On", config.canBeDisabled)
           } else if (config.blockKeyNativeFunction) {
-            Hotkey("*" val, config.func)
+            RegisterHotkey("*" val, config.func, "On", config.canBeDisabled)
           } else {
-            Hotkey("~" val, config.func)
+            RegisterHotkey("~" val, config.func, "On", config.canBeDisabled)
           }
         }
 
@@ -462,13 +460,12 @@ LoadConfigurations() {
         val := IniRead(INI_FILE, "Toggle", key, 0)
         Hotkeys.Set(key, val)
 
-        HotIfWinActive(Game.Title)
         if (val == 1) {
           if (key == "ToggleCtrl") {
-            Hotkey("*Ctrl", config.func)
+            RegisterHotkey("*Ctrl", config.func, "On", config.canBeDisabled)
           }
           if (key == "ToggleShift") {
-            Hotkey("*Shift", config.func)
+            RegisterHotkey("*Shift", config.func, "On", config.canBeDisabled)
           }
         }
 
@@ -477,28 +474,108 @@ LoadConfigurations() {
     }
 
     if (Hotkeys["ToggleCtrl"] == 1 and Hotkeys["ToggleShift"] == 0) {
-      HotIfWinActive(Game.Title)
-      Hotkey("*Shift", ResetToggle)
+      RegisterHotkey("*Shift", ResetToggle, "On", config.canBeDisabled)
     }
     if (Hotkeys["ToggleCtrl"] == 0 and Hotkeys["ToggleShift"] == 1) {
-      HotIfWinActive(Game.Title)
-      Hotkey("*Ctrl", ResetToggle)
+      RegisterHotkey("*Ctrl", ResetToggle, "On", config.canBeDisabled)
     }
 
     if (Hotkeys["ToggleCtrl"] == 1 or Hotkeys["ToggleShift"] == 1) {
-      HotIfWinActive(Game.Title)
-      Hotkey("#LWin", ResetToggle)
-      HotIfWinActive(Game.Title)
-      Hotkey("~*LWin", ResetToggleWin)
-      HotIfWinActive(Game.Title)
-      Hotkey("*Esc", ResetToggleEsc)
+      RegisterHotkey("#LWin", ResetToggle, "On", config.canBeDisabled)
+      RegisterHotkey("~*LWin", ResetToggleWin, "On", config.canBeDisabled)
+      RegisterHotkey("*Esc", ResetToggleEsc, "On", config.canBeDisabled)
       ; HotIfWinActive(Game.Title)
       ; Hotkey("*Space", ResetToggleSpace)
     }
   } catch Error as e {
-    ;LogError("Could not load configurations." e, true)
+    LogError(
+      Format(
+        'Error when loading configurations. If this persists consider deleting file: "{}".`nYou will lose your settings by doing this and have to start over.',
+        INI_FILE
+      ),
+      e,
+      true
+    )
     KillSwitch()
   }
+}
+
+EnableHotkeys() {
+  global RegisteredHotkeys, DynamicHotkeysActivated, DynamicHotkeysState, ManualHotkeyEnabled, DisabledLabel
+
+  if (!IsSet(OverlayGui)) {
+    return
+  }
+
+  for key, obj in RegisteredHotkeys {
+    RegisterHotkey(key, obj.Get("func"), "On")
+  }
+  LoadState()
+  SetDynamicHotkeysState(DynamicHotkeysState, true)
+  ManualHotkeyEnabled := false
+  DisabledLabel.Text := " "
+}
+DisableHotkeys() {
+  global RegisteredHotkeys, ManualHotkeyEnabled, DisabledLabel
+
+  if (!IsSet(OverlayGui)) {
+    return
+  }
+
+  ResetToggle()
+  DisabledLabel.Text := "⚠️"
+  ManualHotkeyEnabled := true
+  SaveState()
+  for key, obj in RegisteredHotkeys {
+    if (!obj.Has("canBeDisabled")) {
+      continue
+    }
+    if (!obj.Get("canBeDisabled")) {
+      continue
+    }
+
+    RegisterHotkey(key, obj.Get("func"), "Off")
+  }
+}
+
+ToggleHotkeys(*) {
+  global ManualHotkeyEnabled
+
+  if (Debounce("ToggleHotkeys", 500)) {
+    return
+  }
+
+  LogInfo("ToggleHotkeys")
+
+  if (!ManualHotkeyEnabled) {
+    LogInfo("DisableHotkeys")
+    DisableHotkeys()
+  } else {
+    LogInfo("EnableHotkeys")
+    EnableHotkeys()
+  }
+
+}
+
+RegisterHotkey(KeyName, Func, Action := "On", canBeDisabled := true, WinName := Game.Title) {
+  global RegisteredHotkeys
+
+  if (!RegisteredHotkeys.Has(KeyName)) {
+    RegisteredHotkeys.Set(
+      KeyName,
+      Map()
+      .Set("func", Func)
+      .Set("action", Action)
+      .Set("canBeDisabled", canBeDisabled)
+    )
+  }
+
+  if (WinName == "") {
+    HotIf()
+  } else {
+    HotIfWinActive(Game.Title)
+  }
+  Hotkey(KeyName, Func, Action)
 }
 
 SelectPixel(control, pixelTextControl, config, *) {
@@ -639,7 +716,7 @@ ShowHUD() {
 }
 
 CreateToggleOverlay() {
-  global OverlayGui, CtrlLabel, ShiftLabel, SpamLabel
+  global OverlayGui, CtrlLabel, ShiftLabel, SpamLabel, DisabledLabel
 
   if (IsSet(OverlayGui)) {
     return
@@ -656,6 +733,8 @@ CreateToggleOverlay() {
     ShiftLabel.SetFont("cWhite s15 q5")
     SpamLabel := OverlayGui.Add("Text", "x" Game.OverlayWidth / 2 " y6 w" Game.OverlayWidth / 2 " h30 vSpam")
     SpamLabel.SetFont("c4cff70 s20 q5")
+    DisabledLabel := OverlayGui.Add("Text", "x" Game.OverlayWidth / 2 " y33 w" Game.OverlayWidth / 2 " h30 vDisabled")
+    DisabledLabel.SetFont("cYellow s20 q5")
   }
 }
 ShowToggleOverlay() {
@@ -1236,7 +1315,6 @@ DynamicHotkeys() {
   FileModificationTime := FileGetTime(clientFilePath, "M")
 
   LastModified := DateDiff(A_Now, FileModificationTime, "Seconds")
-  HotIfWinActive(Game.Title)
 
   if (DynamicHotkeysActivated) {
     SetDynamicHotkeysState(DynamicHotkeysState, false)
@@ -1299,16 +1377,21 @@ MatchPoe1Lines(line) {
   return false
 }
 SetDynamicHotkeysState(state := "Off", setState := true) {
-  global Configs, Hotkeys, DynamicHotkeysActivated, DynamicHotkeysState
+  global Configs, Hotkeys, DynamicHotkeysActivated, DynamicHotkeysState, ManualHotkeyEnabled
+
+  if (ManualHotkeyEnabled) {
+    return
+  }
 
   for key, config in Configs.OwnProps() {
     if (config.toggleOnInstance and Hotkeys[key]) {
-      Hotkey("*" Hotkeys[key], config.func, state)
+      RegisterHotkey("*" Hotkeys[key], config.func, state, config.canBeDisabled, Game.Title)
     }
   }
   if (setState) {
     DynamicHotkeysActivated := true
     DynamicHotkeysState := state
+    SaveState()
   }
 }
 ReadLogFile(clientFile) {

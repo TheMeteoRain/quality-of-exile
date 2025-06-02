@@ -10,14 +10,17 @@ global LastExecutionTime := {
   TransferMaterialsWOInventory: 0,
   ShatterItem: 0,
   WeaponDPS: 0,
+  ToggleHotkeys: 0
 }
 global CtrlToggled := false
 global ShiftToggled := false
 global ScrollSpam := false
 global DPSGui := unset
+global OverlayGui, CtrlLabel, ShiftLabel, SpamLabel, DisabledLabel, HotkeyGui, HUDGui
 global clientFilePath, clientFile, clientFileReadFunc
 global DynamicHotkeysActivated := false
 global DynamicHotkeysState := "OFF"
+global RegisteredHotkeys := Map()
 global RegExpCharacterLimit := 48
 global Game := GameInfo()
 global mousePos := MousePositionSaver()
@@ -25,6 +28,7 @@ global clipboard := ClipboardSaver()
 global Hotkeys := Map()
 global Extra := Map()
 global Options := Map()
+global ManualHotkeyEnabled := false
 global MouseDropdownOptions := [
   "",
   "MButton",
@@ -36,6 +40,7 @@ global Y_GAP := 30
 global Configs := {
   EnterHideout: {
     name: "Enter Hideout",
+    canBeDisabled: true,
     var: "OpenHideout",
     defaultHotkey: "F5",
     func: OpenHideout,
@@ -53,6 +58,7 @@ global Configs := {
   },
   EnterKingsmarch: {
     name: "Enter Kingsmarch",
+    canBeDisabled: true,
     var: "OpenKingsmarch",
     defaultHotkey: "F6",
     func: OpenKingsmarch,
@@ -70,6 +76,7 @@ global Configs := {
   },
   OpenStackedDivinationDeck: {
     name: "Open Stacked Divination Deck",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: OpenStackedDivinationDeck,
     blockKeyNativeFunction: true,
@@ -86,6 +93,7 @@ global Configs := {
   },
   TradeDivinationCard: {
     name: "Trade Divination Card",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: PerformDivinationTrading,
     blockKeyNativeFunction: true,
@@ -108,6 +116,7 @@ global Configs := {
   },
   DropItem: {
     name: "Drop Item From Inventory",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: DropItem,
     mouseBind: true,
@@ -124,6 +133,7 @@ global Configs := {
   },
   FillShipment: {
     name: "Fill Shipments",
+    canBeDisabled: true,
     var: "FillShipment",
     defaultHotkey: "",
     func: FillShipments,
@@ -141,6 +151,7 @@ global Configs := {
   },
   HighlightShopItems: {
     name: "Enter RegExp",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: HighlightShopItems,
     blockKeyNativeFunction: true,
@@ -158,6 +169,7 @@ global Configs := {
   },
   OrbOfTransmutation: {
     name: "Orb of Transmutation (D)",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: OrbOfTransmutation,
     blockKeyNativeFunction: true,
@@ -176,6 +188,7 @@ global Configs := {
   },
   OrbOfAlteration: {
     name: "Orb of Alteration (D)",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: OrbOfAlteration,
     blockKeyNativeFunction: true,
@@ -194,6 +207,7 @@ global Configs := {
   },
   OrbOfChance: {
     name: "Orb of Chance (D)",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: CraftOrbOfChance,
     blockKeyNativeFunction: true,
@@ -212,6 +226,7 @@ global Configs := {
   },
   AlchemyOrb: {
     name: "Alchemy Orb (D)",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: CraftAlchemyOrb,
     blockKeyNativeFunction: true,
@@ -230,6 +245,7 @@ global Configs := {
   },
   OrbOfScouring: {
     name: "Orb of Scouring (D)",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: CraftOrbOfScouring,
     blockKeyNativeFunction: true,
@@ -248,6 +264,7 @@ global Configs := {
   },
   ChaosOrb: {
     name: "Chaos Orb (D)",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: ChaosOrb,
     extraField: true,
@@ -285,6 +302,7 @@ global Configs := {
   },
   KillSwitch: {
     name: "Kill Switch",
+    canBeDisabled: false,
     defaultHotkey: "Home",
     func: KillSwitch,
     blockKeyNativeFunction: true,
@@ -300,6 +318,7 @@ global Configs := {
   },
   Settings: {
     name: "Settings (This GUI)",
+    canBeDisabled: false,
     defaultHotkey: "F10",
     func: Settings,
     blockKeyNativeFunction: true,
@@ -313,8 +332,25 @@ global Configs := {
       y: Y_GAP * 2
     }
   },
+  ToggleHotkeys: {
+    name: "Enable/Disable Hotkeys",
+    canBeDisabled: false,
+    defaultHotkey: "",
+    func: ToggleHotkeys,
+    blockKeyNativeFunction: true,
+    mouseBind: false,
+    tooltip: "TODO",
+    toggleOnInstance: false,
+    tab: "General",
+    section: "Hotkey",
+    coords: {
+      x: X_GAP * 2,
+      y: Y_GAP * 2
+    }
+  },
   ToggleCtrlKeybind: {
     name: "Toggle CTRL Hotkey",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: ToggleCtrl,
     blockKeyNativeFunction: true,
@@ -330,6 +366,7 @@ global Configs := {
   },
   ToggleShiftKeybind: {
     name: "Toggle SHIFT Hotkey",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: ToggleShift,
     blockKeyNativeFunction: true,
@@ -345,6 +382,7 @@ global Configs := {
   },
   CtrlClickSpamToggle: {
     name: "Spam Ctrl Click",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: CtrlClickSpamToggle,
     blockKeyNativeFunction: true,
@@ -360,6 +398,7 @@ global Configs := {
   },
   ForceLogout: {
     name: "Force Logout",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: TerminateTCP,
     blockKeyNativeFunction: true,
@@ -375,6 +414,7 @@ global Configs := {
   },
   ToggleCtrl: {
     name: "Toggle CTRL",
+    canBeDisabled: true,
     defaultValue: 0,
     func: ToggleCtrl,
     tooltip: "TODO",
@@ -388,6 +428,7 @@ global Configs := {
   },
   ToggleShift: {
     name: "Toggle SHIFT",
+    canBeDisabled: true,
     defaultValue: 0,
     func: ToggleShift,
     tooltip: "TODO",
@@ -401,6 +442,7 @@ global Configs := {
   },
   ToggleOverlayPosition: {
     name: "Toggle Overlay Position",
+    canBeDisabled: true,
     tooltip: "TODO",
     section: "Options",
     tab: "General",
@@ -413,6 +455,7 @@ global Configs := {
   },
   TransferMaterialsWInventory: {
     name: "Transfer Materials (w/ inventory open)",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: TransferMaterialsWInventory,
     blockKeyNativeFunction: true,
@@ -432,6 +475,7 @@ global Configs := {
   },
   TransferMaterialsWOInventory: {
     name: "Transfer Materials (w/o inventory open)",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: TransferMaterialsWOInventory,
     blockKeyNativeFunction: true,
@@ -451,6 +495,7 @@ global Configs := {
   },
   ShatterItem: {
     name: "Shatter Item",
+    canBeDisabled: true,
     defaultHotkey: "",
     func: ShatterItem,
     blockKeyNativeFunction: true,
