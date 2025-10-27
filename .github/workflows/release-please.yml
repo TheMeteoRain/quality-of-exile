@@ -88,7 +88,7 @@ jobs:
           tag: v${{ needs.release-please.outputs.version }}
           asset-path: '["./quality-of-exile-${{ needs.release-please.outputs.version }}.zip"]'
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           name: quality-of-exile-exe
 
