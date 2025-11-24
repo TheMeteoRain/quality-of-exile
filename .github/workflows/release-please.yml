@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.release-please.outputs.prs_created == 'true' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ fromJson(needs.release-please.outputs.pr).headBranchName }}
           fetch-depth: 0
@@ -57,7 +57,7 @@ jobs:
     if: ${{ needs.release-please.outputs.releases_created == 'true' }}
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: KamaranL/Ahk2Exe-action@v1
         id: build-x64
@@ -77,7 +77,7 @@ jobs:
     if: ${{ needs.release-please.outputs.releases_created == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Zip files
         run: zip quality-of-exile-${{ needs.release-please.outputs.version }}.zip *.ahk functions version.txt LICENSE README.md
