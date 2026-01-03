@@ -67,7 +67,7 @@ jobs:
           arch: x64
           icon: assets/favicon.ico
           
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: quality-of-exile-exe
           path: QualityOfExile.exe
