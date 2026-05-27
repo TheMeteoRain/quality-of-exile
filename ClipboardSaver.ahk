@@ -17,8 +17,10 @@ class ClipboardSaver {
   }
 
   CopyWithAlt() {
-    Send("!^c")
-    Sleep(50)
+    Send("{LAlt}^c")
+    Sleep(25)
+    Send("{LAlt up}")
+    Sleep(25)
   }
 
   Paste() {
