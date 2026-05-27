@@ -37,7 +37,7 @@ Main() {
 
     if (Game.GameIsPathOfExile() and !Game.GameClientExists()) {
       UnlistenClientFile()
-      SetDynamicHotkeysState("Off")
+      SetDynamicHotkeysState(0)
     }
 
     Main()

@@ -4,20 +4,17 @@
 #Include "functions\CalculateWeaponDPS.ahk"
 
 LoadState() {
-  global DynamicHotkeysActivated, DynamicHotkeysState
+  global DynamicHotkeysActivated, LastLocation
 
   if (FileExist(STATE_FILE)) {
     DynamicHotkeysActivated := IniRead(STATE_FILE, "STATE", "DynamicHotkeysActivated", 0)
-    DynamicHotkeysState := IniRead(STATE_FILE, "STATE", "DynamicHotkeysState", "Off")
-    FileDelete(STATE_FILE)
   }
 }
 
 SaveState() {
-  global DynamicHotkeysActivated, DynamicHotkeysState
-
+  global DynamicHotkeysActivated, LastLocation
   IniWrite(DynamicHotkeysActivated, STATE_FILE, "STATE", "DynamicHotkeysActivated")
-  IniWrite(DynamicHotkeysState, STATE_FILE, "STATE", "DynamicHotkeysState")
+  IniWrite(LastLocation, STATE_FILE, "STATE", "LastLocation")
 }
 
 TerminateTCP(*) {
@@ -501,22 +498,31 @@ LoadConfigurations() {
 }
 
 EnableHotkeys() {
-  global RegisteredHotkeys, DynamicHotkeysActivated, DynamicHotkeysState, ManualHotkeyEnabled, DisabledLabel
+  global RegisteredHotkeys, DynamicHotkeysActivated, ManualHotkeyEnabled, DisabledLabel,
+    LastLocation
 
   if (!IsSet(OverlayGui)) {
     return
   }
 
+  ; Clear manual-disable flag first so `SetDynamicHotkeysState` can run.
+  ManualHotkeyEnabled := false
+
   for key, obj in RegisteredHotkeys {
     RegisterHotkey(key, obj.Get("func"), "On")
   }
-  LoadState()
-  SetDynamicHotkeysState(DynamicHotkeysState, true)
-  ManualHotkeyEnabled := false
+
+  ; Decide dynamic hotkeys from runtime `LastLocation` (not the saved file).
+  if (LastLocation == "safe") {
+    SetDynamicHotkeysState(1, true)
+  } else {
+    SetDynamicHotkeysState(0, true)
+  }
+
   DisabledLabel.Text := " "
 }
 DisableHotkeys() {
-  global RegisteredHotkeys, ManualHotkeyEnabled, DisabledLabel
+  global RegisteredHotkeys, ManualHotkeyEnabled, DisabledLabel, DynamicHotkeysActivated
 
   if (!IsSet(OverlayGui)) {
     return
@@ -524,8 +530,13 @@ DisableHotkeys() {
 
   ResetToggle()
   DisabledLabel.Text := "⚠️"
+
+  ; Turn off dynamic hotkeys via the canonical setter which handles persistence.
+  SetDynamicHotkeysState(0, true)
+
+  ; Mark manual override so automatic re-enabling won't occur until user enables.
   ManualHotkeyEnabled := true
-  SaveState()
+
   for key, obj in RegisteredHotkeys {
     if (!obj.Has("canBeDisabled")) {
       continue
@@ -1318,21 +1329,21 @@ openSettlersShipmentUI(*) {
 }
 
 DynamicHotkeys() {
-  global clientFilePath, DynamicHotkeysActivated, DynamicHotkeysState
+  global clientFilePath, DynamicHotkeysActivated
 
   FileModificationTime := FileGetTime(clientFilePath, "M")
 
   LastModified := DateDiff(A_Now, FileModificationTime, "Seconds")
 
   if (DynamicHotkeysActivated) {
-    SetDynamicHotkeysState(DynamicHotkeysState, false)
+    SetDynamicHotkeysState(DynamicHotkeysActivated, true)
     return
   }
 
   if (LastModified > 300 or Game.PreviousAttachTime) {
-    SetDynamicHotkeysState("Off", false)
+    SetDynamicHotkeysState(0, true)
   } else {
-    SetDynamicHotkeysState("On", false)
+    SetDynamicHotkeysState(1, true)
   }
 }
 
@@ -1360,7 +1371,15 @@ ListenToClientFile() {
 
   if (clientFile and !IsSet(clientFileReadFunc)) {
     clientFileReadFunc := ReadLogFile.Bind(clientFile)
-    clientFile.Seek(0, 2)  ; Move to the end of the file
+    ; On startup, read the existing log to determine the last known location
+    ; so we can enable dynamic hotkeys immediately if appropriate.
+    pos := Max(0, clientFile.Length - 100000)
+    clientFile.Seek(pos, 0)  ; Move to the start of the file
+    ReadLogFile(clientFile)
+    ; If startup read didn't determine a LastLocation, persist "other"
+    ; so the state file exists even when not in a safe location.
+
+    clientFile.Seek(0, 2)  ; Move to the end of the file for tailing
     SetTimer(clientFileReadFunc, 1000)
   }
 }
@@ -1379,48 +1398,81 @@ MatchPoe2Lines(line) {
   return false
 }
 MatchPoe1Lines(line) {
-  if (RegExMatch(line, "Generating level \d+ area `"\d+_\d+(?:_.*)?_town|.*Hideout.*|KalguuranSettlersLeague`"")) {
+  if (RegExMatch(line,
+    "Generating level \d+ area `"(?:\d+_\d+?(?:_.*)?_town|.*Hideout.*|KalguuranSettlersLeague|ChayulaLeague)`"")) {
     return true
   }
   return false
 }
-SetDynamicHotkeysState(state := "Off", setState := true) {
-  global Configs, Hotkeys, DynamicHotkeysActivated, DynamicHotkeysState, ManualHotkeyEnabled
+SetDynamicHotkeysState(state := 0, setState := true) {
+  global Configs, Hotkeys, DynamicHotkeysActivated, ManualHotkeyEnabled, LastLocation
 
   if (ManualHotkeyEnabled) {
     return
   }
 
+  ; Accept boolean or numeric (1/0) for `state`.
+  activated := (state == true or state = 1)
+
+  ; Respect last known location: never enable dynamic hotkeys when last location is not safe
+  if (activated and LastLocation != "safe") {
+    activated := false
+  }
+
+  action := activated ? "On" : "Off"
   for key, config in Configs.OwnProps() {
     if (config.toggleOnInstance and Hotkeys[key]) {
-      RegisterHotkey("*" Hotkeys[key], config.func, state, config.canBeDisabled, Game.Title)
+      RegisterHotkey("*" . Hotkeys[key], config.func, action, config.canBeDisabled, Game.Title)
     }
   }
   if (setState) {
-    DynamicHotkeysActivated := true
-    DynamicHotkeysState := state
-    SaveState()
+    prev := IsSet(DynamicHotkeysActivated) ? DynamicHotkeysActivated : unset
+    DynamicHotkeysActivated := activated
+    ; Only persist when the persisted value actually changes (or was unset).
+    if (!IsSet(prev) or prev != DynamicHotkeysActivated) {
+      SaveState()
+    }
   }
 }
-ReadLogFile(clientFile) {
-  global Configs, Hotkeys, DynamicHotkeysActivated, DynamicHotkeysState
+ProcessLogText(text) {
+  global Configs, Hotkeys, DynamicHotkeysActivated, LastLocation
 
+  if (!text) {
+    return
+  }
+
+  lines := StrSplit(text, "`n")
+  localLast := LastLocation
+
+  for index, line in lines {
+    line := RegExReplace(line, "`r$")
+
+    if (RegExMatch(line, "\[STARTUP\] Game Start|Connected to")) {
+      localLast := "other"
+      continue
+    }
+
+    if (RegExMatch(line, "Generating level")) {
+      if (MatchPoe1Lines(line) or MatchPoe2Lines(line)) {
+        localLast := "safe"
+      } else {
+        localLast := "other"
+      }
+    }
+  }
+
+  LastLocation := localLast
+  SaveState()
+  SetDynamicHotkeysState(localLast == "safe" ? 1 : 0, true)
+}
+ReadLogFile(clientFile) {
+  global Configs, Hotkeys, DynamicHotkeysActivated, LastLocation
   if !IsObject(clientFile) {
     return  ; Ensure the file object is valid
   }
 
   if (newLines := clientFile.Read()) {
-    if (RegExMatch(newLines, "\[STARTUP\] Game Start|Connected to")) {
-      SetDynamicHotkeysState("Off")
-    } else if (RegExMatch(newLines, "Generating level")) {
-      ResetToggle()
-
-      if (MatchPoe1Lines(newLines) or MatchPoe2Lines(newLines)) {
-        SetDynamicHotkeysState("On")
-      } else {
-        SetDynamicHotkeysState("Off")
-      }
-    }
+    ProcessLogText(newLines)
   }
 }
 

@@ -21,7 +21,7 @@ global DPSGui := unset
 global OverlayGui, CtrlLabel, ShiftLabel, SpamLabel, DisabledLabel, HotkeyGui, HUDGui
 global clientFilePath, clientFile, clientFileReadFunc
 global DynamicHotkeysActivated := false
-global DynamicHotkeysState := "OFF"
+global LastLocation := "other"
 global RegisteredHotkeys := Map()
 global RegExpCharacterLimit := 248
 global Game := GameInfo()
