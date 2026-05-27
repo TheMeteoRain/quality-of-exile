@@ -74,6 +74,177 @@ global Configs := {
     },
     game: "PathOfExile",
   },
+  EnterMonastery: {
+    name: "Enter Monastery",
+    canBeDisabled: true,
+    var: "OpenMonastery",
+    defaultHotkey: "F7",
+    func: OpenMonastery,
+    blockKeyNativeFunction: true,
+    mouseBind: false,
+    tooltip: "How to use: press hotkey to enter Monastery.",
+    toggleOnInstance: false,
+    tab: "General",
+    section: "Hotkey",
+    coords: {
+      x: X_GAP * 2,
+      y: 0
+    },
+    game: "PathOfExile",
+  },
+  ForceLogout: {
+    name: "Force Logout",
+    canBeDisabled: true,
+    defaultHotkey: "",
+    func: TerminateTCP,
+    blockKeyNativeFunction: true,
+    mouseBind: false,
+    tooltip: "TODO",
+    toggleOnInstance: false,
+    tab: "General",
+    section: "Hotkey",
+    coords: {
+      x: X_GAP * 2,
+      y: Y_GAP * 2
+    }
+  },
+  KillSwitch: {
+    name: "Kill Switch",
+    canBeDisabled: false,
+    defaultHotkey: "Home",
+    func: KillSwitch,
+    blockKeyNativeFunction: true,
+    mouseBind: false,
+    tooltip: "TODO",
+    toggleOnInstance: false,
+    tab: "General",
+    section: "Hotkey",
+    coords: {
+      x: X_GAP,
+      y: Y_GAP * 2
+    }
+  },
+  Settings: {
+    name: "Settings (This GUI)",
+    canBeDisabled: false,
+    defaultHotkey: "F10",
+    func: Settings,
+    blockKeyNativeFunction: true,
+    mouseBind: false,
+    tooltip: "TODO",
+    toggleOnInstance: false,
+    tab: "General",
+    section: "Hotkey",
+    coords: {
+      x: 0,
+      y: Y_GAP * 2
+    }
+  },
+  ToggleHotkeys: {
+    name: "Master Hotkey`n(toggle other hotkeys)",
+    canBeDisabled: false,
+    defaultHotkey: "",
+    func: ToggleHotkeys,
+    blockKeyNativeFunction: true,
+    mouseBind: false,
+    tooltip: "TODO",
+    toggleOnInstance: false,
+    tab: "General",
+    section: "Hotkey",
+    coords: {
+      x: 0,
+      y: Y_GAP * 4
+    }
+  },
+  ToggleCtrlKeybind: {
+    name: "Toggle CTRL Hotkey",
+    canBeDisabled: true,
+    defaultHotkey: "",
+    func: ToggleCtrl,
+    blockKeyNativeFunction: true,
+    mouseBind: true,
+    tooltip: "TODO",
+    toggleOnInstance: false,
+    tab: "General",
+    section: "Hotkey",
+    coords: {
+      x: X_GAP,
+      y: Y_GAP * 10
+    }
+  },
+  ToggleShiftKeybind: {
+    name: "Toggle SHIFT Hotkey",
+    canBeDisabled: true,
+    defaultHotkey: "",
+    func: ToggleShift,
+    blockKeyNativeFunction: true,
+    mouseBind: true,
+    tooltip: "TODO",
+    toggleOnInstance: false,
+    tab: "General",
+    section: "Hotkey",
+    coords: {
+      x: X_GAP * 2,
+      y: Y_GAP * 10
+    }
+  },
+  CtrlClickSpamToggle: {
+    name: "Spam Ctrl Click",
+    canBeDisabled: true,
+    defaultHotkey: "",
+    func: CtrlClickSpamToggle,
+    blockKeyNativeFunction: true,
+    mouseBind: true,
+    tooltip: "TODO",
+    toggleOnInstance: false,
+    coords: {
+      x: 0,
+      y: Y_GAP * 10
+    },
+    tab: "General",
+    section: "Hotkey"
+  },
+  ToggleCtrl: {
+    name: "Toggle CTRL",
+    canBeDisabled: true,
+    defaultValue: 0,
+    func: ToggleCtrl,
+    tooltip: "TODO",
+    section: "Toggle",
+    tab: "General",
+    toggleOnInstance: false,
+    coords: {
+      x: X_GAP,
+      y: Y_GAP * 7
+    }
+  },
+  ToggleShift: {
+    name: "Toggle SHIFT",
+    canBeDisabled: true,
+    defaultValue: 0,
+    func: ToggleShift,
+    tooltip: "TODO",
+    section: "Toggle",
+    tab: "General",
+    toggleOnInstance: false,
+    coords: {
+      x: X_GAP * 2,
+      y: Y_GAP * 7
+    }
+  },
+  ToggleOverlayPosition: {
+    name: "Toggle Overlay Position",
+    canBeDisabled: true,
+    tooltip: "TODO",
+    section: "Options",
+    tab: "General",
+    toggleOnInstance: false,
+    pixelSelect: true,
+    coords: {
+      x: 0,
+      y: Y_GAP * 7
+    }
+  },
   OpenStackedDivinationDeck: {
     name: "Open Stacked Divination Deck",
     canBeDisabled: true,
@@ -300,159 +471,7 @@ global Configs := {
     pixelSelect: false,
     game: "PathOfExile",
   },
-  KillSwitch: {
-    name: "Kill Switch",
-    canBeDisabled: false,
-    defaultHotkey: "Home",
-    func: KillSwitch,
-    blockKeyNativeFunction: true,
-    mouseBind: false,
-    tooltip: "TODO",
-    toggleOnInstance: false,
-    tab: "General",
-    section: "Hotkey",
-    coords: {
-      x: X_GAP,
-      y: Y_GAP * 2
-    }
-  },
-  Settings: {
-    name: "Settings (This GUI)",
-    canBeDisabled: false,
-    defaultHotkey: "F10",
-    func: Settings,
-    blockKeyNativeFunction: true,
-    mouseBind: false,
-    tooltip: "TODO",
-    toggleOnInstance: false,
-    tab: "General",
-    section: "Hotkey",
-    coords: {
-      x: 0,
-      y: Y_GAP * 2
-    }
-  },
-  ToggleHotkeys: {
-    name: "Master Hotkey`n(toggle other hotkeys)",
-    canBeDisabled: false,
-    defaultHotkey: "",
-    func: ToggleHotkeys,
-    blockKeyNativeFunction: true,
-    mouseBind: false,
-    tooltip: "TODO",
-    toggleOnInstance: false,
-    tab: "General",
-    section: "Hotkey",
-    coords: {
-      x: X_GAP * 2,
-      y: Y_GAP * 2
-    }
-  },
-  ToggleCtrlKeybind: {
-    name: "Toggle CTRL Hotkey",
-    canBeDisabled: true,
-    defaultHotkey: "",
-    func: ToggleCtrl,
-    blockKeyNativeFunction: true,
-    mouseBind: true,
-    tooltip: "TODO",
-    toggleOnInstance: false,
-    tab: "General",
-    section: "Hotkey",
-    coords: {
-      x: X_GAP,
-      y: Y_GAP * 8
-    }
-  },
-  ToggleShiftKeybind: {
-    name: "Toggle SHIFT Hotkey",
-    canBeDisabled: true,
-    defaultHotkey: "",
-    func: ToggleShift,
-    blockKeyNativeFunction: true,
-    mouseBind: true,
-    tooltip: "TODO",
-    toggleOnInstance: false,
-    tab: "General",
-    section: "Hotkey",
-    coords: {
-      x: X_GAP * 2,
-      y: Y_GAP * 8
-    }
-  },
-  CtrlClickSpamToggle: {
-    name: "Spam Ctrl Click",
-    canBeDisabled: true,
-    defaultHotkey: "",
-    func: CtrlClickSpamToggle,
-    blockKeyNativeFunction: true,
-    mouseBind: true,
-    tooltip: "TODO",
-    toggleOnInstance: false,
-    coords: {
-      x: 0,
-      y: Y_GAP * 8
-    },
-    tab: "General",
-    section: "Hotkey"
-  },
-  ForceLogout: {
-    name: "Force Logout",
-    canBeDisabled: true,
-    defaultHotkey: "",
-    func: TerminateTCP,
-    blockKeyNativeFunction: true,
-    mouseBind: false,
-    tooltip: "TODO",
-    toggleOnInstance: false,
-    tab: "General",
-    section: "Hotkey",
-    coords: {
-      x: X_GAP * 2,
-      y: 0
-    }
-  },
-  ToggleCtrl: {
-    name: "Toggle CTRL",
-    canBeDisabled: true,
-    defaultValue: 0,
-    func: ToggleCtrl,
-    tooltip: "TODO",
-    section: "Toggle",
-    tab: "General",
-    toggleOnInstance: false,
-    coords: {
-      x: X_GAP,
-      y: Y_GAP * 5
-    }
-  },
-  ToggleShift: {
-    name: "Toggle SHIFT",
-    canBeDisabled: true,
-    defaultValue: 0,
-    func: ToggleShift,
-    tooltip: "TODO",
-    section: "Toggle",
-    tab: "General",
-    toggleOnInstance: false,
-    coords: {
-      x: X_GAP * 2,
-      y: Y_GAP * 5
-    }
-  },
-  ToggleOverlayPosition: {
-    name: "Toggle Overlay Position",
-    canBeDisabled: true,
-    tooltip: "TODO",
-    section: "Options",
-    tab: "General",
-    toggleOnInstance: false,
-    pixelSelect: true,
-    coords: {
-      x: 0,
-      y: Y_GAP * 5
-    }
-  },
+  ; LAST EPOCH
   TransferMaterialsWInventory: {
     name: "Transfer Materials (w/ inventory open)",
     canBeDisabled: true,
