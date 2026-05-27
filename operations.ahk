@@ -278,8 +278,8 @@ Settings(*) {
   HotkeyGui.Show(
     Format(
       "x{} y{} w{} h{}",
-      Game.GameWindowCenterX - 550 / 2, Game.GameWindowCenterY - 475 / 2, 550,
-      475
+      Game.GameWindowCenterX - 550 / 2, Game.GameWindowCenterY - 550 / 2, 550,
+      550
     )
   )
   ControlFocus(HotkeyGui, HotkeyGui.Title)
@@ -289,7 +289,7 @@ ShowSettings(*) {
   HotkeyGui.Show(
     Format(
       "x{} y{} w{} h{}",
-      Game.GameWindowCenterX - 550 / 2, Game.GameWindowCenterY - 550 / 2, 550, 550
+      Game.GameWindowCenterX - 550 / 2, Game.GameWindowCenterY - 650 / 2, 550, 650
     )
   )
   ControlFocus(HotkeyGui, HotkeyGui.Title)
@@ -431,15 +431,15 @@ LoadConfigurations() {
         }
 
         if (val && key == "KillSwitch") {
-          RegisterHotkey("*" val, config.func, "On", config.canBeDisabled, "")
+          RegisterHotkey("*" . val, config.func, "On", config.canBeDisabled, "")
         } else {
           if (config.HasProp("toggleOnInstance") and config.toggleOnInstance) {
             ; dynamic hotkeys
-            RegisterHotkey("*" val, config.func, "On", config.canBeDisabled)
+            RegisterHotkey("*" . val, config.func, "On", config.canBeDisabled)
           } else if (config.blockKeyNativeFunction) {
-            RegisterHotkey("*" val, config.func, "On", config.canBeDisabled)
+            RegisterHotkey("*" . val, config.func, "On", config.canBeDisabled)
           } else {
-            RegisterHotkey("~" val, config.func, "On", config.canBeDisabled)
+            RegisterHotkey("~" . val, config.func, "On", config.canBeDisabled)
           }
         }
 
@@ -1047,7 +1047,12 @@ OpenHideout(*) {
 
 OpenKingsmarch(*) {
   ResetToggle()
-  SendInput("{Enter}/kingsmarch{Enter}")
+  SendInput("{Enter}/played{Enter}")
+}
+
+OpenMonastery(*) {
+  ResetToggle()
+  SendInput("{Enter}/monastery{Enter}")
 }
 
 CraftAlchemyOrb(*) {

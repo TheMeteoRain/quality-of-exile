@@ -19,7 +19,7 @@ jobs:
       releases_created: ${{ steps.release.outputs.releases_created }}
       version: ${{ steps.release.outputs.version }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
         id: release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.release-please.outputs.prs_created == 'true' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ fromJson(needs.release-please.outputs.pr).headBranchName }}
           fetch-depth: 0
@@ -57,7 +57,7 @@ jobs:
     if: ${{ needs.release-please.outputs.releases_created == 'true' }}
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: KamaranL/Ahk2Exe-action@v1
         id: build-x64
@@ -67,7 +67,7 @@ jobs:
           arch: x64
           icon: assets/favicon.ico
           
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: quality-of-exile-exe
           path: QualityOfExile.exe
@@ -77,7 +77,7 @@ jobs:
     if: ${{ needs.release-please.outputs.releases_created == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Zip files
         run: zip quality-of-exile-${{ needs.release-please.outputs.version }}.zip *.ahk functions version.txt LICENSE README.md
@@ -88,7 +88,7 @@ jobs:
           tag: v${{ needs.release-please.outputs.version }}
           asset-path: '["./quality-of-exile-${{ needs.release-please.outputs.version }}.zip"]'
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: quality-of-exile-exe
 
