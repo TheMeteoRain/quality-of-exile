@@ -21,7 +21,7 @@ global clientFilePath, clientFile, clientFileReadFunc
 global DynamicHotkeysActivated := false
 global DynamicHotkeysState := "OFF"
 global RegisteredHotkeys := Map()
-global RegExpCharacterLimit := 48
+global RegExpCharacterLimit := 248
 global Game := GameInfo()
 global mousePos := MousePositionSaver()
 global clipboard := ClipboardSaver()
