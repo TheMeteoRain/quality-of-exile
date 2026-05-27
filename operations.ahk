@@ -814,6 +814,10 @@ ResetToggleWin(*) {
 ToggleCtrl(*) {
   global CtrlToggled
 
+  if (Debounce("ToggleCtrl", 50)) {
+    return
+  }
+
   ShiftUp()
   spamState := StopClickSpam()
   if (spamState) {
@@ -829,6 +833,10 @@ ToggleCtrl(*) {
 
 ToggleShift(*) {
   global ShiftToggled
+
+  if (Debounce("ToggleShift", 50)) {
+    return
+  }
 
   StopClickSpam()
   CtrlUp()

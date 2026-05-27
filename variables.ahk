@@ -10,7 +10,9 @@ global LastExecutionTime := {
   TransferMaterialsWOInventory: 0,
   ShatterItem: 0,
   WeaponDPS: 0,
-  ToggleHotkeys: 0
+  ToggleHotkeys: 0,
+  ToggleCtrl: 0,
+  ToggleShift: 0,
 }
 global CtrlToggled := false
 global ShiftToggled := false
