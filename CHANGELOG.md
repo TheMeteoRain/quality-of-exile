@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.2.0-beta.15](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.0-beta.15...v0.2.0-beta.15) (2026-05-27)
+
+
+### Features
+
+* add debounces to toggle ctrl and shift ([15845e6](https://github.com/TheMeteoRain/quality-of-exile/commit/15845e6fe98bf314e55074c5ed6a05a3d5ade721))
+* add improvements to reseting states after changing locations ([73f090d](https://github.com/TheMeteoRain/quality-of-exile/commit/73f090de0d00770b141ae1019c54fa4a9f10cbe0))
+* increase regexp limit to 250 ([f023a69](https://github.com/TheMeteoRain/quality-of-exile/commit/f023a69fb0f51a13f584a1c30b29993820edfa1b))
+
+
+### Bug Fixes
+
+* issue item tooltip freezing when checking weapon dps ([aa64a83](https://github.com/TheMeteoRain/quality-of-exile/commit/aa64a837adfe008705d9d684eb8cfbc5c82c3580))
+
 ## [0.1.0-beta.15](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.1-beta.14...v0.1.0-beta.15) (2025-06-02)
 
 
