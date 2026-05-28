@@ -5,6 +5,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.1.0-beta.15](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.1-beta.14...v0.1.0-beta.15) (2026-05-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* user saved settings are not backwards compatible
+
+### Features
+
+* add debounces to toggle ctrl and shift ([15845e6](https://github.com/TheMeteoRain/quality-of-exile/commit/15845e6fe98bf314e55074c5ed6a05a3d5ade721))
+* add improvements to reseting states after changing locations ([73f090d](https://github.com/TheMeteoRain/quality-of-exile/commit/73f090de0d00770b141ae1019c54fa4a9f10cbe0))
+* Add master keybind to activate/deactivate other keybinds ([56ee1e7](https://github.com/TheMeteoRain/quality-of-exile/commit/56ee1e7ee4c0910e5873cf651e3966ddd838884e))
+* add tooltips ([b7adff8](https://github.com/TheMeteoRain/quality-of-exile/commit/b7adff885c815a8011d717cbb759148149cb2678))
+* Add weapon dps calculation ([16d7ee9](https://github.com/TheMeteoRain/quality-of-exile/commit/16d7ee91ece654c2c45a51fc8a382da4210ca1ef))
+* increase regexp limit to 250 ([f023a69](https://github.com/TheMeteoRain/quality-of-exile/commit/f023a69fb0f51a13f584a1c30b29993820edfa1b))
+* moving overlay HUD will be visible while choosing a place for it ([b7adff8](https://github.com/TheMeteoRain/quality-of-exile/commit/b7adff885c815a8011d717cbb759148149cb2678))
+* Prettify overlay UI ([a60427e](https://github.com/TheMeteoRain/quality-of-exile/commit/a60427e8baf658385191ec4c9c070c8502a0bac3))
+* Running application again will kill the previous process ([1c0a69f](https://github.com/TheMeteoRain/quality-of-exile/commit/1c0a69fde8f5c75aa76c5036c12b1c2590a5264d))
+* Self update scripts when detecting new versions ([fbe52ea](https://github.com/TheMeteoRain/quality-of-exile/commit/fbe52ea9ed15fe067974e10fd5e3536f6aba3765))
+* separate hotkeys/configs between PoE1 and PoE2 ([b7adff8](https://github.com/TheMeteoRain/quality-of-exile/commit/b7adff885c815a8011d717cbb759148149cb2678))
+* simplify UI ([b7adff8](https://github.com/TheMeteoRain/quality-of-exile/commit/b7adff885c815a8011d717cbb759148149cb2678))
+* switch some of the hotkeys to be generic hotkeys without explicit texts indicating where they should be used ([b7adff8](https://github.com/TheMeteoRain/quality-of-exile/commit/b7adff885c815a8011d717cbb759148149cb2678))
+
+
+### Bug Fixes
+
+* Add waiting in-between copy and pasting ([9585b05](https://github.com/TheMeteoRain/quality-of-exile/commit/9585b054e2f1908f4daaaf11350e99b7551b97d7))
+* Compare versions strictly to avoid issues ([f878dc1](https://github.com/TheMeteoRain/quality-of-exile/commit/f878dc1650e997a3da514d1d585b36cdec864744))
+* Handle .ahk self updating process correctly ([bcdbc15](https://github.com/TheMeteoRain/quality-of-exile/commit/bcdbc1582482f0f0058678c20c7821ffc30b7a5b))
+* issue item tooltip freezing when checking weapon dps ([aa64a83](https://github.com/TheMeteoRain/quality-of-exile/commit/aa64a837adfe008705d9d684eb8cfbc5c82c3580))
+* Issue with fetching latest version ([c21af8a](https://github.com/TheMeteoRain/quality-of-exile/commit/c21af8a35e17302b8c15fab7c5bf93d782694506))
+* Remove gif images from main branch ([49273a2](https://github.com/TheMeteoRain/quality-of-exile/commit/49273a2a5b90245f58b8f585df0253f762044d0b))
+* Rename Master hotkey ([73714c3](https://github.com/TheMeteoRain/quality-of-exile/commit/73714c30da7500e11ce2a12db123616ddb015980))
+* Rename tabs to prevent confusion ([d94bcf8](https://github.com/TheMeteoRain/quality-of-exile/commit/d94bcf8bb52c4dd37fe0f39fe357bbf46e2fcbb1))
+* Show splash screen once program is running as admin ([5e804ad](https://github.com/TheMeteoRain/quality-of-exile/commit/5e804ad226f7987daa854786e1f5961dc6685bd0))
+* Stop checking for updates if application was gracefully reloaded ([44d1c01](https://github.com/TheMeteoRain/quality-of-exile/commit/44d1c014ac0ef8fe30b382c52975bd1d4dac343d))
+* Use correct tab value ([ac9571c](https://github.com/TheMeteoRain/quality-of-exile/commit/ac9571c9c0f54ccef93ac9ffceaee8046bf74eef))
+
+
+### Miscellaneous Chores
+
+* release 0.1.0-beta.10 ([aa02d69](https://github.com/TheMeteoRain/quality-of-exile/commit/aa02d699cf8cf6d304445bbd59afebee2c068e25))
+* release 0.1.0-beta.12 just to test self updating functionality ([cddd417](https://github.com/TheMeteoRain/quality-of-exile/commit/cddd4173a937eb5b899445665e2c684f799cd010))
+* release 0.1.0-beta.14 ([6342582](https://github.com/TheMeteoRain/quality-of-exile/commit/63425826b14498e9421c0e90a530738b8e7850d1))
+* release 0.1.0-beta.15 ([103dd1e](https://github.com/TheMeteoRain/quality-of-exile/commit/103dd1e56d7c08ea56ef7e7b2cd415cdb587511b))
+
 ## [0.2.0-beta.15](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.0-beta.15...v0.2.0-beta.15) (2026-05-27)
 
 
