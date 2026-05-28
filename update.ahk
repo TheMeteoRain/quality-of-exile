@@ -1,73 +1,14 @@
 #Requires AutoHotkey v2.0
 
 CreateProgramPathDir() {
-  if (!DirExist(Q_ProgramPathDir)) {
-    DirCreate(Q_ProgramPathDir)
+  if (!DirExist(DATA_DIR)) {
+    DirCreate(DATA_DIR)
   }
 }
 
 DestroyGui(GuiCtrl, *) {
   if (IsSet(GuiCtrl)) {
     GuiCtrl.gui.Destroy()
-  }
-}
-
-DownloadCports() {
-  if FileExist(Q_CportsPath) {
-    LogInfo("CurrPorts already exists at: " Q_CportsPath)
-    return
-  }
-
-  ; if last download made some progress, start from clean slate
-  if (DirExist(Q_CportsPathDir)) {
-    DirDelete(Q_CportsPathDir, true)
-  }
-
-  ; Download cports
-  try {
-    Download(Q_CportsDownloadLink, Q_CportsZipPath)
-  } catch Error as e {
-    LogError("Failed to download CurrPorts. Please check your internet connection and try again.", e, true)
-  }
-
-  ; Wait for download
-  timeout := 30000
-  startTime := A_TickCount
-  loop 30 {
-    if FileExist(Q_CportsZipPath) && FileGetSize(Q_CportsZipPath) > 0 {
-      break
-    }
-    if (A_TickCount - startTime > timeout) {
-      LogError(
-        "Downloading CurrPorts timedout. Please check your internet connection or try again later.",
-        e,
-        true
-      )
-      ExitApp()
-    }
-    Sleep(1000)
-  }
-
-  ; Create dir
-  DirCreate(Q_CportsPathDir)
-  if (!DirExist(Q_CportsPathDir)) {
-    MsgBox("Something went wrong")
-    LogError("Could not create dir for cports", e)
-    ExitApp()
-  }
-
-  ; Extract zip
-  tarCommand := Format("tar -xf {} -C {}", Q_CportsZipPath, Q_CportsPathDir)
-  RunWait(A_ComSpec . " /c " . tarCommand, "", "Hide")
-  FileDelete(Q_CportsZipPath)
-
-  if !FileExist(Q_CportsPath) {
-    LogError(
-      "Error downloading or extracting CurrPorts. Please ensure you have internet access and try again.",
-      ,
-      true
-    )
-    ExitApp()
   }
 }
 
@@ -100,7 +41,7 @@ GetNewerReleaseBodies(json, currentVersion) {
       }
     }
   } catch Error as e {
-    LogError("Failed to parse changelog.", e, false)
+    Log.Error("Failed to parse changelog.", e, false)
   }
 
   return bodies
@@ -114,19 +55,19 @@ UpdateScript(GuiCtrl, *) {
   if (A_IsCompiled) {
     ; file is .exe
     DownloadURL := "https://github.com/TheMeteoRain/quality-of-exile/releases/download/v" LATEST_VERSION "/QualityOfExile.exe"
-    DownloadPath := Q_ProgramPathDir "\QualityOfExile.tmp.exe"
+    DownloadPath := DATA_DIR "\QualityOfExile.tmp.exe"
   } else {
     ; file is .ahk
     DownloadURL := "https://github.com/TheMeteoRain/quality-of-exile/releases/download/v" LATEST_VERSION "/quality-of-exile-" LATEST_VERSION ".zip"
-    DownloadPath := Q_ProgramPathDir "\qualityofexile.zip"
+    DownloadPath := DATA_DIR "\qualityofexile.zip"
   }
 
-  LogInfo("Download update. DownloadURL: " DownloadURL ", DownloadPath: " DownloadPath)
+  Log.Info("Download update. DownloadURL: " DownloadURL ", DownloadPath: " DownloadPath)
   try {
     Download(DownloadURL, DownloadPath)
   } catch Error as e {
-    LogError(
-      "Failed to download update. Please check your internet connection and try again. Optionally send an issue at: " Q_GithubLink,
+    Log.Error(
+      "Failed to download update. Please check your internet connection and try again. Optionally send an issue at: " GITHUB_URL,
       e,
       true
     )
@@ -134,14 +75,14 @@ UpdateScript(GuiCtrl, *) {
   }
 
   if (A_IsCompiled) {
-    helperPath := Q_ProgramPathDir "\update_helper.ahk"
+    helperPath := DATA_DIR "\update_helper.ahk"
     if (FileExist(helperPath)) {
-      LogInfo("Delete old helper file.")
+      Log.Info("Delete old helper file.")
       FileDelete(helperPath)
     }
 
     try {
-      LogInfo("Creating a helper file for updating .exe file.")
+      Log.Info("Creating a helper file for updating .exe file.")
       currentExePath := A_ScriptFullPath
       helperScript := Format('
                     (
@@ -156,40 +97,59 @@ UpdateScript(GuiCtrl, *) {
         A_ScriptName, DownloadPath, currentExePath, currentExePath)
       FileAppend(helperScript, helperPath)
 
-      LogInfo("Running helper file to update .exe file.")
+      Log.Info("Running helper file to update .exe file.")
       Run(helperPath)
     } catch Error as e {
-      LogError("Failed to update. Try again or send an issue at: " Q_GithubLink, e, true)
+      Log.Error("Failed to update. Try again or send an issue at: " GITHUB_URL, e, true)
     } finally {
       ExitApp()
     }
   }
 
+  ; Pre-extract cleanup: tar -xf only creates and overwrites — it never
+  ; deletes — so a release that removed or renamed a file/folder would
+  ; otherwise leave dead artifacts in the install dir.
+  ;
+  ; 1. Every top-level *.ahk is deleted; the new zip re-supplies whatever
+  ;    should still exist. The currently-running script's own file may
+  ;    refuse deletion (held open) — that's fine, the extract overwrites it.
+  ; 2. Known project subdirs are wiped recursively. Clearing them
+  ;    wipes old installs cleanly.
+  loop files, A_ScriptDir "\*.ahk" {
+    try FileDelete(A_LoopFilePath)
+  }
+  for _, dir in ["src"] {
+    fullPath := A_ScriptDir "\" dir
+    if (DirExist(fullPath)) {
+      try DirDelete(fullPath, true)
+    }
+  }
+
   try {
-    ; TODO: fix path
-    tarCommand := Format("tar -xf {} -C {}", DownloadPath, A_ScriptDir)
-    LogInfo("Running tar command: " tarCommand)
+    ; Paths are quoted in case A_ScriptDir contains spaces (Program Files etc).
+    tarCommand := Format('tar -xf "{}" -C "{}"', DownloadPath, A_ScriptDir)
+    Log.Info("Running tar command: " tarCommand)
     RunWait(A_ComSpec . " /c " . tarCommand, "", "Hide")
-    LogInfo("Tar command completed.")
+    Log.Info("Tar command completed.")
   } catch Error as e {
-    LogError(
-      "Failed to extract updated files from .zip. Try again or send an issue at: " Q_GithubLink,
+    Log.Error(
+      "Failed to extract updated files from .zip. Try again or send an issue at: " GITHUB_URL,
       e,
       true
     )
     ExitApp()
   } finally {
     if (FileExist(DownloadPath)) {
-      LogInfo("Delete .zip file.")
+      Log.Info("Delete .zip file.")
       FileDelete(DownloadPath)
     }
   }
 
   try {
-    LogInfo("Running updated file.")
+    Log.Info("Running updated file.")
     Run(A_ScriptFullPath)
   } catch Error as e {
-    LogError("Failed to run updated file. Try again or send an issue at: " Q_GithubLink, e, true)
+    Log.Error("Failed to run updated file. Try again or send an issue at: " GITHUB_URL, e, true)
   } finally {
     ExitApp()
   }
@@ -199,29 +159,29 @@ CheckForUpdates() {
   global LATEST_VERSION
 
   try {
-    LogInfo("Checking for updates.")
-    releasesFile := Q_ProgramPathDir . "\releases.json"
+    Log.Info("Checking for updates.")
+    releasesFile := DATA_DIR . "\releases.json"
 
     if (FileExist(releasesFile)) {
-      LogInfo("Delete old release.json file.")
+      Log.Info("Delete old release.json file.")
       FileDelete(releasesFile)
     }
 
-    LogInfo("Downloading releases.json.")
+    Log.Info("Downloading releases.json.")
     Download(
       "https://api.github.com/repos/themeteorain/quality-of-exile/releases",
-      Q_ProgramPathDir . "\releases.json"
+      DATA_DIR . "\releases.json"
     )
-    Releases := FileRead(Q_ProgramPathDir . "\releases.json")
+    Releases := FileRead(DATA_DIR . "\releases.json")
 
-    LogInfo("Parsing version.")
+    Log.Info("Parsing version.")
     if (RegExMatch(Releases, '"tag_name"\s*:\s*"v([^"]+)"', &match)) {
       LATEST_VERSION := Trim(match[1])
-      LogInfo("Latest version fetched: " LATEST_VERSION)
+      Log.Info("Latest version fetched: " LATEST_VERSION)
     }
 
     if (VerCompare(LATEST_VERSION, VERSION) == 1) {
-      LogInfo("Parsing changelog.")
+      Log.Info("Parsing changelog.")
       Changelog := GetNewerReleaseBodies(Releases, VERSION)
 
       VersionGui := Gui("", "Quality of Exile - Update Available")
@@ -238,7 +198,7 @@ CheckForUpdates() {
       VersionGui.Show()
     }
   } catch Error as e {
-    LogError(
+    Log.Error(
       Format("
         (
           Failed to check for updates.
@@ -252,7 +212,7 @@ CheckForUpdates() {
     )
   } finally {
     if (FileExist(releasesFile)) {
-      LogInfo("Delete release.json file.")
+      Log.Info("Delete release.json file.")
       FileDelete(releasesFile)
     }
   }
@@ -261,10 +221,9 @@ CheckForUpdates() {
 
 ExitReason := IniRead(BOOT_FILE, "BOOT", "ExitReason", "")
 CreateProgramPathDir()
-DownloadCports()
 if (ExitReason != "Reload") {
   CheckForUpdates()
 }
-if (FileDelete(BOOT_FILE)) {
+if (FileExist(BOOT_FILE)) {
   FileDelete(BOOT_FILE)
 }

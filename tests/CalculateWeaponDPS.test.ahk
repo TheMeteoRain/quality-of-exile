@@ -1,6 +1,6 @@
 #Requires AutoHotkey v2.0
 
-#Include "..\functions\CalculateWeaponDPS.ahk"
+#Include "..\src\games\poe\CalculateWeaponDPS.ahk"
 
 item1 := "
     (
