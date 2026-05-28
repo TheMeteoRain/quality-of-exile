@@ -1,18 +1,13 @@
 #Requires AutoHotkey v2.0
 
+; Save / restore wrapper around A_Clipboard. One global instance `Clip`.
+
 class ClipboardSaver {
-  __New() {
-    this.OriginalClipboard := ""
-  }
+  OriginalClipboard := ""
 
   Save() {
     Sleep(50)
     this.OriginalClipboard := A_Clipboard
-    Sleep(50)
-  }
-
-  Copy() {
-    Send("^c")
     Sleep(50)
   }
 
@@ -44,28 +39,6 @@ class ClipboardSaver {
   Get() {
     return A_Clipboard
   }
-
-  IsItem() {
-    this.Save()
-    this.Copy()
-    cp := this.Get()
-    this.Restore()
-    if (RegExMatch(cp, "Item Class")) {
-      return true
-    }
-
-    return false
-  }
-
-  IsWeapon() {
-    this.Save()
-    this.Copy()
-    cp := this.Get()
-    this.Restore()
-    if (RegExMatch(cp, "Attacks per Second: ")) {
-      return true
-    }
-
-    return false
-  }
 }
+
+global Clip := ClipboardSaver()
