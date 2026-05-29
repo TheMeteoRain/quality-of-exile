@@ -113,6 +113,9 @@ class Modifiers {
   ;     resets toggles when pressed (so releasing held modifiers feels natural).
   ;   - LWin and Esc bypass the toggle (release held modifiers + send key normally).
   static WireFallbacks() {
+    if (!Game.HWND) {
+      return  ; no game attached → registering globally would steal keys app-wide
+    }
     ctrlOn := Storage.Bindings["ToggleCtrl"] == 1
     shiftOn := Storage.Bindings["ToggleShift"] == 1
 

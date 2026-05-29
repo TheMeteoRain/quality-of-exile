@@ -9,6 +9,11 @@ class App {
   ; Runs once at script start: attach to the game, load config + state, build
   ; the floating HUDs.
   static Boot() {
+    ; "Open Settings" in context menu works outside of the game
+    A_TrayMenu.Add()  ; separator
+    A_TrayMenu.Add("Open Settings", (*) => Settings.Open())
+    A_TrayMenu.Default := "Open Settings"
+
     Game.AttachToGame()
     Storage.LoadConfig()
     Shipments.Load()

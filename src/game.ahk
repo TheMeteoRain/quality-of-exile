@@ -144,8 +144,8 @@ class GameInfo {
   }
 
   FocusGameWindow() {
-    if (this.GameClientExists()) {
-      WinActivate(this.HWND)
+    if (this.HWND) {
+      try WinActivate(this.HWND)
     }
   }
 

@@ -18,6 +18,13 @@ class Settings {
   static Open(*) {
     global Configs
 
+    ; If no game is attached yet (Settings opened via tray before game launch),
+    ; default to PoE1 so fields populate. User can switch via the dropdown.
+    if (Game.Variant == "") {
+      Settings._SetGameVariant(1)
+      Storage.LoadConfig()
+    }
+
     if (Settings._gui) {
       Settings._gui.Destroy()
     }
@@ -26,7 +33,17 @@ class Settings {
     legend := "(D): Dynamic Hotkey"
 
     Settings._gui := Gui("+AlwaysOnTop +ToolWindow", "Quality of Exile")
-    Settings._gui.Add("Text", Format("x{} y{} w500", L.legendX, L.legendY), legend).SetFont("w700")
+    Settings._gui.Add("Text", Format("x{} y{} w300", L.legendX, L.legendY), legend).SetFont("w700")
+
+    ; Game variant selector (top-right). Locked when a game is auto-detected.
+    ddlX := L.windowW - 130
+    Settings._gui.Add("Text", Format("x{} y{} w40 Right", ddlX - 45, L.legendY + 2), "Game:")
+    gameDdl := Settings._gui.Add("DropDownList", Format("x{} y{} w120", ddlX, L.legendY - 2), Settings._VARIANT_LABELS)
+    gameDdl.Choose(Settings._VariantIndex())
+    if (Game.HWND) {
+      gameDdl.Enabled := false
+    }
+    gameDdl.OnEvent("Change", (*) => Settings._SwitchGame(gameDdl.Value, tabCtrl.Value))
 
     OnMessage(Settings._WM_MOUSEMOVE, (wp, lp, msg, hwnd) => Settings._HandleHover(wp, lp, msg, hwnd))
 
@@ -46,7 +63,12 @@ class Settings {
     tabCtrl.UseTab("")
 
     minTabH := tabHeights.Has("General") ? tabHeights["General"] : 0
-    initialTabH := Max(tabHeights[tabs[1]], minTabH)
+    ; Restore the tab the user was on before a re-open (e.g. game-variant switch).
+    if (Settings._pendingTabIndex > 0) {
+      tabCtrl.Choose(Settings._pendingTabIndex)
+    }
+    initialTab := tabs[tabCtrl.Value]
+    initialTabH := Max(tabHeights[initialTab], minTabH)
     tabCtrl.Move(, , , initialTabH)
 
     initialFooterY := L.tabY + initialTabH + L.footerGap
@@ -55,11 +77,16 @@ class Settings {
     tabCtrl.OnEvent("Change", (*) => Settings._OnTabChange(tabCtrl, tabs, tabHeights, minTabH, footer))
 
     initialWindowH := initialFooterY + L.footerBottom + L.windowBottomPad
-    Settings._gui.Show(Format(
-      "x{} y{} w{} h{}",
-      Game.GameWindowCenterX - L.windowW / 2, Game.GameWindowCenterY - initialWindowH / 2,
-      L.windowW, initialWindowH
-    ))
+    if (Game.GameWindowCenterX > 0) {
+      Settings._gui.Show(Format(
+        "x{} y{} w{} h{}",
+        Game.GameWindowCenterX - L.windowW / 2, Game.GameWindowCenterY - initialWindowH / 2,
+        L.windowW, initialWindowH
+      ))
+    } else {
+      ; No game attached yet — center on the active monitor.
+      Settings._gui.Show(Format("w{} h{} Center", L.windowW, initialWindowH))
+    }
     ControlFocus(Settings._gui, Settings._gui.Title)
   }
 
@@ -71,6 +98,38 @@ class Settings {
 
   static Submit() {
     return Settings._gui.Submit()
+  }
+
+  ; Order matches Settings._VariantIndex and Settings._SwitchGame.
+  static _VARIANT_LABELS := ["PoE1", "PoE2", "Last Epoch"]
+
+  static _VariantIndex() {
+    switch Game.Variant {
+      case "PoE2": return 2
+      case "LastEpoch": return 3
+      default: return 1   ; PoE1 or unset
+    }
+  }
+
+  static _SetGameVariant(idx) {
+    static profiles := [
+      { name: "PathOfExile", variant: "PoE1" },
+      { name: "PathOfExile", variant: "PoE2" },
+      { name: "LastEpoch",   variant: "LastEpoch" },
+    ]
+    p := profiles[idx]
+    Game.Name := p.name
+    Game.Variant := p.variant
+  }
+
+  static _pendingTabIndex := 0
+
+  static _SwitchGame(idx, tabIndex := 0) {
+    Settings._SetGameVariant(idx)
+    Settings._pendingTabIndex := tabIndex
+    Storage.LoadConfig()
+    Settings.Open()
+    Settings._pendingTabIndex := 0
   }
 
   ; ============================ Layout / constants ============================
