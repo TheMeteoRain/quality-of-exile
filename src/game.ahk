@@ -12,12 +12,19 @@ class GameInfo {
   HWND := 0
   PID := 0
   ProcessPath := ""
-  ; PoE1 and PoE2 install with different exe names; LE has its own.
-  static VariantByExe := Map(
-    "PathOfExile.exe", "PoE1",
-    "PathOfExileSteam.exe", "PoE2",
-    "Last Epoch.exe", "LastEpoch",
-  )
+  ; PoE1 and PoE2 ship identical exe names — the Steam client of BOTH is
+  ; PathOfExileSteam.exe, the standalone of both is PathOfExile.exe — so the exe
+  ; can't tell them apart. They differ only by install folder ("Path of Exile"
+  ; vs "Path of Exile 2"), so we detect the exe and resolve the variant from the
+  ; process path (see AttachToGame). Last Epoch has its own exe.
+  static _LastEpochExe := "Last Epoch.exe"
+  static _GameExes := [
+    "Last Epoch.exe",
+    "PathOfExileSteam.exe",
+    "PathOfExile.exe",
+    "PathOfExile_x64Steam.exe",
+    "PathOfExile_x64.exe",
+  ]
   Title := ""
   Name := ""        ; "PathOfExile" or "LastEpoch" — used to match config.game
   Variant := ""     ; "PoE1" | "PoE2" | "LastEpoch" — namespaces pixel storage
@@ -106,7 +113,7 @@ class GameInfo {
   AttachToGame() {
     gameProcessFound := false
     while (!this.HWND) {
-      for exe, variant in GameInfo.VariantByExe {
+      for exe in GameInfo._GameExes {
         title := "ahk_exe " exe
 
         if this.GameClientExists(title) {
@@ -114,9 +121,15 @@ class GameInfo {
           this.Title := title
           this.PID := WinGetPID(title)
           this.ProcessPath := ProcessGetPath(this.PID)
+          if (exe == GameInfo._LastEpochExe) {
+            this.Name := "LastEpoch"
+            this.Variant := "LastEpoch"
+          } else {
+            ; PoE1 vs PoE2 disambiguated by install folder, not exe name.
+            this.Name := "PathOfExile"
+            this.Variant := InStr(this.ProcessPath, "Path of Exile 2") ? "PoE2" : "PoE1"
+          }
           this.HWND := this.GameClientActive(title)
-          this.Variant := variant
-          this.Name := (variant == "LastEpoch") ? "LastEpoch" : "PathOfExile"
           break
         }
         Sleep 1000
