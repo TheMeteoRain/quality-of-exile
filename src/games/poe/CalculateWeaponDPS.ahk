@@ -8,12 +8,13 @@ CalculatePhysicalDPS(weapon, quality) {
   )
 }
 CalculateElementalDPS(weapon) {
-  return CalculateDPS(
-    weapon.ele.fire[1] + weapon.ele.fire[2] +
-    weapon.ele.cold[1] + weapon.ele.cold[2] +
-    weapon.ele.light[1] + weapon.ele.light[2],
-    weapon.aps.default, weapon.aps.ias
-  )
+  base := weapon.ele.fire[1] + weapon.ele.fire[2]
+    + weapon.ele.cold[1] + weapon.ele.cold[2]
+    + weapon.ele.light[1] + weapon.ele.light[2]
+  if (base == 0) {
+    base := weapon.ele.combined[1] + weapon.ele.combined[2]
+  }
+  return CalculateDPS(base, weapon.aps.default, weapon.aps.ias)
 }
 CalculateDPS(base, aps := 1, ias := 0, ipd := 0, quality := 0) {
   ; Quality is local "increased Physical Damage" and shares the additive
@@ -400,6 +401,7 @@ CopyWeapon(weapon) {
       fire: [weapon.ele.fire[1], weapon.ele.fire[2]],
       cold: [weapon.ele.cold[1], weapon.ele.cold[2]],
       light: [weapon.ele.light[1], weapon.ele.light[2]],
+      combined: [weapon.ele.combined[1], weapon.ele.combined[2]],
       dps: weapon.ele.dps,
     },
   }
@@ -463,6 +465,7 @@ CalculateWeaponDPS(item, GuiCtrl := unset) {
         fire: [0, 0],
         cold: [0, 0],
         light: [0, 0],
+        combined: [0, 0],   ; fallback total from the Elemental Damage line
         dps: 0,
       },
     }
@@ -489,6 +492,22 @@ CalculateWeaponDPS(item, GuiCtrl := unset) {
     }
     if (totals.Has(affixLabels.light)) {
       weapon.ele.light := totals.Get(affixLabels.light).total
+    }
+
+    ; The per-element values above come only from advanced {Modifier} blocks.
+    ; When those are absent (or the mod format differs), fall back to the item's
+    ; Elemental Damage property line — summed across its comma-separated ranges —
+    ; so elemental DPS still counts. Physical already reads its own line below.
+    eleFromAffixes := weapon.ele.fire[1] + weapon.ele.fire[2]
+      + weapon.ele.cold[1] + weapon.ele.cold[2]
+      + weapon.ele.light[1] + weapon.ele.light[2]
+    if (eleFromAffixes == 0 and RegExMatch(item, "im)^Elemental Damage:\s*(.+)$", &eleLine)) {
+      for _, part in StrSplit(eleLine[1], ",") {
+        if (RegExMatch(part, "(\d+)\s*-\s*(\d+)", &r)) {
+          weapon.ele.combined[1] += r[1]
+          weapon.ele.combined[2] += r[2]
+        }
+      }
     }
 
     if (RegExMatch(item, "Quality: \+(\d+)%", &m)) {
