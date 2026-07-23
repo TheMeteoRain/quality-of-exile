@@ -1,9 +1,9 @@
 #Requires AutoHotkey v2.0
 
-; Hover an item, hit the hotkey: we Ctrl+Alt+C the item, identify its base
-; from a bundled craftofexile dataset, and pop a context menu near the cursor
-; with jump-to-affixes (and future entries). Silently no-ops when the base
-; can't be matched — common for non-equipment items (currency, maps, etc).
+; Hover an item, hit the hotkey: we Ctrl+Alt+C the item and pop a context menu
+; near the cursor — jump to its affixes on Craft of Exile (when the base matches
+; a bundled dataset) and, for weapons, a DPS breakdown. Silently no-ops when the
+; item offers neither — common for currency, maps, etc.
 
 class ItemContext {
   ; Sorted longest-first so the substring scan picks the most specific base
@@ -25,43 +25,51 @@ class ItemContext {
       return
     }
 
-    item := ItemContext._CopyAndIdentify(Game.Variant)
-    if (!item) {
-      return  ; nothing identifiable — stay silent
+    text := ItemContext._Copy()
+    if (text == "") {
+      return
     }
 
     ; Name can't be `menu` — AHK is case-insensitive so a local `menu` shadows
     ; the built-in `Menu` class and breaks the constructor call.
     popup := Menu()
-    popup.Add("Affixes (Craft of Exile)", (*) => Run(item.coeUrl))
+    entries := 0
+
+    base := ItemContext._MatchBase(Game.Variant, text)
+    if (base) {
+      coeUrl := ItemContext._CoeUrl(Game.Variant, base, text)
+      popup.Add("Affixes (Craft of Exile)", (*) => Run(coeUrl))
+      entries++
+    }
+
+    if (WeaponDPS.IsWeapon(text)) {
+      popup.Add("Calculate Weapon DPS", (*) => WeaponDPS.Show(text))
+      entries++
+    }
+
+    if (entries == 0) {
+      return  ; nothing to offer — stay silent
+    }
     popup.Show()
   }
 
   ; --- Internal ---
 
-  static _CopyAndIdentify(variant) {
+  static _Copy() {
     Clip.Save()
     Clip.Clear()
     Clip.CopyWithAlt()
     text := Clip.Get()
     Clip.Restore()
+    return text
+  }
 
-    if (text == "") {
-      return false
-    }
-    base := ItemContext._MatchBase(variant, text)
-    if (!base) {
-      return false
-    }
-
+  static _CoeUrl(variant, base, text) {
     qs := Format("&b={}&bi={}", base.idBase, base.idBitem)
     if (ilvl := ItemContext._ExtractILvl(text)) {
       qs .= "&lv=" ilvl
     }
-    return {
-      base: base,
-      coeUrl: ItemContext._COE_URL[variant] qs,
-    }
+    return ItemContext._COE_URL[variant] qs
   }
 
   ; The dataset is sorted longest-first; the first substring hit wins,

@@ -1,26 +1,26 @@
 #Requires AutoHotkey v2.0
 
-; Hover-a-weapon hotkey: Alt+Copy the item under the cursor, run it through
-; CalculateWeaponDPS, show the result as a transparent overlay near the mouse
-; for 5 seconds.
+; Runs copied item text through CalculateWeaponDPS and shows the result as a
+; transparent overlay near the mouse for 5 seconds. Invoked from the item
+; context menu.
 
 class WeaponDPS {
   static _AUTO_HIDE_MS := 5000   ; popup self-dismisses after this long
 
   static _gui := 0
 
-  static Show(*) {
+  ; Item text describes a weapon when it carries an attack-speed line.
+  static IsWeapon(item) {
+    return InStr(item, "Attacks per Second:")
+  }
+
+  static Show(item) {
     if (Debounce("WeaponDPS", 250)) {
       return
     }
 
     WeaponDPS.Hide()
     SetTimer((*) => WeaponDPS.Hide(), 0)
-    Clip.Save()
-    Clip.Clear()
-    Clip.CopyWithAlt()
-    item := Clip.Get()
-    Clip.Restore()
 
     WeaponDPS._gui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20")
     WeaponDPS._gui.BackColor := MAIN_COLOR
@@ -29,6 +29,7 @@ class WeaponDPS {
     try {
       ctrl := CalculateWeaponDPS(item, WeaponDPS._gui)
       if (!ctrl) {
+        WeaponDPS.Hide()
         return
       }
     } catch Error as e {

@@ -145,16 +145,6 @@ global Configs := Map(
   "CraftingCurrency4", CurrencyConfig(4, 1, 0, true),
   "CraftingCurrency5", CurrencyConfig(5, 1, 1, true),
   "CraftingCurrency6", CurrencyConfig(6, 1, 2, true),
-  "CalcWeaponDPS", HotkeyEntry({
-    name: "Calc. Weapon DPS",
-    func: WeaponDPS.Show,
-    game: "PathOfExile",
-    tab: "PoE Crafting",
-    row: 2,
-    col: 0,
-    gap: true,
-    tooltip: "Hover a weapon to see its DPS breakdown.",
-  }),
   ; ============================ PoE Inventory ============================
   "DropItem", HotkeyEntry({
     name: "Drop Item From Inventory",
@@ -207,7 +197,7 @@ global Configs := Map(
     row: 1,
     col: 1,
     gap: true,
-    tooltip: "Hover an item, press to open a menu: jump to its affixes on Craft of Exile.",
+    tooltip: "Hover an item, press to open a menu: jump to its affixes on Craft of Exile, or calc weapon DPS.",
   }),
   ; Full-row (span:3) RegExp search slots; per-PoE-variant patterns.
   "HighlightShopItems1", RegexpEntry(1, "F1",
