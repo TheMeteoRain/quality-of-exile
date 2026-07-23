@@ -43,13 +43,19 @@ class Overlay {
       return
     }
 
-    val := Storage.UserValues.Get("ToggleOverlayPosition", Format("{}x{}", Game.OverlayPosX, Game.OverlayPosY))
+    default := Format("{}x{}", Game.OverlayPosX, Game.OverlayPosY)
+    val := Storage.UserValues.Get("ToggleOverlayPosition", default)
     resolution := ParseResolution(val)
     if (!resolution) {
-      MsgBox(
-        "Invalid resolution for toggle overlay position. Please set a valid resolution in the format 'widthxheight' (e.g., 1920x1080)."
-      )
-      return
+      ; Corrupt / legacy stored position. Silently reset to the auto-computed
+      ; default (and persist it) instead of blocking with a MsgBox — the error
+      ; used to reappear every Show(), leaving the user no way to fix it.
+      Storage.UserValues.Set("ToggleOverlayPosition", default)
+      IniWrite(default, DATA_FILE, "Pixels", GameScopedKey("ToggleOverlayPosition"))
+      resolution := ParseResolution(default)
+      if (!resolution) {
+        return
+      }
     }
 
     Overlay._gui.Show("x" resolution.width " y" resolution.height " w" Game.OverlayWidth " h" Game.OverlayHeight " NoActivate"
