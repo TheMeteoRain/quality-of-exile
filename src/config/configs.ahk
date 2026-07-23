@@ -199,6 +199,16 @@ global Configs := Map(
     gap: true,
     tooltip: "Click the first shipment cell, then press to fill every row.",
   }),
+  "ItemContextMenu", HotkeyEntry({
+    name: "Item Context Menu",
+    func: ItemContext.Show,
+    game: "PathOfExile",
+    tab: "PoE Inventory",
+    row: 1,
+    col: 1,
+    gap: true,
+    tooltip: "Hover an item, press to open a menu: jump to its affixes on Craft of Exile.",
+  }),
   ; Full-row (span:3) RegExp search slots; per-PoE-variant patterns.
   "HighlightShopItems1", RegexpEntry(1, "F1",
     "(\w\W){5}|-\w-.-|(-\w){4}|(-\w){5}|nne|rint|ll g", 0, false),

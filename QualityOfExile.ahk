@@ -39,6 +39,7 @@ DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
 #Include "src/games/poe/CraftCurrency.ahk"
 #Include "src/games/poe/Divination.ahk"
 #Include "src/games/poe/DropItem.ahk"
+#Include "src/games/poe/ItemContext.ahk"
 #Include "src/games/poe/Logout.ahk"
 #Include "src/games/poe/RegexpShop.ahk"
 #Include "src/games/poe/Shipments.ahk"
