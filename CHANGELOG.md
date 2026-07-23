@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.2.0](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.0...v0.2.0) (2026-07-23)
+
+
+### Features
+
+* add ladder rank lookup with in-game HUD ([58b5da7](https://github.com/TheMeteoRain/quality-of-exile/commit/58b5da75d249cbebfca8e77759e85cc321e6f7fb))
+* allow to open settings outside of game via context menu ([6ceada9](https://github.com/TheMeteoRain/quality-of-exile/commit/6ceada97361978ab273ba952072d2e82723bb578))
+* **poe:** add item context menu with Craft of Exile links ([aa25a0b](https://github.com/TheMeteoRain/quality-of-exile/commit/aa25a0bb1ecd28e87bdb01abb3705703442a6553))
+* **poe:** move weapon DPS into the item context menu ([eda8953](https://github.com/TheMeteoRain/quality-of-exile/commit/eda8953e31ac6c6a52ff205f879c3e0244bc69a9))
+
+
+### Bug Fixes
+
+* **game:** detect PoE1 vs PoE2 by install path ([e000fb6](https://github.com/TheMeteoRain/quality-of-exile/commit/e000fb6d6d1a392899c32a4e4551282f4ad0de48))
+* **hotkeys:** reset toggles on Esc and Windows key ([cbd569b](https://github.com/TheMeteoRain/quality-of-exile/commit/cbd569b7ef4a48e2c1c5257bb0dd54fdc9a45491))
+* **overlay:** hide overlay and HUD when the game is not focused ([0067652](https://github.com/TheMeteoRain/quality-of-exile/commit/00676526c5b4689ccd563e84b8af754a2150e273))
+* **overlay:** reset invalid toggle overlay position ([a8f820d](https://github.com/TheMeteoRain/quality-of-exile/commit/a8f820da49418f49f7099b19db40591c31263f59))
+* **poe:** fall back to the Elemental Damage line for weapon DPS ([db8d4b8](https://github.com/TheMeteoRain/quality-of-exile/commit/db8d4b88435ca5a82184beec119a0fe30a8a592e))
+* **poe:** stack weapon quality additively with increased physical damage ([2f7cb24](https://github.com/TheMeteoRain/quality-of-exile/commit/2f7cb24cef36c83b1f76dd2448e8bc3519806af5))
+
 ## [0.1.0](https://github.com/TheMeteoRain/quality-of-exile/compare/v0.1.1-beta.14...v0.1.0) (2026-05-28)
 
 
