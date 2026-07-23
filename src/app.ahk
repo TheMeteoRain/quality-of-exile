@@ -77,6 +77,12 @@ class App {
 
   ; SetTimer callback: re-syncs HUD positions when the game window moves.
   static _AdjustOverlay() {
+    ; The game can lose focus between this timer firing and being turned off;
+    ; bail so we neither block in CalculatePixels (WinWaitActive) nor re-show the
+    ; overlay over another window.
+    if (!Game.IsActive()) {
+      return
+    }
     Game.CalculatePixels()
     Overlay.Show()
     HUD.Show()

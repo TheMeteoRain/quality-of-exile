@@ -38,6 +38,10 @@ class Overlay {
     if (Overlay._previewLock) {  ; picker owns position
       return
     }
+    if (!Game.IsActive()) {  ; never float over another window when unfocused
+      Overlay.Hide()
+      return
+    }
     if (!Modifiers.AnyToggleableBound()) {
       Overlay.Hide()
       return

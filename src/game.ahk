@@ -170,6 +170,12 @@ class GameInfo {
     return WinWaitActive(title)
   }
 
+  ; Non-blocking foreground check. Unlike GameClientActive (WinWaitActive),
+  ; this returns immediately — safe to poll from timers / Show guards.
+  IsActive() {
+    return this.HWND and WinActive(this.Title)
+  }
+
   GameClientNotActive() {
     return WinWaitNotActive(this.Title)
   }

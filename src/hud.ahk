@@ -20,6 +20,10 @@ class HUD {
   }
 
   static Show() {
+    if (!Game.IsActive()) {  ; only float over the game while it is focused
+      HUD.Hide()
+      return
+    }
     if (HUD._gui) {
       HUD._gui.Show("x" Game.HudPosX " y" Game.HudPosY " w120 h58 NoActivate")
     }
