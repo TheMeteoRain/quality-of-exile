@@ -111,7 +111,9 @@ class Modifiers {
   ; Called once at boot after configs load. Wires:
   ;   - If only one of Ctrl/Shift toggle is bound, the OTHER physical key
   ;     resets toggles when pressed (so releasing held modifiers feels natural).
-  ;   - LWin and Esc bypass the toggle (release held modifiers + send key normally).
+  ;   - Esc and the Windows key release held modifiers + stop click-spam, then
+  ;     send the key normally. Modifiers are released BEFORE the re-send, or a
+  ;     held Ctrl turns Esc/Win into Ctrl+Esc/Ctrl+Win (Start menu).
   static WireFallbacks() {
     if (!Game.HWND) {
       return  ; no game attached → registering globally would steal keys app-wide
@@ -126,10 +128,12 @@ class Modifiers {
       Keybinds.Register("*Ctrl", Modifiers.Reset, "On", true)
     }
 
-    if (ctrlOn or shiftOn) {
-      Keybinds.Register("#LWin", Modifiers.Reset, "On", true)
-      Keybinds.Register("~*LWin", (*) => Modifiers.ResetAndSend("{LWin}"), "On", true)
+    ; Any toggle that can leave held state (Ctrl/Shift holds, click-spam) gets
+    ; the Esc/Win escape hatch — not just the Ctrl/Shift toggles.
+    if (Modifiers.AnyToggleableBound()) {
       Keybinds.Register("*Esc", (*) => Modifiers.ResetAndSend("{Esc}"), "On", true)
+      Keybinds.Register("*LWin", (*) => Modifiers.ResetAndSend("{LWin}"), "On", true)
+      Keybinds.Register("*RWin", (*) => Modifiers.ResetAndSend("{RWin}"), "On", true)
     }
   }
 }
