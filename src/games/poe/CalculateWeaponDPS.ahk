@@ -16,7 +16,10 @@ CalculateElementalDPS(weapon) {
   )
 }
 CalculateDPS(base, aps := 1, ias := 0, ipd := 0, quality := 0) {
-  return base / 2 * (1 + ipd / 100) * (1 + quality / 100) * Round(aps * (1 + ias / 100), 2)
+  ; Quality is local "increased Physical Damage" and shares the additive
+  ; increased bucket with physical-damage affixes — one sum, not a separate
+  ; (More-style) multiplier.
+  return base / 2 * (1 + (ipd + quality) / 100) * Round(aps * (1 + ias / 100), 2)
 }
 
 ParseWeaponAffixes(item) {
@@ -517,14 +520,11 @@ CalculateWeaponDPS(item, GuiCtrl := unset) {
     }
 
     if (weapon.phys.augmented) {
-      weapon.phys.default[1] := Round(
-        weapon.phys.augmentedValue[1] / (1 + weapon.phys.ipd / 100) /
-        (1 + weapon.quality / 100) - weapon.phys.flat[1]
-      )
-      weapon.phys.default[2] := Round(
-        weapon.phys.augmentedValue[2] / (1 + weapon.phys.ipd / 100) /
-        (1 + weapon.quality / 100) - weapon.phys.flat[2]
-      )
+      ; Reverse the same additive bucket to recover the base range: displayed =
+      ; (base + flat) * (1 + (ipd + quality) / 100).
+      increased := 1 + (weapon.phys.ipd + weapon.quality) / 100
+      weapon.phys.default[1] := Round(weapon.phys.augmentedValue[1] / increased - weapon.phys.flat[1])
+      weapon.phys.default[2] := Round(weapon.phys.augmentedValue[2] / increased - weapon.phys.flat[2])
     }
 
     weapon.phys.dps := CalculatePhysicalDPS(weapon, weapon.quality)
