@@ -304,6 +304,8 @@ class Settings {
       y := Settings._RenderRegexp(key, config, x, y, w)
     } else if (key == "FillShipment") {
       y := Settings._RenderShipment(key, config, x, y, w)
+    } else if (config.HasProp("dropdown")) {
+      y := Settings._RenderDropdown(key, config, x, y, w)
     } else if (ConfigBool(config, "textField")) {
       y := Settings._RenderText(key, config, x, y, w)
     }
@@ -437,6 +439,44 @@ class Settings {
     return y + L.rowH
   }
 
+  ; Dropdown whose options come from config.dropdown — a function that
+  ; returns an Array of strings (e.g. fetched league names). When the call
+  ; returns nothing and the config provides `emptyError`, render a disabled
+  ; dropdown with the error text in its label slot instead.
+  static _RenderDropdown(key, config, x, y, w) {
+    L := Settings._LAYOUT
+    options := config.dropdown.Call()
+    if (options.Length == 0 and config.HasProp("emptyError")) {
+      ; No v-name on purpose — keeps Submit from overwriting the stored
+      ; league value with the error placeholder.
+      ddl := Settings._gui.Add(
+        "DropDownList",
+        Format("x{} y{} w{}", x, y, w),
+        [config.emptyError]
+      )
+      ddl.Choose(1)
+      ddl.Enabled := false
+      Settings._AttachTooltip(ddl, config)
+      return y + L.rowH
+    }
+    ddl := Settings._gui.Add(
+      "DropDownList",
+      Format("v{}_extra x{} y{} w{}", key, x, y, w),
+      options
+    )
+    current := Storage.UserValues.Get(key, "")
+    if (current != "") {
+      for i, opt in options {
+        if (opt == current) {
+          ddl.Choose(i)
+          break
+        }
+      }
+    }
+    Settings._AttachTooltip(ddl, config)
+    return y + L.rowH
+  }
+
   ; Mnemonic field for currency slots — does not affect runtime.
   static _RenderLabel(key, x, y, w) {
     L := Settings._LAYOUT
@@ -550,7 +590,7 @@ class Settings {
       Settings._FinishCapture(Settings._capture.prev)
       return
     }
-    if (key == "Backspace") {    ; clear
+    if (key == "Backspace" or key == "Delete") {    ; clear
       Settings._FinishCapture("")
       return
     }

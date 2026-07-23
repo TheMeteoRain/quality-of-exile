@@ -100,7 +100,7 @@ class Storage {
   }
 
   static _SaveExtra(key, config, controls) {
-    if (!ConfigBool(config, "textField") and !ConfigBool(config, "regexpField")) {
+    if (!ConfigBool(config, "textField") and !ConfigBool(config, "regexpField") and !config.HasProp("dropdown")) {
       return
     }
     extraKey := key "_extra"
@@ -136,6 +136,10 @@ class Storage {
   }
 
   static _LoadAndRegister(key, config) {
+    ; textField / regexpField / labelField data is independent of section
+    ; (sectionless configs can still have these — e.g. ladder character/league).
+    Storage._LoadTextValues(key, config)
+
     section := config.HasProp("section") ? config.section : ""
     if (section == "Hotkey") {
       Storage._LoadHotkey(key, config)
@@ -144,21 +148,28 @@ class Storage {
     }
   }
 
-  static _LoadHotkey(key, config) {
-    val := IniRead(DATA_FILE, "Hotkeys", key, config.defaultHotkey)
-    Storage.Bindings.Set(key, val)
-
-    if (ConfigBool(config, "textField") or ConfigBool(config, "regexpField")) {
+  static _LoadTextValues(key, config) {
+    if (ConfigBool(config, "textField") or ConfigBool(config, "regexpField") or config.HasProp("dropdown")) {
       dflt := config.HasProp("defaultText") ? config.defaultText : ""
       Storage.UserValues.Set(key, ConfigBool(config, "gameScoped")
         ? ReadGameScoped("Extra", key, dflt)
         : IniRead(DATA_FILE, "Extra", key, dflt))
     }
-
     if (ConfigBool(config, "labelField")) {
       Storage.SlotLabels[key] := ConfigBool(config, "gameScoped")
         ? ReadGameScoped("Labels", key, "")
         : IniRead(DATA_FILE, "Labels", key, "")
+    }
+  }
+
+  static _LoadHotkey(key, config) {
+    val := IniRead(DATA_FILE, "Hotkeys", key, config.defaultHotkey)
+    Storage.Bindings.Set(key, val)
+
+    ; No game attached + not explicitly global → skip the hotkey registration,
+    ; otherwise it would fire everywhere (Game.Title is empty → HotIf() = global).
+    if (!ConfigBool(config, "globalScope") and !Game.HWND) {
+      return
     }
 
     winName := ConfigBool(config, "globalScope") ? "" : Game.Title
@@ -171,7 +182,7 @@ class Storage {
     val := IniRead(DATA_FILE, "Toggle", key, 0)
     Storage.Bindings.Set(key, val)
 
-    if (val == 1 and config.HasProp("companionKey")) {
+    if (val == 1 and config.HasProp("companionKey") and Game.HWND) {
       Keybinds.Register(config.companionKey, config.func, "On", config.canBeDisabled)
     }
   }

@@ -31,6 +31,7 @@ DllCall("SetThreadDpiAwarenessContext", "ptr", -4, "ptr")
 
 ; ---- Cross-game actions ----
 #Include "src/games/shared/ClickSpam.ahk"
+#Include "src/games/shared/Leaderboard.ahk"
 
 ; ---- Path of Exile ----
 #Include "src/games/poe/ChatCommand.ahk"

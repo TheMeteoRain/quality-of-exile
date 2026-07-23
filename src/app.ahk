@@ -9,7 +9,8 @@ class App {
   ; Runs once at script start: attach to the game, load config + state, build
   ; the floating HUDs.
   static Boot() {
-    ; "Open Settings" in context menu works outside of the game
+    ; Set up the tray menu BEFORE the blocking Game.AttachToGame() so the
+    ; "Open Settings" entry is available even while waiting for the game.
     A_TrayMenu.Add()  ; separator
     A_TrayMenu.Add("Open Settings", (*) => Settings.Open())
     A_TrayMenu.Default := "Open Settings"
@@ -31,6 +32,7 @@ class App {
 
       if (Game.GameIsPathOfExile()) {
         ClientLog.Start()
+        Leaderboard.Start()
       }
 
       Overlay.Show()
@@ -45,8 +47,30 @@ class App {
       Modifiers.Reset()
       SetTimer(App._AdjustOverlayTimer, 0)
 
-      if (Game.GameIsPathOfExile() and !Game.GameClientExists()) {
-        ClientLog.Stop()
+      if (!Game.GameClientExists()) {
+        ; Game quit. Stop services and wipe Game state so the next
+        ; AttachToGame() re-blocks on WinWaitActive instead of no-op'ing
+        ; with a dead HWND (which would respin Show/Hide and leave the
+        ; overlay visible).
+        if (Game.GameIsPathOfExile()) {
+          ClientLog.Stop()
+          Leaderboard.Stop()
+        }
+        Game.Reset()
+      } else {
+        ; Plain alt-tab — game still running. Wait for it to come back
+        ; before re-showing the overlay; otherwise WinWaitNotActive returns
+        ; immediately on the now-inactive window and the loop busy-spins.
+        ; Poll with a 1s timeout so we still notice if the game dies during
+        ; the wait.
+        loop {
+          if (WinWaitActive(Game.Title,, 1)) {
+            break
+          }
+          if (!Game.GameClientExists()) {
+            break
+          }
+        }
       }
     }
   }
